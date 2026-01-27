@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temp
+*.log
+*.tmp
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Bun
+bun.lock

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}">
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="alternate" hreflang="en" href="/en/">
+  <link rel="alternate" hreflang="zh" href="/zh/">
+  <link rel="canonical" href="/zh/">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Top Row -->
+    <div class="top-row">
+      <div class="top-left">
+        <img src="/images/profile.jpeg" alt="{{name}}" class="avatar">
+        <h1>{{name}}</h1>
+        <p class="title">{{jobTitle}}</p>
+      </div>
+      <div class="top-right">
+        <div class="content-controls">
+          <button id="theme-toggle" class="control-btn" aria-label="Toggle theme">
+            <span class="icon-light">☀</span>
+            <span class="icon-dark">☾</span>
+          </button>
+          <a href="/en/" class="control-btn lang-switch" aria-label="Switch language">
+            <span class="lang-label">EN</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horizontal Divider -->
+    <div class="cross-divider"></div>
+
+    <!-- Bottom Row -->
+    <div class="bottom-row">
+      <div class="bottom-left">
+        <p class="tagline">{{{tagline}}}</p>
+        
+        <div class="sidebar-links">
+          <a href="https://lizheng.me/" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.469 6.825c.84 1.537 1.318 3.3 1.318 5.175 0 3.979-2.156 7.456-5.363 9.325-.477-.587-1.009-1.303-1.581-2.112a13.01 13.01 0 01-.596-.924c-.238-.405-.467-.821-.678-1.247-.326-.664-.603-1.343-.828-2.03-.164-.504-.295-1.013-.39-1.523a11.252 11.252 0 01-.134-1.395c-.009-.473.003-.946.044-1.417.068-.771.205-1.535.41-2.283.084-.305.18-.607.29-.906.136-.37.293-.735.472-1.091a10.14 10.14 0 01.753-1.232c.212-.294.442-.579.69-.851.147-.161.3-.318.46-.47a9.69 9.69 0 01.892-.748c.172-.124.349-.244.531-.358a9.435 9.435 0 011.238-.679c.16-.073.323-.142.489-.207a9.483 9.483 0 011.582-.459c.196-.04.394-.073.594-.1.265-.035.532-.058.8-.069.353-.014.707.001 1.059.044-.073.212-.164.418-.271.616zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.992 7.757a7.583 7.583 0 00-1.083-.603c-.22-.098-.444-.186-.672-.264a7.735 7.735 0 00-1.165-.305 7.667 7.667 0 00-1.573-.106 7.686 7.686 0 00-.972.082 7.52 7.52 0 00-1.168.271c-.203.067-.403.143-.599.228a7.403 7.403 0 00-1.016.516 7.29 7.29 0 00-.745.499c-.188.145-.369.299-.543.46a7.1 7.1 0 00-.611.609c-.217.249-.417.512-.599.787a8.077 8.077 0 00-.659 1.136c-.159.333-.295.676-.408 1.026a8.617 8.617 0 00-.358 2.078 8.933 8.933 0 00.052 1.292c.043.335.104.667.184.994.068.28.151.557.249.829.156.437.349.861.577 1.267.166.295.349.58.548.854.274.376.579.729.911 1.056l.149.139c-2.797-1.899-4.633-5.089-4.633-8.709 0-5.801 4.699-10.5 10.5-10.5 3.622 0 6.813 1.838 8.708 4.636a7.474 7.474 0 00-.325-.289z"/></svg>
+            lizheng.me
+          </a>
+          <a href="https://x.com/zhengli" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+            x.com/zhengli
+          </a>
+          <a href="https://linkedin.com/in/nocoo" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            linkedin.com/in/nocoo
+          </a>
+          <a href="https://github.com/nocoo" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+            github.com/nocoo
+          </a>
+        </div>
+      </div>
+
+      <main class="content">
+        <article class="resume">
+          <section id="summary">
+            <h2>{{summaryTitle}}</h2>
+            <p class="summary-subtitle"><strong>{{summarySubtitle}}</strong></p>
+            {{#each summary}}
+            <p>{{this}}</p>
+            {{/each}}
+          </section>
+
+          <hr>
+
+          <section id="experience">
+            <h2>{{experienceTitle}}</h2>
+            {{#each jobs}}
+            <div class="job">
+              <div class="job-header">
+                <div class="job-header-left">
+                  <h3>{{company}}</h3>
+                  {{#if title}}<span class="job-title">{{title}}</span>{{/if}}
+                </div>
+                <span class="job-meta">{{meta}}</span>
+              </div>
+              <ul>
+                {{#each items}}
+                <li>{{this}}</li>
+                {{/each}}
+              </ul>
+            </div>
+            {{/each}}
+          </section>
+
+          <hr>
+
+          <section id="education">
+            <h2>{{educationTitle}}</h2>
+            {{#each education}}
+            <div class="edu">
+              <div class="edu-header">
+                <div class="edu-header-left">
+                  <h3>{{school}}</h3>
+                  <span class="edu-degree">{{degree}}</span>
+                </div>
+                <span class="edu-year">{{year}}</span>
+              </div>
+            </div>
+            {{/each}}
+          </section>
+
+          <hr>
+
+          <section id="patent">
+            <h2>{{patentTitle}}</h2>
+            <p><strong>{{patent.id}}</strong> – {{patent.name}} <a href="{{patent.url}}" target="_blank" rel="noopener" class="patent-link" aria-label="View Patent"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zm-2 16H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7h-7z"/></svg></a></p>
+          </section>
+
+          <hr>
+
+          <section id="leadership">
+            <h2>{{leadershipTitle}}</h2>
+            {{#each leadership}}
+            <p>{{this}}</p>
+            {{/each}}
+          </section>
+
+          <hr>
+
+          <section id="beyond">
+            <h2>{{beyondTitle}}</h2>
+            {{#each beyond}}
+            <p>{{this}}</p>
+            {{/each}}
+          </section>
+        </article>
+
+        <footer class="footer">
+          <p id="copyright"></p>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
