@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh" data-theme="light">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>(function(){var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)})()</script>
   <title>{{title}}</title>
   <meta name="description" content="{{description}}">
   <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -16,7 +17,10 @@
     <!-- Top Row -->
     <div class="top-row">
       <div class="top-left">
-        <img src="/images/profile.jpeg" alt="{{name}}" class="avatar">
+        <picture>
+          <source srcset="/images/profile.webp" type="image/webp">
+          <img src="/images/profile-optimized.jpg" alt="{{name}}" class="avatar">
+        </picture>
         <h1>{{name}}</h1>
         <p class="title">{{jobTitle}}</p>
       </div>
@@ -143,6 +147,6 @@
     </div>
   </div>
 
-  <script type="module" src="/main.js"></script>
+  <script defer src="/main.js"></script>
 </body>
 </html>
