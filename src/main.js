@@ -13,8 +13,5 @@ themeToggle.addEventListener('click', () => {
 const copyrightEl = document.getElementById('copyright');
 if (copyrightEl) {
   const year = new Date().getFullYear();
-  const lang = document.documentElement.lang;
-  copyrightEl.textContent = lang === 'zh' 
-    ? `© ${year} 李征. 保留所有权利。`
-    : `© ${year} Zheng Li. All rights reserved.`;
+  copyrightEl.textContent = `© ${year} Zheng Li. All rights reserved.`;
 }

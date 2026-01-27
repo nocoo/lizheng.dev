@@ -5,7 +5,7 @@ export default {
   title: '李征 - 微软首席软件工程经理',
   description: '李征是一位资深工程领导者，拥有十余年构建复杂、高影响力移动应用的经验。',
   name: '李征',
-  jobTitle: '微软首席软件工程经理',
+  jobTitle: 'Principal Software Engineering Manager @ Microsoft',
   tagline: '15年 Web 和移动软件开发经验<br>正在为AI时代重塑自己',
   
   // Resume sections
