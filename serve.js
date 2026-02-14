@@ -41,7 +41,6 @@ watch(srcDir, { recursive: true }, async (event, filename) => {
   console.log(`Change detected: ${filename}`);
   try {
     // Clear module cache and rebuild
-    delete require.cache[require.resolve('./build.js')];
     await import('./build.js?' + Date.now());
     console.log('Rebuilt!');
   } catch (e) {
