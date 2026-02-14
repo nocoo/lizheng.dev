@@ -6,6 +6,11 @@ import zhData from './src/data/zh.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// Helper to get nested value
+function getValue(obj, path) {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
+
 // Find matching closing tag, handling nesting
 function findMatchingClose(str, openTag, closeTag, startPos) {
   let depth = 1;
@@ -35,7 +40,7 @@ function processEach(template, context) {
   
   while (result.includes('{{#each ') && safetyCounter < 100) {
     safetyCounter++;
-    const match = result.match(/\{\{#each (\w+)\}\}/);
+    const match = result.match(/\{\{#each ([\w.]+)\}\}/);
     if (!match) break;
     
     const arrayName = match[1];
@@ -47,7 +52,7 @@ function processEach(template, context) {
     if (closePos === -1) break;
     
     const innerTemplate = result.substring(openTagEnd, closePos);
-    const arr = context[arrayName];
+    const arr = getValue(context, arrayName);
     
     let replacement = '';
     if (Array.isArray(arr)) {
@@ -76,7 +81,7 @@ function processIf(template, context) {
   
   while (result.includes('{{#if ') && safetyCounter < 100) {
     safetyCounter++;
-    const match = result.match(/\{\{#if (\w+)\}\}/);
+    const match = result.match(/\{\{#if ([\w.]+)\}\}/);
     if (!match) break;
     
     const varName = match[1];
@@ -88,13 +93,13 @@ function processIf(template, context) {
     if (closePos === -1) break;
     
     const innerTemplate = result.substring(openTagEnd, closePos);
-    const value = context[varName];
+    const value = getValue(context, varName);
     
     let replacement = '';
     if (value) {
       replacement = innerTemplate;
-      // Replace {{varName}} within the if block
-      replacement = replacement.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), value);
+      // We don't specificly replace the variable here anymore,
+      // as processVariables will handle it later with full context support.
     }
     
     result = result.substring(0, startPos) + replacement + result.substring(closePos + closeTag.length);
@@ -107,20 +112,17 @@ function processIf(template, context) {
 function processVariables(template, context) {
   let result = template;
   
-  // Replace {{obj.key}} patterns (like {{patent.id}})
-  result = result.replace(/\{\{(\w+)\.(\w+)\}\}/g, (match, objName, key) => {
-    const obj = context[objName];
-    return obj?.[key] !== undefined ? obj[key] : match;
+  // Replace {{{variable}}} patterns (unescaped HTML) - support dots
+  // Note: match specific patterns first
+  result = result.replace(/\{\{\{([\w.]+)\}\}\}/g, (match, key) => {
+    const val = getValue(context, key);
+    return val !== undefined ? val : match;
   });
   
-  // Replace {{{variable}}} patterns (unescaped HTML)
-  result = result.replace(/\{\{\{(\w+)\}\}\}/g, (match, key) => {
-    return context[key] !== undefined ? context[key] : match;
-  });
-  
-  // Replace {{variable}} patterns
-  result = result.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-    return context[key] !== undefined ? context[key] : match;
+  // Replace {{variable}} patterns - support dots
+  result = result.replace(/\{\{([\w.]+)\}\}/g, (match, key) => {
+    const val = getValue(context, key);
+    return val !== undefined ? val : match;
   });
   
   return result;
