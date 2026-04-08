@@ -6,9 +6,14 @@
   "scripts": {
     "build": "bun run build.js",
     "dev": "bun run build.js && bun --hot serve.js",
-    "serve": "bun run build.js && bunx serve dist"
+    "serve": "bun run build.js && bunx serve dist",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "devDependencies": {
     "@types/bun": "latest"
+  },
+  "dependencies": {
+    "wrangler": "^4.71.0"
   }
 }
