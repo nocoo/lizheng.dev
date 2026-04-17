@@ -1,21 +1,25 @@
 {
-  "name": "lizheng.dev",
-  "version": "2.0.0",
-  "type": "module",
-  "private": true,
-  "scripts": {
-    "build": "bun run build.js",
-    "dev": "bun run build.js && bun --hot serve.js",
-    "serve": "bun run build.js && bunx serve dist",
-    "deploy": "wrangler deploy",
-    "preview": "wrangler dev",
-    "test": "bun test",
-    "test:coverage": "bun test --coverage"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "dependencies": {
-    "wrangler": "^4.71.0"
-  }
+	"name": "lizheng.dev",
+	"version": "2.0.0",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "bun run build.js",
+		"dev": "bun run build.js && bun --hot serve.js",
+		"serve": "bun run build.js && bunx serve dist",
+		"deploy": "wrangler deploy",
+		"preview": "wrangler dev",
+		"test": "bun test",
+		"test:coverage": "bun test --coverage",
+    "lint": "bunx biome check .",
+    "lint:fix": "bunx biome check --write .",
+    "typecheck": "bunx tsc --noEmit"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.12",
+		"@types/bun": "latest"
+	},
+	"dependencies": {
+		"wrangler": "^4.71.0"
+	}
 }

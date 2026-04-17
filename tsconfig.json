@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"types": ["bun-types"],
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"allowJs": true,
+		"checkJs": false,
+		"esModuleInterop": true,
+		"resolveJsonModule": true
+	},
+	"include": ["src/**/*", "tests/**/*", "*.js", "*.ts"],
+	"exclude": ["node_modules", "dist"]
+}
