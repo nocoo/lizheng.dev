@@ -9,7 +9,8 @@
     "serve": "bun run build.js && bunx serve dist",
     "deploy": "wrangler deploy",
     "preview": "wrangler dev",
-    "test": "bun test"
+    "test": "bun test",
+    "test:coverage": "bun test --coverage"
   },
   "devDependencies": {
     "@types/bun": "latest"
