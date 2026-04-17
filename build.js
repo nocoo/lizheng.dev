@@ -6,13 +6,13 @@ import zhData from './src/data/zh.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Helper to get nested value
-function getValue(obj, path) {
+// Template engine functions (exported for testing)
+export function getValue(obj, path) {
   return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 }
 
 // Find matching closing tag, handling nesting
-function findMatchingClose(str, openTag, closeTag, startPos) {
+export function findMatchingClose(str, openTag, closeTag, startPos) {
   let depth = 1;
   let pos = startPos;
   while (depth > 0 && pos < str.length) {
@@ -34,7 +34,7 @@ function findMatchingClose(str, openTag, closeTag, startPos) {
 }
 
 // Process {{#each}}...{{/each}} blocks
-function processEach(template, context) {
+export function processEach(template, context) {
   let result = template;
   let safetyCounter = 0;
   
@@ -75,7 +75,7 @@ function processEach(template, context) {
 }
 
 // Process {{#if}}...{{/if}} blocks
-function processIf(template, context) {
+export function processIf(template, context) {
   let result = template;
   let safetyCounter = 0;
   
@@ -109,7 +109,7 @@ function processIf(template, context) {
 }
 
 // Process simple {{variable}} and {{{variable}}} and {{obj.key}} patterns
-function processVariables(template, context) {
+export function processVariables(template, context) {
   let result = template;
   
   // Replace {{{variable}}} patterns (unescaped HTML) - support dots

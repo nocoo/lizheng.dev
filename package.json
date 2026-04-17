@@ -8,7 +8,8 @@
     "dev": "bun run build.js && bun --hot serve.js",
     "serve": "bun run build.js && bunx serve dist",
     "deploy": "wrangler deploy",
-    "preview": "wrangler dev"
+    "preview": "wrangler dev",
+    "test": "bun test"
   },
   "devDependencies": {
     "@types/bun": "latest"
