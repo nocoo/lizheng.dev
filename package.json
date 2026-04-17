@@ -11,9 +11,9 @@
 		"preview": "wrangler dev",
 		"test": "bun test",
 		"test:coverage": "bun test --coverage",
-    "lint": "bunx biome check .",
-    "lint:fix": "bunx biome check --write .",
-    "typecheck": "bunx tsc --noEmit"
+		"lint": "bunx biome check .",
+		"lint:fix": "bunx biome check --write .",
+		"typecheck": "bunx tsc --noEmit"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.12",
