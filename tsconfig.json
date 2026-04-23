@@ -3,7 +3,7 @@
 		"target": "ESNext",
 		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"types": ["bun-types"],
+		"types": ["bun-types", "@cloudflare/workers-types"],
 		"strict": true,
 		"noEmit": true,
 		"skipLibCheck": true,
@@ -12,6 +12,6 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true
 	},
-	"include": ["src/**/*", "tests/**/*", "*.js", "*.ts"],
+	"include": ["src/**/*", "tests/**/*", "worker/**/*", "*.js", "*.ts"],
 	"exclude": ["node_modules", "dist"]
 }

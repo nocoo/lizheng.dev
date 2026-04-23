@@ -2,11 +2,21 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "lizheng-dev",
 	"compatibility_date": "2025-09-27",
+	"compatibility_flags": ["nodejs_compat"],
+	"main": "worker/index.ts",
 	"observability": {
 		"enabled": true
 	},
 	"assets": {
-		"directory": "dist"
+		"directory": "dist",
+		"binding": "ASSETS",
+		"not_found_handling": "none",
+		"run_worker_first": true
 	},
-	"compatibility_flags": ["nodejs_compat"]
+	"routes": [
+		{ "pattern": "lizheng.dev/*", "zone_name": "lizheng.dev" },
+		{ "pattern": "www.lizheng.dev/*", "zone_name": "lizheng.dev" },
+		{ "pattern": "lizheng.me/*", "zone_name": "lizheng.me" },
+		{ "pattern": "www.lizheng.me/*", "zone_name": "lizheng.me" }
+	]
 }
