@@ -90,21 +90,23 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* Full-page noise texture */
+/* Full-page noise texture — zed-style fractal noise */
 body::before {
 	content: "";
 	position: fixed;
 	inset: 0;
 	z-index: -1;
 	pointer-events: none;
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-	background-size: 180px 180px;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+	background-size: 240px 240px;
 	background-repeat: repeat;
-	opacity: 0.035;
+	opacity: 0.06;
+	mix-blend-mode: multiply;
 }
 
 [data-theme="dark"] body::before {
-	opacity: 0.012;
+	opacity: 0.04;
+	mix-blend-mode: screen;
 }
 
 /* Page wrapper - centered layout with split background */
@@ -117,30 +119,52 @@ body::before {
 	border-right: 1px solid var(--border-color);
 }
 
-/* Cross Divider - horizontal line spanning full viewport */
+/* Cross Divider - horizontal line within page-wrapper, with intersection rings */
 .cross-divider {
 	position: relative;
 	height: 1px;
 	background: var(--border-color);
 }
 
+/* Open ring markers at left/right page-wrapper border intersections */
 .cross-divider::before,
 .cross-divider::after {
 	content: "";
 	position: absolute;
-	top: 0;
-	height: 1px;
-	background: var(--border-color);
+	top: 50%;
+	width: 7px;
+	height: 7px;
+	border: 1px solid var(--border-color);
+	border-radius: 50%;
+	background: var(--bg-elevated);
+	transform: translate(-50%, -50%);
 }
 
 .cross-divider::before {
-	right: 100%;
-	width: 100vw;
+	left: 0;
 }
 
 .cross-divider::after {
 	left: 100%;
-	width: 100vw;
+}
+
+/* Ring at sidebar border × cross-divider intersection */
+.top-left {
+	position: relative;
+}
+
+.top-left::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 7px;
+	height: 7px;
+	border: 1px solid var(--border-color);
+	border-radius: 50%;
+	background: var(--bg-base);
+	transform: translate(50%, 50%);
+	z-index: 1;
 }
 
 /* Top Row */
@@ -623,6 +647,12 @@ a:hover {
 
 	hr::before,
 	hr::after {
+		display: none;
+	}
+
+	.cross-divider::before,
+	.cross-divider::after,
+	.top-left::after {
 		display: none;
 	}
 
