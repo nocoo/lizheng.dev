@@ -11,14 +11,16 @@
 		"preview": "wrangler dev",
 		"test": "bun test",
 		"test:coverage": "bun test --coverage",
-		"lint": "bunx biome check .",
+		"lint": "bunx biome check --error-on-warnings .",
 		"lint:fix": "bunx biome check --write .",
-		"typecheck": "bunx tsc --noEmit"
+		"typecheck": "bunx tsc --noEmit",
+		"prepare": "husky"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.12",
 		"@cloudflare/workers-types": "^4.20260423.1",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"husky": "^9.1.7"
 	},
 	"dependencies": {
 		"wrangler": "^4.71.0"
