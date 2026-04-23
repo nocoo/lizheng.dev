@@ -82,7 +82,7 @@ body {
 	font-family: var(--font-family);
 	font-size: var(--font-size);
 	line-height: var(--line-height);
-	background: var(--bg-sidebar);
+	background: var(--bg-elevated);
 	color: var(--text-primary);
 	margin: 0;
 	padding: 0;
@@ -113,6 +113,8 @@ body::before {
 	margin: 0 auto;
 	min-height: 100vh;
 	position: relative;
+	border-left: 1px solid var(--border-color);
+	border-right: 1px solid var(--border-color);
 }
 
 /* Cross Divider - horizontal line spanning full viewport */
@@ -504,6 +506,8 @@ a:hover {
 
 	.page-wrapper {
 		background: var(--bg-primary);
+		border-left: none;
+		border-right: none;
 	}
 
 	.top-row {
