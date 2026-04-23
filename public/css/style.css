@@ -119,6 +119,33 @@ body::before {
 	border-right: 1px solid var(--border-color);
 }
 
+/* Decorative ruler ticks along the page-wrapper edges */
+.page-wrapper::before,
+.page-wrapper::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 6px;
+	pointer-events: none;
+	background-image: repeating-linear-gradient(
+		to bottom,
+		var(--border-color) 0,
+		var(--border-color) 1px,
+		transparent 1px,
+		transparent 8px
+	);
+	opacity: 0.7;
+}
+
+.page-wrapper::before {
+	left: -7px;
+}
+
+.page-wrapper::after {
+	right: -7px;
+}
+
 /* Cross Divider - horizontal line within page-wrapper, with intersection rings */
 .cross-divider {
 	position: relative;
@@ -569,6 +596,11 @@ a:hover {
 		border-right: none;
 	}
 
+	.page-wrapper::before,
+	.page-wrapper::after {
+		display: none;
+	}
+
 	.top-row {
 		flex-direction: column;
 	}
@@ -654,6 +686,11 @@ a:hover {
 	.cross-divider::before,
 	.cross-divider::after,
 	.top-left::after {
+		display: none;
+	}
+
+	.page-wrapper::before,
+	.page-wrapper::after {
 		display: none;
 	}
 
