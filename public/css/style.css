@@ -331,11 +331,35 @@ section {
 	margin-bottom: var(--spacing);
 }
 
-/* Horizontal Rules */
+/* Horizontal Rules — with corner plus-node markers */
 hr {
+	position: relative;
 	border: none;
 	border-top: 1px solid var(--border-color);
 	margin: var(--spacing-lg) 0;
+	overflow: visible;
+	color: var(--text-muted);
+}
+
+hr::before,
+hr::after {
+	content: "";
+	position: absolute;
+	top: -4px;
+	width: 9px;
+	height: 9px;
+	background:
+		linear-gradient(currentColor, currentColor) center/100% 1px no-repeat,
+		linear-gradient(currentColor, currentColor) center/1px 100% no-repeat;
+	opacity: 0.55;
+}
+
+hr::before {
+	left: -4.5px;
+}
+
+hr::after {
+	right: -4.5px;
 }
 
 /* Job entries */
