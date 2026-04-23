@@ -90,6 +90,23 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* Full-page noise texture */
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+	background-size: 180px 180px;
+	background-repeat: repeat;
+	opacity: 0.035;
+}
+
+[data-theme="dark"] body::before {
+	opacity: 0.012;
+}
+
 /* Page wrapper - centered layout with split background */
 .page-wrapper {
 	max-width: var(--layout-max-width);
