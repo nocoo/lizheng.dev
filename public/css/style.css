@@ -124,18 +124,43 @@ body::before {
 .page-wrapper::after {
 	content: "";
 	position: absolute;
-	top: 0;
-	bottom: 0;
+	top: 80px;
+	bottom: 80px;
 	width: 6px;
 	pointer-events: none;
-	background-image: repeating-linear-gradient(
+	background-image:
+		repeating-linear-gradient(
+			to bottom,
+			var(--border-color) 0,
+			var(--border-color) 1px,
+			transparent 1px,
+			transparent 40px
+		),
+		repeating-linear-gradient(
+			to bottom,
+			var(--border-color) 0,
+			var(--border-color) 1px,
+			transparent 1px,
+			transparent 8px
+		);
+	background-size: 6px 100%, 3px 100%;
+	background-repeat: no-repeat;
+	background-position: left top, left top;
+	opacity: 0.6;
+	-webkit-mask-image: linear-gradient(
 		to bottom,
-		var(--border-color) 0,
-		var(--border-color) 1px,
-		transparent 1px,
-		transparent 8px
+		transparent 0,
+		black 60px,
+		black calc(100% - 60px),
+		transparent 100%
 	);
-	opacity: 0.7;
+	mask-image: linear-gradient(
+		to bottom,
+		transparent 0,
+		black 60px,
+		black calc(100% - 60px),
+		transparent 100%
+	);
 }
 
 .page-wrapper::before {
@@ -144,6 +169,7 @@ body::before {
 
 .page-wrapper::after {
 	right: -7px;
+	background-position: right top, right top;
 }
 
 /* Cross Divider - horizontal line within page-wrapper, with intersection rings */
@@ -197,6 +223,7 @@ body::before {
 /* Top Row */
 .top-row {
 	display: flex;
+	background: var(--bg-primary);
 }
 
 .top-left {
@@ -229,7 +256,8 @@ body::before {
 }
 
 .top-right {
-	width: var(--content-max-width);
+	flex: 1;
+	min-width: 0;
 	background: var(--bg-primary);
 	padding: var(--content-padding);
 	display: flex;
@@ -290,6 +318,7 @@ body::before {
 .bottom-row {
 	display: flex;
 	flex: 1;
+	background: var(--bg-primary);
 }
 
 .bottom-left {
@@ -338,8 +367,9 @@ body::before {
 
 /* Main Content - reset Pico styles */
 .content {
-	width: var(--content-max-width);
-	flex-shrink: 0;
+	flex: 1;
+	min-width: 0;
+	max-width: var(--content-max-width);
 	padding: var(--content-padding);
 	background: var(--bg-primary);
 	box-shadow: none;
