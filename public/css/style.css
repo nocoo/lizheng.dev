@@ -405,21 +405,22 @@ hr::before,
 hr::after {
 	content: "";
 	position: absolute;
-	top: -4px;
+	top: 0;
 	width: 9px;
 	height: 9px;
 	background:
 		linear-gradient(currentColor, currentColor) center/100% 1px no-repeat,
 		linear-gradient(currentColor, currentColor) center/1px 100% no-repeat;
 	opacity: 0.55;
+	transform: translate(-50%, -50%);
 }
 
 hr::before {
-	left: -4.5px;
+	left: 0;
 }
 
 hr::after {
-	right: -4.5px;
+	left: 100%;
 }
 
 /* Job entries */
