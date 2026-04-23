@@ -6,15 +6,19 @@
   <script>(()=> {var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)})()</script>
   <title>{{title}}</title>
   <meta name="description" content="{{description}}">
-  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.png">
   <link rel="alternate" hreflang="en" href="https://lizheng.me/en/">
   <link rel="alternate" hreflang="zh" href="https://lizheng.me/zh/">
   <link rel="alternate" hreflang="x-default" href="https://lizheng.me/en/">
   <link rel="canonical" href="https://lizheng.me/{{lang}}/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap"></noscript>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="preload" as="image" href="/images/profile-176.webp" type="image/webp">
 </head>
 <body class="cover-body">
   <div class="cover-wrapper">
@@ -34,8 +38,8 @@
 
     <main class="cover-main">
       <picture>
-        <source srcset="/images/profile.webp" type="image/webp">
-        <img src="/images/profile-optimized.jpg" alt="{{name}}" class="cover-avatar">
+        <source srcset="/images/profile-176.webp" type="image/webp">
+        <img src="/images/profile-176.jpg" alt="{{name}}" class="cover-avatar" width="88" height="88" decoding="async">
       </picture>
       <h1 class="cover-name">{{name}}</h1>
       <p class="cover-role">{{role}}</p>
