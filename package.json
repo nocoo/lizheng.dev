@@ -10,7 +10,7 @@
 		"deploy": "wrangler deploy",
 		"preview": "wrangler dev",
 		"test": "bun test",
-		"test:coverage": "bun test --coverage",
+		"test:coverage": "bun run scripts/check-coverage.ts",
 		"lint": "bunx biome check --error-on-warnings .",
 		"lint:fix": "bunx biome check --write .",
 		"typecheck": "bunx tsc --noEmit",
