@@ -1,6 +1,8 @@
 import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import coverEnData from "./src/data/cover-en.js";
+import coverZhData from "./src/data/cover-zh.js";
 import enData from "./src/data/en.js";
 import zhData from "./src/data/zh.js";
 
@@ -157,19 +159,38 @@ console.log("Building...");
 const enTemplate = readFileSync(join(__dirname, "src/en/index.html"), "utf-8");
 const zhTemplate = readFileSync(join(__dirname, "src/zh/index.html"), "utf-8");
 const indexHtml = readFileSync(join(__dirname, "src/index.html"), "utf-8");
+const coverEnTemplate = readFileSync(
+	join(__dirname, "src/cover/en/index.html"),
+	"utf-8",
+);
+const coverZhTemplate = readFileSync(
+	join(__dirname, "src/cover/zh/index.html"),
+	"utf-8",
+);
+const coverIndexHtml = readFileSync(
+	join(__dirname, "src/cover/index.html"),
+	"utf-8",
+);
 
 // Generate HTML
 const enHtml = render(enTemplate, enData);
 const zhHtml = render(zhTemplate, zhData);
+const coverEnHtml = render(coverEnTemplate, coverEnData);
+const coverZhHtml = render(coverZhTemplate, coverZhData);
 
 // Create dist directories
 mkdirSync(join(__dirname, "dist/en"), { recursive: true });
 mkdirSync(join(__dirname, "dist/zh"), { recursive: true });
+mkdirSync(join(__dirname, "dist/cover/en"), { recursive: true });
+mkdirSync(join(__dirname, "dist/cover/zh"), { recursive: true });
 
 // Write HTML files
 writeFileSync(join(__dirname, "dist/index.html"), indexHtml);
 writeFileSync(join(__dirname, "dist/en/index.html"), enHtml);
 writeFileSync(join(__dirname, "dist/zh/index.html"), zhHtml);
+writeFileSync(join(__dirname, "dist/cover/index.html"), coverIndexHtml);
+writeFileSync(join(__dirname, "dist/cover/en/index.html"), coverEnHtml);
+writeFileSync(join(__dirname, "dist/cover/zh/index.html"), coverZhHtml);
 
 // Copy static assets
 cpSync(join(__dirname, "public"), join(__dirname, "dist"), { recursive: true });
@@ -182,6 +203,9 @@ console.log("Build complete!");
 console.log("  dist/index.html");
 console.log("  dist/en/index.html");
 console.log("  dist/zh/index.html");
+console.log("  dist/cover/index.html");
+console.log("  dist/cover/en/index.html");
+console.log("  dist/cover/zh/index.html");
 console.log("  dist/css/style.css");
 console.log("  dist/images/...");
 console.log("  dist/main.js");

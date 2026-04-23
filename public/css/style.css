@@ -1,9 +1,10 @@
 /* CSS Variables */
 :root {
-	--font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
-		"Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-	--font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo,
-		Consolas, monospace;
+	--font-sans:
+		"IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+		"Noto Sans", Helvetica, Arial, sans-serif;
+	--font-mono:
+		"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	--font-serif: "IBM Plex Serif", Georgia, serif;
 	--font-family: var(--font-sans);
 	--font-size: 16px;
@@ -143,9 +144,13 @@ body::before {
 			transparent 1px,
 			transparent 8px
 		);
-	background-size: 6px 100%, 3px 100%;
+	background-size:
+		6px 100%,
+		3px 100%;
 	background-repeat: no-repeat;
-	background-position: left top, left top;
+	background-position:
+		left top,
+		left top;
 	opacity: 0.6;
 	-webkit-mask-image: linear-gradient(
 		to bottom,
@@ -169,7 +174,9 @@ body::before {
 
 .page-wrapper::after {
 	right: -7px;
-	background-position: right top, right top;
+	background-position:
+		right top,
+		right top;
 }
 
 /* Cross Divider - horizontal line within page-wrapper, with intersection rings */
@@ -302,6 +309,13 @@ body::before {
 }
 
 /* Theme toggle icons */
+#theme-toggle .icon-light,
+#theme-toggle .icon-dark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
 #theme-toggle .icon-dark {
 	display: none;
 }
@@ -311,7 +325,7 @@ body::before {
 }
 
 [data-theme="dark"] #theme-toggle .icon-dark {
-	display: inline;
+	display: inline-flex;
 }
 
 /* Bottom Row */
@@ -466,8 +480,8 @@ hr::after {
 	width: 9px;
 	height: 9px;
 	background:
-		linear-gradient(currentColor, currentColor) center/100% 1px no-repeat,
-		linear-gradient(currentColor, currentColor) center/1px 100% no-repeat;
+		linear-gradient(currentColor, currentColor) center / 100% 1px no-repeat,
+		linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
 	opacity: 0.55;
 	transform: translate(-50%, -50%);
 }
@@ -612,6 +626,200 @@ a:hover {
 	font-size: 0.8125rem;
 	color: var(--text-muted);
 	margin: 0;
+}
+
+/* ============================================================
+   Cover page (lizheng.me)
+   ============================================================ */
+.cover-body {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background: var(--bg-base);
+}
+
+.cover-wrapper {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	max-width: 640px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 4rem var(--spacing) 2rem;
+	position: relative;
+}
+
+.cover-controls {
+	position: absolute;
+	top: 1.25rem;
+	right: 1.25rem;
+	display: flex;
+	gap: 0.25rem;
+}
+
+.cover-controls .control-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	color: var(--text-muted);
+	border-radius: 6px;
+	transition:
+		color 0.2s ease,
+		background-color 0.2s ease;
+}
+
+.cover-controls .control-btn:hover {
+	color: var(--text-primary);
+	background: color-mix(in oklab, var(--border-color) 60%, transparent);
+}
+
+.cover-main {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding-top: 3rem;
+}
+
+.cover-avatar {
+	width: 88px;
+	height: 88px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 1px solid var(--border-color);
+	margin-bottom: 1.5rem;
+}
+
+.cover-name {
+	font-family: var(--font-serif);
+	font-size: clamp(2rem, 5vw, 2.75rem);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: var(--text-primary);
+	margin: 0 0 0.5rem 0;
+	line-height: 1.1;
+}
+
+.cover-role {
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	letter-spacing: 0.02em;
+	color: var(--text-muted);
+	margin: 0 0 1.25rem 0;
+}
+
+.cover-tagline {
+	font-family: var(--font-serif);
+	font-style: italic;
+	font-size: 1.125rem;
+	line-height: 1.55;
+	color: var(--text-secondary);
+	margin: 0 0 0 0;
+	max-width: 32rem;
+}
+
+.cover-hr {
+	width: 100%;
+	margin: 2.5rem 0 1.5rem;
+}
+
+.cover-links-title {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	letter-spacing: 0.05em;
+	margin: 0 0 0.75rem 0;
+	opacity: 0.8;
+}
+
+.cover-links {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.cover-links a {
+	display: flex;
+	align-items: center;
+	gap: 0.875rem;
+	padding: 0.875rem 0.25rem;
+	color: var(--text-primary);
+	border-bottom: 1px solid
+		color-mix(in oklab, var(--border-color) 70%, transparent);
+	font-family: var(--font-sans);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	transition:
+		color 0.15s ease,
+		padding-left 0.15s ease;
+}
+
+.cover-links a:hover {
+	color: var(--accent);
+	padding-left: 0.5rem;
+}
+
+.cover-links a:last-child {
+	border-bottom: none;
+}
+
+.cover-links a > svg:first-child {
+	color: var(--text-muted);
+	flex-shrink: 0;
+	transition: color 0.15s ease;
+}
+
+.cover-links a:hover > svg:first-child {
+	color: var(--accent);
+}
+
+.cover-links a > span {
+	flex: 1;
+}
+
+.cover-link-arrow {
+	color: var(--text-muted);
+	opacity: 0;
+	transform: translateX(-4px);
+	transition:
+		opacity 0.15s ease,
+		transform 0.15s ease,
+		color 0.15s ease;
+}
+
+.cover-links a:hover .cover-link-arrow {
+	opacity: 1;
+	transform: translateX(0);
+	color: var(--accent);
+}
+
+.cover-footer {
+	padding-top: 2rem;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	opacity: 0.7;
+}
+
+.cover-footer p {
+	margin: 0;
+}
+
+@media (max-width: 480px) {
+	.cover-wrapper {
+		padding: 3.5rem 1.25rem 1.5rem;
+	}
+
+	.cover-main {
+		padding-top: 1.5rem;
+	}
+
+	.cover-tagline {
+		font-size: 1rem;
+	}
 }
 
 /* Responsive Design */
