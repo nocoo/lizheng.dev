@@ -642,6 +642,7 @@ a:hover {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	max-width: 640px;
 	width: 100%;
 	margin: 0 auto;
@@ -650,11 +651,12 @@ a:hover {
 }
 
 .cover-controls {
-	position: absolute;
+	position: fixed;
 	top: 1.25rem;
 	right: 1.25rem;
 	display: flex;
 	gap: 0.25rem;
+	z-index: 10;
 }
 
 .cover-controls .control-btn {
@@ -677,11 +679,10 @@ a:hover {
 }
 
 .cover-main {
-	flex: 1;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
-	padding-top: 3rem;
+	align-items: center;
+	text-align: center;
 }
 
 .cover-avatar {
@@ -717,7 +718,7 @@ a:hover {
 	font-size: 1.125rem;
 	line-height: 1.55;
 	color: var(--text-secondary);
-	margin: 0 0 0 0;
+	margin: 0;
 	max-width: 32rem;
 }
 
@@ -733,12 +734,16 @@ a:hover {
 	letter-spacing: 0.05em;
 	margin: 0 0 0.75rem 0;
 	opacity: 0.8;
+	align-self: center;
+	width: 100%;
+	max-width: 22rem;
 }
 
 .cover-links {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	max-width: 22rem;
 }
 
 .cover-links a {
@@ -802,6 +807,7 @@ a:hover {
 	font-size: 0.75rem;
 	color: var(--text-muted);
 	opacity: 0.7;
+	text-align: center;
 }
 
 .cover-footer p {
@@ -811,10 +817,6 @@ a:hover {
 @media (max-width: 480px) {
 	.cover-wrapper {
 		padding: 3.5rem 1.25rem 1.5rem;
-	}
-
-	.cover-main {
-		padding-top: 1.5rem;
 	}
 
 	.cover-tagline {
