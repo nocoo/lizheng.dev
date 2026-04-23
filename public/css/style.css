@@ -17,26 +17,37 @@
 	--spacing-lg: 2.5rem;
 	--content-padding: 3rem;
 
-	/* Light theme colors */
-	--bg-primary: #ffffff;
-	--bg-sidebar: #f8f9fa;
-	--text-primary: #1a1a1a;
-	--text-secondary: #6b7280;
-	--text-muted: #9ca3af;
-	--border-color: #e5e7eb;
-	--accent-color: #2563eb;
-	--accent-hover: #1d4ed8;
+	/* Light theme — zed.dev cream */
+	--bg-base: #f5f4f3;
+	--bg-elevated: #fafaf9;
+	--bg-primary: var(--bg-elevated);
+	--bg-sidebar: var(--bg-base);
+	--text: #1a1a1a;
+	--text-primary: var(--text);
+	--text-secondary: #5c574a;
+	--text-muted: #8a8678;
+	--border: #dadde2;
+	--border-color: var(--border);
+	--accent: oklch(48% 0.23 264);
+	--accent-color: var(--accent);
+	--accent-hover: oklch(40% 0.23 264);
 }
 
 [data-theme="dark"] {
-	--bg-primary: #0f0f0f;
-	--bg-sidebar: #1a1a1a;
-	--text-primary: #f3f4f6;
-	--text-secondary: #9ca3af;
-	--text-muted: #6b7280;
-	--border-color: #374151;
-	--accent-color: #60a5fa;
-	--accent-hover: #93c5fd;
+	/* Dark theme — zed.dev offgray */
+	--bg-base: hsl(218 13% 7.5%);
+	--bg-elevated: #121316;
+	--bg-primary: var(--bg-elevated);
+	--bg-sidebar: var(--bg-base);
+	--text: #e5e7eb;
+	--text-primary: var(--text);
+	--text-secondary: #b3b8c2;
+	--text-muted: #9ca3af;
+	--border: color-mix(in oklab, #6a7282 22%, transparent);
+	--border-color: var(--border);
+	--accent: color-mix(in oklch, oklch(48% 0.23 264) 60%, white);
+	--accent-color: var(--accent);
+	--accent-hover: color-mix(in oklch, oklch(48% 0.23 264) 40%, white);
 }
 
 /* Reset Pico defaults */
