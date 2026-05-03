@@ -17,6 +17,7 @@ node_modules/
 
 # Build output
 dist/
+coverage/
 
 # wrangler files
 .wrangler
