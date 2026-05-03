@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
 	findMatchingClose,
 	getValue,
@@ -118,5 +118,35 @@ describe("processVariables", () => {
 		expect(processVariables("{{a}} and {{b}}", { a: "1", b: "2" })).toBe(
 			"1 and 2",
 		);
+	});
+
+	test("missing triple-brace variable unchanged", () => {
+		expect(processVariables("{{{missing}}}", {})).toBe("{{{missing}}}");
+	});
+});
+
+describe("processEach edge cases", () => {
+	test("non-array value renders empty", () => {
+		const template = "{{#each items}}x{{/each}}";
+		expect(processEach(template, { items: "not-array" })).toBe("");
+	});
+
+	test("unclosed each tag is left intact", () => {
+		const template = "{{#each items}}x";
+		expect(processEach(template, { items: ["a"] })).toBe("{{#each items}}x");
+	});
+});
+
+describe("processIf edge cases", () => {
+	test("unclosed if tag is left intact", () => {
+		const template = "{{#if show}}x";
+		expect(processIf(template, { show: true })).toBe("{{#if show}}x");
+	});
+});
+
+describe("findMatchingClose edge cases", () => {
+	test("unbalanced extra opens return -1", () => {
+		const str = "{{#each a}}{{#each b}}only-one-close{{/each}}";
+		expect(findMatchingClose(str, "{{#each ", "{{/each}}", 11)).toBe(-1);
 	});
 });
