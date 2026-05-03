@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import {
 	findMatchingClose,
 	getValue,
@@ -43,6 +43,10 @@ describe("findMatchingClose", () => {
 			findMatchingClose("{{#each a}}hello", "{{#each ", "{{/each}}", 11),
 		).toBe(-1);
 	});
+
+	test("startPos beyond string length returns -1", () => {
+		expect(findMatchingClose("abc", "{{#each ", "{{/each}}", 100)).toBe(-1);
+	});
 });
 
 describe("processEach", () => {
@@ -69,6 +73,16 @@ describe("processEach", () => {
 		const template = "{{#each items}}{{this}}{{/each}}";
 		expect(processEach(template, {})).toBe("");
 	});
+
+	test("malformed each tag (no name) leaves template unchanged", () => {
+		const template = "{{#each }}x{{/each}}";
+		expect(processEach(template, {})).toBe(template);
+	});
+
+	test("unclosed each tag leaves template unchanged", () => {
+		const template = "{{#each items}}x";
+		expect(processEach(template, { items: ["a"] })).toBe(template);
+	});
 });
 
 describe("processIf", () => {
@@ -91,6 +105,16 @@ describe("processIf", () => {
 		const template = "{{#if name}}Hello{{/if}}";
 		expect(processIf(template, { name: "Li" })).toBe("Hello");
 	});
+
+	test("malformed if tag (no name) leaves template unchanged", () => {
+		const template = "{{#if }}x{{/if}}";
+		expect(processIf(template, {})).toBe(template);
+	});
+
+	test("unclosed if tag leaves template unchanged", () => {
+		const template = "{{#if show}}x";
+		expect(processIf(template, { show: true })).toBe(template);
+	});
 });
 
 describe("processVariables", () => {
@@ -112,6 +136,10 @@ describe("processVariables", () => {
 
 	test("missing variable unchanged", () => {
 		expect(processVariables("{{missing}}", {})).toBe("{{missing}}");
+	});
+
+	test("missing triple-brace variable unchanged", () => {
+		expect(processVariables("{{{missing}}}", {})).toBe("{{{missing}}}");
 	});
 
 	test("multiple variables", () => {

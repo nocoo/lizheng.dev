@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 echo "🧪 Running tests..."
-bun test
+bun run test
 echo "🔍 Running lint..."
 bunx biome check .
 echo "🔐 Running gitleaks..."
