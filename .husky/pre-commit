@@ -2,4 +2,4 @@ gitleaks protect --staged --no-banner
 
 bun run lint
 bun run typecheck
-bun run test
+bun run test:coverage
