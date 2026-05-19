@@ -26,5 +26,8 @@
 	},
 	"dependencies": {
 		"wrangler": "^4.71.0"
+	},
+	"overrides": {
+		"ws": ">=8.20.1"
 	}
 }
