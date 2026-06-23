@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>李征 - 微软首席软件工程经理</title>
+  <meta name="description" content="李征是一位资深工程领导者，拥有十余年构建复杂、高影响力移动应用的经验。" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="alternate" hreflang="en" href="https://lizheng.dev/en/" />
+  <link rel="alternate" hreflang="zh" href="https://lizheng.dev/zh/" />
+  <link rel="alternate" hreflang="x-default" href="https://lizheng.dev/en/" />
+  <link rel="canonical" href="https://lizheng.dev/zh/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Noto+Sans+SC:wght@400;500&display=swap" />
+  <style>
+    :root {
+      --bg:        oklch(98% 0.006 85);
+      --paper:     oklch(96% 0.008 85);
+      --ink:       oklch(20% 0.025 260);
+      --ink-soft:  oklch(38% 0.02 260);
+      --muted:     oklch(56% 0.015 260);
+      --rule:      oklch(86% 0.012 85);
+      --rule-soft: oklch(91% 0.01 85);
+      --tomato:    oklch(63% 0.19 35);
+
+      --serif: 'Instrument Serif', 'Noto Serif SC', 'Iowan Old Style', Georgia, serif;
+      --sans:  'IBM Plex Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
+      --mono:  'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+      --max: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: inherit; }
+
+    .flourish {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .flourish .blob {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: multiply;
+      filter: blur(60px);
+    }
+    .blob.b1 {
+      top: -16vh; right: -10vw;
+      width: 50vw; height: 50vw;
+      background: var(--sun);
+      opacity: 0.32;
+    }
+    .blob.b2 {
+      bottom: -22vh; left: -12vw;
+      width: 42vw; height: 42vw;
+      background: var(--mint);
+      opacity: 0.22;
+    }
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(to right, oklch(20% 0.025 260 / 0.035) 1px, transparent 1px);
+      background-size: 80px 100%;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: oklch(98% 0.006 85 / 0.7);
+      border-bottom: 1px solid var(--rule);
+    }
+    .topbar-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 12px clamp(20px, 4vw, 36px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .brand .dot {
+      width: 9px; height: 9px;
+      background: var(--tomato);
+      transform: rotate(45deg);
+    }
+    .top-actions { display: inline-flex; gap: 8px; align-items: center; }
+    .top-actions a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 7px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      background: var(--paper);
+      transition: border-color 0.15s;
+    }
+    .top-actions a:hover { border-color: var(--ink); }
+    .lang-pill em { font-style: normal; color: var(--tomato); margin-right: 4px; }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: clamp(40px, 6vw, 64px) clamp(20px, 4vw, 40px) 80px;
+    }
+
+    .head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: clamp(20px, 4vw, 40px);
+      align-items: center;
+      padding-bottom: clamp(28px, 4vw, 40px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 22px; height: 1px;
+      background: var(--muted);
+    }
+    .head h1 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(44px, 6.8vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .role {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--ink);
+      margin-top: 14px;
+    }
+    .tagline {
+      font-family: var(--serif);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+      color: var(--ink-soft);
+      margin-top: 14px;
+      max-width: 28ch;
+    }
+    .tagline .marked {
+      color: var(--tomato);
+      position: relative;
+      white-space: nowrap;
+    }
+    .tagline .marked svg {
+      position: absolute;
+      left: -1%;
+      right: -1%;
+      bottom: -0.16em;
+      width: 102%;
+      height: 0.3em;
+      pointer-events: none;
+    }
+    .tagline .marked svg path {
+      fill: none;
+      stroke: var(--tomato);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+    .meta-row {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+    .meta-row span,
+    .meta-row a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: inherit;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .meta-row a:hover {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+    .meta-row svg { width: 13px; height: 13px; opacity: 0.55; }
+
+    .avatar {
+      width: clamp(110px, 16vw, 148px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      font-family: var(--serif);
+      font-size: clamp(52px, 7vw, 72px);
+      color: var(--ink);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .section { padding: clamp(32px, 4vw, 48px) 0 0; }
+    .section + .section { border-top: 1px solid var(--rule-soft); }
+    .section h2 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(24px, 2.8vw, 30px);
+      line-height: 1.2;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .section h2 .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--tomato);
+      flex-shrink: 0;
+      width: 32px;
+    }
+    .summary-subtitle {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--ink);
+      margin: 4px 0 18px 46px;
+    }
+    .prose {
+      max-width: 44em;
+      margin-left: 46px;
+    }
+    .prose p {
+      font-size: 15.5px;
+      line-height: 1.9;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong { color: var(--ink); font-weight: 500; }
+
+    .jobs {
+      margin-left: 46px;
+      display: grid;
+      gap: clamp(26px, 3vw, 36px);
+    }
+    .job { display: grid; gap: 6px; }
+    .job-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px 16px;
+    }
+    .job-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .job h3 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 22px;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .job .role-line {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--tomato);
+      padding: 3px 9px;
+      border: 1px solid oklch(63% 0.19 35 / 0.35);
+      border-radius: 999px;
+    }
+    .job-meta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .job ul {
+      list-style: none;
+      margin-top: 10px;
+      max-width: 44em;
+    }
+    .job li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.85;
+    }
+    .job li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.9em;
+      width: 6px; height: 1px;
+      background: var(--muted);
+    }
+
+    .edu-list {
+      margin-left: 46px;
+      display: grid;
+      gap: 12px;
+    }
+    .edu {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .edu:last-child { border-bottom: 0; padding-bottom: 0; }
+    .edu-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .edu h4 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 20px;
+      color: var(--ink);
+    }
+    .edu .degree {
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+    .edu .year {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .patent-row {
+      margin-left: 46px;
+      max-width: 44em;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px 14px;
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+    .patent-row .pid {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--tomato);
+      letter-spacing: 0.04em;
+    }
+    .patent-row strong { color: var(--ink); font-weight: 500; }
+    .patent-row a.open {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 1px;
+    }
+    .patent-row a.open svg { width: 11px; height: 11px; }
+
+    .foot {
+      margin-top: clamp(48px, 6vw, 80px);
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .foot a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .foot a:hover { border-bottom-color: var(--muted); }
+
+    @media (max-width: 640px) {
+      .head { grid-template-columns: 1fr; gap: 22px; }
+      .avatar { width: 88px; order: -1; font-size: 44px; }
+      .head h1 { font-size: 40px; }
+      .summary-subtitle,
+      .prose,
+      .jobs,
+      .edu-list,
+      .patent-row { margin-left: 0; }
+      .section h2 .num { width: auto; }
+      .job-head, .edu { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .job-meta { white-space: normal; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    @media print {
+      body { background: #fff; font-size: 11pt; line-height: 1.55; }
+      .flourish { display: none; }
+      .topbar, .foot a { display: none; }
+      .foot { border-top: 1px solid #ccc; color: #666; }
+      .page { padding: 0; max-width: 100%; }
+      .section + .section { border-top: 1px solid #eee; }
+      .avatar { display: none; }
+      .head { grid-template-columns: 1fr; padding-bottom: 16pt; border-bottom: 1px solid #ccc; }
+      .head h1 { font-size: 24pt; }
+      .tagline { font-size: 11pt; }
+      .section h2 { font-size: 14pt; }
+      .summary-subtitle { font-size: 12pt; }
+      .job h3, .edu h4 { font-size: 12pt; }
+      .job li, .prose p, .patent-row { font-size: 10pt; line-height: 1.6; color: #333; }
+      .section, .job, .edu { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flourish" aria-hidden="true">
+    <div class="grid-lines"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/"><span class="dot"></span>lizheng.dev</a>
+      <div class="top-actions">
+        <a class="lang-pill" href="/en/" hreflang="en"><em>EN</em>English</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <header class="head">
+      <div>
+        <span class="eyebrow">个人简历</span>
+        <h1>李 征</h1>
+        <p class="role">微软首席软件工程经理 · Principal SE Manager @ Microsoft</p>
+        <p class="tagline">
+          15 年 Web 和移动软件开发经验，<br>
+          正在为 <span class="marked">AI 时代<svg viewBox="0 0 200 18" preserveAspectRatio="none"><path d="M3 12 C 50 4, 100 17, 150 9 S 195 5, 197 11" /></svg></span> 重塑自己。
+        </p>
+        <div class="meta-row">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-8 8-13a8 8 0 1 0-16 0c0 5 8 13 8 13Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            北京
+          </span>
+          <a href="https://lizheng.blog/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            lizheng.blog
+          </a>
+          <a href="https://github.com/nocoo" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            github.com/nocoo
+          </a>
+          <a href="https://linkedin.com/in/nocoo" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            linkedin.com/in/nocoo
+          </a>
+          <a href="https://x.com/zhengli" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16"/><path d="M20 4L4 20"/></svg>
+            x.com/zhengli
+          </a>
+        </div>
+      </div>
+
+      <div class="avatar">
+        <picture>
+          <source srcset="../images/profile.webp" type="image/webp">
+          <img src="../images/profile-optimized.jpg" alt="李征" loading="lazy" />
+        </picture>
+      </div>
+    </header>
+
+    <section class="section" id="summary">
+      <h2><span class="num">01</span>职业概述</h2>
+      <p class="summary-subtitle"><strong>微软 AI 转型中的工程领导者</strong></p>
+      <div class="prose">
+        <p>李征是一位经验丰富的工程管理者，十余年来专注于构建高韧性、全栈交付能力的团队，支撑大规模产品的落地。他将战略视野与深度技术执行力相结合，带领团队穿越多个技术周期——从移动优先到 AI 原生。</p>
+        <p>在当前领导一个 15 人跨职能团队的角色中，李征正在重新定义 AI 时代的工程领导力。他注重将 AI 能力内化于自身，以身作则，成为连接高层战略与一线代码的桥梁。这种务实的方式推动了微软 Copilot 移动端应用的高速成功发布。他打造的团队以自主性、心理安全感和对效率的极致追求为特征，确保工程师不仅能使用 AI，更能用 AI 构建未来。</p>
+      </div>
+    </section>
+
+    <section class="section" id="experience">
+      <h2><span class="num">02</span>工作经历</h2>
+      <div class="jobs">
+
+        <article class="job">
+          <div class="job-head">
+            <div class="job-left">
+              <h3>微软（ASG → WebXT → MAI）</h3>
+              <span class="role-line">首席软件工程经理</span>
+            </div>
+            <span class="job-meta">2012 年至今 · 北京</span>
+          </div>
+          <ul>
+            <li>职级历程：SDE → SDE II → 高级工程师 → 高级经理 → 首席经理</li>
+            <li>长期负责 Bing 和 Microsoft Start（MSN）移动端开发，覆盖 Android、iOS、iPad 等平台</li>
+            <li>搭建并领导一个跨职能团队，覆盖 Android、iOS、Web、数据、服务五大方向，实现从用户体验到服务交付的全栈闭环</li>
+            <li>基于 Azure 构建完整的移动端交付平台：日志采集与 A/B 实验数据管线；推送系统与稳定性监控；搜索、个性化、内容分发等服务集群；CI/CD 工具与版本发布系统</li>
+            <li>从零交付 Copilot 移动端应用，连续高质量发布 3 个版本，在高层重点关注下无严重回归问题</li>
+            <li>与产品与市场团队共建广告增长引擎，完成 Adjust 接入、归因系统与实时看板，实现年均 120%+ ROI</li>
+            <li>率先在移动端平台中推进 LLM 架构重构，拆解旧架构，尝试语义层调度与 AI 模块集成</li>
+            <li>在团队管理上注重信任与执行力，强调团队健康、节奏管理与文化稳定</li>
+            <li>参与多个与 Windows 集成的探索性项目，虽未发布，但为方向验证提供支撑</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <div class="job-head">
+            <div class="job-left">
+              <h3>阿里巴巴集团 – 用户体验部（UED）</h3>
+            </div>
+            <span class="job-meta">2010 — 2012</span>
+          </div>
+          <ul>
+            <li>使用 Flex、HTML5、Node.js 构建 InfoViz、WebOS 等内部与开源工具</li>
+            <li>聚焦于开发者工具与数据可视化平台的构建</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <div class="job-head">
+            <div class="job-left">
+              <h3>微软亚洲研究院</h3>
+              <span class="role-line">夏季实习生</span>
+            </div>
+            <span class="job-meta">2005、2007</span>
+          </div>
+          <ul>
+            <li>两次暑期实习，专注于数据可视化研究与开发</li>
+            <li>使用 JavaScript 和 Silverlight 构建交互式原型</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="section" id="education">
+      <h2><span class="num">03</span>教育背景</h2>
+      <div class="edu-list">
+        <div class="edu">
+          <div class="edu-left">
+            <h4>同济大学</h4>
+            <span class="degree">工学硕士，计算机软件与理论（分布式系统方向）</span>
+          </div>
+          <span class="year">2010 年</span>
+        </div>
+        <div class="edu">
+          <div class="edu-left">
+            <h4>同济大学</h4>
+            <span class="degree">工学学士，计算机科学与技术</span>
+          </div>
+          <span class="year">2007 年</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="patent">
+      <h2><span class="num">04</span>专利</h2>
+      <div class="patent-row">
+        <span class="pid">CN103248610 A</span>
+        <span>– <strong>移动搜索 UI/UX 交互创新</strong>（2013）</span>
+        <a class="open" href="https://patents.google.com/patent/CN103248610A" target="_blank" rel="noopener">
+          查看专利
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="leadership">
+      <h2><span class="num">05</span>领导力与沟通</h2>
+      <div class="prose">
+        <p>李征不仅在技术层面表现出色，也以构建高信任、高清晰度的团队文化而受到认可。他长期致力于推动团队自治、结果导向的工程氛围，即便在高压、多方博弈的环境下也能稳定交付。</p>
+        <p>他熟练使用中英文工作语言，与来自美国、印度、以色列的全球团队保持长期沟通合作，擅长在跨文化、跨时区环境中推动高效协作与关键决策。</p>
+      </div>
+    </section>
+
+    <section class="section" id="beyond">
+      <h2><span class="num">06</span>工作之外</h2>
+      <div class="prose">
+        <p>李征是一个 INFJ 型人格，兼具长期系统思考与深入个体关注的特点。他热衷于探索各种效率工具、自动化工作流与知识系统，从 Raycast 到 Notion、从 PARA 到自定义命令行，他将这套系统同样运用于管理、工程与生活之中。</p>
+        <p>他始终相信：好的工具能延伸思维，而任何系统——不论是软件、组织还是自我——都值得认真设计与持续优化。</p>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>© <span id="year"></span> 李征. 保留所有权利。</span>
+      <span><a href="/en/">English</a> · <a href="/">home</a></span>
+    </footer>
+
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

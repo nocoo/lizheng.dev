@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zheng Li - Principal Software Engineering Manager @ Microsoft</title>
+  <meta name="description" content="Zheng Li is a veteran engineering leader at Microsoft with over a decade of experience shipping complex, user-facing mobile applications at scale." />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="alternate" hreflang="en" href="https://lizheng.dev/en/" />
+  <link rel="alternate" hreflang="zh" href="https://lizheng.dev/zh/" />
+  <link rel="alternate" hreflang="x-default" href="https://lizheng.dev/en/" />
+  <link rel="canonical" href="https://lizheng.dev/en/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <style>
+    :root {
+      --bg:        oklch(98% 0.006 85);
+      --paper:     oklch(96% 0.008 85);
+      --ink:       oklch(20% 0.025 260);
+      --ink-soft:  oklch(38% 0.02 260);
+      --muted:     oklch(56% 0.015 260);
+      --rule:      oklch(86% 0.012 85);
+      --rule-soft: oklch(91% 0.01 85);
+      --tomato:    oklch(63% 0.19 35);
+      --mint:      oklch(78% 0.10 165);
+      --sun:       oklch(86% 0.13 95);
+
+      --serif: 'Instrument Serif', 'Iowan Old Style', 'Charter', Georgia, serif;
+      --sans:  'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --mono:  'IBM Plex Mono', ui-monospace, 'JetBrains Mono', Menlo, monospace;
+
+      --max: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: inherit; }
+
+    /* ---------- Background flourish (subtle — borrowed from home) ---------- */
+    .flourish {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .flourish .blob {
+      position: absolute;
+      border-radius: 50%;
+      mix-blend-mode: multiply;
+      filter: blur(60px);
+    }
+    .blob.b1 {
+      top: -16vh; right: -10vw;
+      width: 50vw; height: 50vw;
+      background: var(--sun);
+      opacity: 0.32;
+    }
+    .blob.b2 {
+      bottom: -22vh; left: -12vw;
+      width: 42vw; height: 42vw;
+      background: var(--mint);
+      opacity: 0.22;
+    }
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(to right, oklch(20% 0.025 260 / 0.035) 1px, transparent 1px);
+      background-size: 80px 100%;
+    }
+
+    /* ---------- Topbar ---------- */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: oklch(98% 0.006 85 / 0.7);
+      border-bottom: 1px solid var(--rule);
+    }
+    .topbar-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 12px clamp(20px, 4vw, 36px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .brand .dot {
+      width: 9px; height: 9px;
+      background: var(--tomato);
+      transform: rotate(45deg);
+    }
+    .top-actions {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .top-actions a {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      padding: 7px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      background: var(--paper);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .top-actions a:hover { border-color: var(--ink); }
+    .lang-pill em { font-style: normal; color: var(--tomato); margin-right: 4px; }
+
+    /* ---------- Page wrapper ---------- */
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: clamp(40px, 6vw, 64px) clamp(20px, 4vw, 40px) 80px;
+    }
+
+    /* ---------- Header (résumé head, not a marketing hero) ---------- */
+    .head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: clamp(20px, 4vw, 40px);
+      align-items: center;
+      padding-bottom: clamp(28px, 4vw, 40px);
+      border-bottom: 1px solid var(--rule);
+    }
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 22px; height: 1px;
+      background: var(--muted);
+    }
+    .head h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(48px, 7.5vw, 76px);
+      line-height: 0.98;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .role {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--ink);
+      margin-top: 14px;
+    }
+    .tagline {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.45;
+      color: var(--ink-soft);
+      margin-top: 14px;
+      max-width: 34ch;
+      position: relative;
+    }
+    .tagline .marked {
+      color: var(--tomato);
+      position: relative;
+      white-space: nowrap;
+    }
+    .tagline .marked svg {
+      position: absolute;
+      left: -1%;
+      right: -1%;
+      bottom: -0.16em;
+      width: 102%;
+      height: 0.32em;
+      pointer-events: none;
+    }
+    .tagline .marked svg path {
+      fill: none;
+      stroke: var(--tomato);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+    .meta-row {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+    .meta-row span,
+    .meta-row a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: inherit;
+      border-bottom: 1px solid transparent;
+      padding-bottom: 1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .meta-row a:hover {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+    .meta-row svg { width: 13px; height: 13px; opacity: 0.55; }
+
+    .avatar {
+      width: clamp(110px, 16vw, 148px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      font-family: var(--serif);
+      font-size: clamp(52px, 7vw, 72px);
+      color: var(--ink);
+    }
+    .avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* ---------- Sections ---------- */
+    .section {
+      padding: clamp(32px, 4vw, 48px) 0 0;
+    }
+    .section + .section { border-top: 1px solid var(--rule-soft); }
+    .section h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(26px, 3vw, 32px);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .section h2 .num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--tomato);
+      flex-shrink: 0;
+      width: 32px;
+    }
+    .summary-subtitle {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 18px;
+      line-height: 1.45;
+      color: var(--ink);
+      margin: 4px 0 18px 46px;
+    }
+    .prose {
+      max-width: 72ch;
+      margin-left: 46px;
+    }
+    .prose p {
+      font-size: 15.5px;
+      line-height: 1.78;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+    .prose strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ---------- Jobs (résumé canonical) ---------- */
+    .jobs {
+      margin-left: 46px;
+      display: grid;
+      gap: clamp(26px, 3vw, 36px);
+    }
+    .job {
+      display: grid;
+      gap: 6px;
+    }
+    .job-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px 16px;
+    }
+    .job-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .job h3 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 22px;
+      line-height: 1.2;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+    .job .role-line {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tomato);
+      padding: 3px 9px;
+      border: 1px solid oklch(63% 0.19 35 / 0.35);
+      border-radius: 999px;
+    }
+    .job-meta {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .job ul {
+      list-style: none;
+      margin-top: 10px;
+      max-width: 72ch;
+    }
+    .job li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .job li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 6px; height: 1px;
+      background: var(--muted);
+    }
+
+    /* ---------- Edu rows ---------- */
+    .edu-list {
+      margin-left: 46px;
+      display: grid;
+      gap: 12px;
+    }
+    .edu {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .edu:last-child { border-bottom: 0; padding-bottom: 0; }
+    .edu-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .edu h4 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 20px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+    .edu .degree {
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--ink-soft);
+    }
+    .edu .year {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ---------- Patent line ---------- */
+    .patent-row {
+      margin-left: 46px;
+      max-width: 72ch;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px 14px;
+      font-size: 15.5px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+    .patent-row .pid {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--tomato);
+      letter-spacing: 0.04em;
+    }
+    .patent-row strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .patent-row a.open {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 1px;
+    }
+    .patent-row a.open svg { width: 11px; height: 11px; }
+
+    /* ---------- Footer ---------- */
+    .foot {
+      margin-top: clamp(48px, 6vw, 80px);
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .foot a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+    .foot a:hover { border-bottom-color: var(--muted); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 640px) {
+      .head {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+      .avatar {
+        width: 88px;
+        order: -1;
+        font-size: 44px;
+      }
+      .head h1 { font-size: 44px; }
+      .summary-subtitle,
+      .prose,
+      .jobs,
+      .edu-list,
+      .patent-row { margin-left: 0; }
+      .section h2 .num { width: auto; }
+      .job-head, .edu { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .job-meta { white-space: normal; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    /* ---------- Print ---------- */
+    @media print {
+      body { background: #fff; font-size: 11pt; line-height: 1.5; }
+      .flourish { display: none; }
+      .topbar, .foot a { display: none; }
+      .foot { border-top: 1px solid #ccc; color: #666; }
+      .page { padding: 0; max-width: 100%; }
+      .section + .section { border-top: 1px solid #eee; }
+      .avatar { display: none; }
+      .head { grid-template-columns: 1fr; padding-bottom: 16pt; border-bottom: 1px solid #ccc; }
+      .head h1 { font-size: 28pt; }
+      .tagline { font-size: 11pt; }
+      .section h2 { font-size: 14pt; }
+      .summary-subtitle { font-size: 12pt; }
+      .job h3, .edu h4 { font-size: 12pt; }
+      .job li, .prose p, .patent-row { font-size: 10pt; line-height: 1.55; color: #333; }
+      .section, .job, .edu { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flourish" aria-hidden="true">
+    <div class="grid-lines"></div>
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/"><span class="dot"></span>lizheng.dev</a>
+      <div class="top-actions">
+        <a class="lang-pill" href="/zh/" hreflang="zh"><em>中</em>中文</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <header class="head">
+      <div>
+        <span class="eyebrow">Curriculum Vitae</span>
+        <h1>Zheng Li</h1>
+        <p class="role">Principal Software Engineering Manager @ Microsoft</p>
+        <p class="tagline">
+          15 years building web &amp; mobile software.<br>
+          Now <span class="marked">rebuilding myself<svg viewBox="0 0 260 18" preserveAspectRatio="none"><path d="M3 12 C 50 4, 120 17, 180 9 S 250 5, 257 11" /></svg></span> for the AI era.
+        </p>
+        <div class="meta-row">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-8 8-13a8 8 0 1 0-16 0c0 5 8 13 8 13Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Beijing, China
+          </span>
+          <a href="https://lizheng.blog/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            lizheng.blog
+          </a>
+          <a href="https://github.com/nocoo" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            github.com/nocoo
+          </a>
+          <a href="https://linkedin.com/in/nocoo" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            linkedin.com/in/nocoo
+          </a>
+          <a href="https://x.com/zhengli" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16"/><path d="M20 4L4 20"/></svg>
+            x.com/zhengli
+          </a>
+        </div>
+      </div>
+
+      <div class="avatar">
+        <picture>
+          <source srcset="../images/profile.webp" type="image/webp">
+          <img src="../images/profile-optimized.jpg" alt="Zheng Li" loading="lazy" />
+        </picture>
+      </div>
+    </header>
+
+    <section class="section" id="summary">
+      <h2><span class="num">01</span>Professional Summary</h2>
+      <p class="summary-subtitle"><strong>Engineering Leader Driving AI Transformation at Microsoft</strong></p>
+      <div class="prose">
+        <p>Zheng is a seasoned engineering manager with over a decade of experience building resilient, full-stack teams that deliver at massive scale. Combining strategic vision with deep technical execution, he has guided his team through multiple technology cycles—from mobile-first to AI-native.</p>
+        <p>In his current role leading a 15-person cross-functional unit, Zheng is redefining engineering leadership for the AI era. He focuses on internalizing AI capabilities personally to serve as a practical role model, bridging the gap between high-level strategy and daily code. This hands-on approach enabled the successful, high-velocity launch of Microsoft's Copilot mobile app. Zheng builds teams defined by autonomy, psychological safety, and a relentless pursuit of efficiency, ensuring his engineers are equipped not just to use AI, but to build the future with it.</p>
+      </div>
+    </section>
+
+    <section class="section" id="experience">
+      <h2><span class="num">02</span>Work Experience</h2>
+      <div class="jobs">
+
+        <article class="job">
+          <div class="job-head">
+            <div class="job-left">
+              <h3>Microsoft (ASG → WebXT → MAI)</h3>
+              <span class="role-line">Principal Software Engineering Manager</span>
+            </div>
+            <span class="job-meta">2012 — Present · Beijing</span>
+          </div>
+          <ul>
+            <li>Promoted through ranks: SDE → SDE II → Senior SDE → Senior SDE Manager → Principal SDE Manager</li>
+            <li>Longtime owner of mobile development for Bing and Microsoft Start (MSN) across Android, iOS, and iPad</li>
+            <li>Built and led a cross-functional team across Android, iOS, Web, Data, and Services, capable of full-scope delivery from UX to backend ops</li>
+            <li>Designed and scaled an Azure-based platform for mobile delivery: distributed data pipelines for logging, A/B testing, and insights; multi-platform push systems and telemetry-based alerting; service clusters for search, personalization, and monetization; CI/CD and in-house tooling for release management and experimentation</li>
+            <li>Led from zero the launch of Copilot Mobile App, delivering 3 clean releases under executive visibility, with zero major regressions</li>
+            <li>Partnered with product and marketing to create a data-informed growth engine for paid acquisition, integrating Adjust, backend attribution, and real-time dashboards—yielding 120%+ ROI annually</li>
+            <li>Embraced the AI transition by leading LLM-driven platform rewrites, decoupling legacy architecture and piloting new semantic layers for mobile-native Copilot interactions</li>
+            <li>Known internally for balancing discipline with trust, Zheng focuses on team health, cultural integrity, and decision velocity</li>
+            <li>Participated in early-stage Windows-integrated experiments to extend mobile scenarios, contributing to design and feasibility</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <div class="job-head">
+            <div class="job-left">
+              <h3>Alibaba Group – UED Team</h3>
+            </div>
+            <span class="job-meta">2010 — 2012</span>
+          </div>
+          <ul>
+            <li>Built internal tools and open-source projects (InfoViz, WebOS) using Flex, HTML5, and Node.js</li>
+            <li>Focused on developer productivity and data visualization frameworks</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <div class="job-head">
+            <div class="job-left">
+              <h3>Microsoft Research Asia</h3>
+              <span class="role-line">Summer Intern</span>
+            </div>
+            <span class="job-meta">2005, 2007</span>
+          </div>
+          <ul>
+            <li>Completed two summer internships focused on data visualization</li>
+            <li>Developed interactive prototypes using JavaScript and Silverlight</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="section" id="education">
+      <h2><span class="num">03</span>Education</h2>
+      <div class="edu-list">
+        <div class="edu">
+          <div class="edu-left">
+            <h4>Tongji University</h4>
+            <span class="degree">M.Eng. in Computer Software and Theory (Distributed Systems)</span>
+          </div>
+          <span class="year">2010</span>
+        </div>
+        <div class="edu">
+          <div class="edu-left">
+            <h4>Tongji University</h4>
+            <span class="degree">B.Eng. in Computer Science and Technology</span>
+          </div>
+          <span class="year">2007</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="patent">
+      <h2><span class="num">04</span>Patent</h2>
+      <div class="patent-row">
+        <span class="pid">CN103248610 A</span>
+        <span>– <strong>Mobile search UI/UX innovation</strong> (2013)</span>
+        <a class="open" href="https://patents.google.com/patent/CN103248610A" target="_blank" rel="noopener">
+          View Patent
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="leadership">
+      <h2><span class="num">05</span>Leadership &amp; Communication</h2>
+      <div class="prose">
+        <p>Zheng is known not only for technical rigor, but also for building resilient teams with a culture of autonomy and clarity. He actively cultivates shared ownership, pragmatic execution, and a calm-but-decisive leadership style—even in high-stakes, cross-org settings.</p>
+        <p>Fluent in both Chinese and English, Zheng has long worked across time zones and cultures, collaborating (and negotiating) with global teams across the U.S., India, and Israel. He is as comfortable in architectural deep-dives as in heated prioritization debates.</p>
+      </div>
+    </section>
+
+    <section class="section" id="beyond">
+      <h2><span class="num">06</span>Beyond Work</h2>
+      <div class="prose">
+        <p>Zheng is an INFJ, often balancing long-term systems thinking with deep individual focus. He is passionate about efficiency tools, automation workflows, and personal knowledge systems—from command palette launchers to structured digital habits (Notion, PARA, Raycast, etc.).</p>
+        <p>He believes that great tools extend the mind, and that every system—from software to self—deserves thoughtful iteration.</p>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>© <span id="year"></span> Zheng Li. All rights reserved.</span>
+      <span><a href="/zh/">中文</a> · <a href="/">home</a></span>
+    </footer>
+
+  </main>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
