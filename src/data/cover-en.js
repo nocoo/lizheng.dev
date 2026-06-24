@@ -1,7 +1,6 @@
 export default {
 	lang: "en",
 	alternateLang: "zh",
-	alternateUrl: "/zh/",
 	title: "Zheng Li — Engineering Leader",
 	description:
 		"Engineering leader at Microsoft. 15 years building web & mobile software, now rebuilding myself for the AI era.",

@@ -1,7 +1,6 @@
 export default {
 	lang: "zh",
 	alternateLang: "en",
-	alternateUrl: "/en/",
 	title: "李征 — 程序员",
 	description:
 		"微软工程领导者。写了 20 年代码，15 年微软。Web、移动、数据。正在探索 AI 时代的自我重塑。",
