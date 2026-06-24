@@ -18,37 +18,58 @@
 	--spacing-lg: 2.5rem;
 	--content-padding: 3rem;
 
-	/* Light theme — zed.dev cream */
-	--bg-base: #f5f4f3;
-	--bg-elevated: #fafaf9;
+	/* Light theme — cover paper white (OKLch) */
+	--bg-base: oklch(98% 0.006 85);
+	--bg-elevated: oklch(96% 0.008 85);
 	--bg-primary: var(--bg-elevated);
 	--bg-sidebar: var(--bg-base);
-	--text: #1a1a1a;
+	--text: oklch(20% 0.025 260);
 	--text-primary: var(--text);
-	--text-secondary: #5c574a;
-	--text-muted: #8a8678;
-	--border: #dadde2;
+	--text-secondary: oklch(38% 0.02 260);
+	--text-muted: oklch(56% 0.015 260);
+	--border: oklch(86% 0.012 85);
 	--border-color: var(--border);
-	--accent: oklch(48% 0.23 264);
+	--accent: oklch(63% 0.19 35);
 	--accent-color: var(--accent);
-	--accent-hover: oklch(40% 0.23 264);
+	--accent-hover: oklch(56% 0.19 35);
+
+	/* Cover flourish palette (tomato accent + tinted pastels) */
+	--tomato: oklch(63% 0.19 35);
+	--mint: oklch(78% 0.1 165);
+	--sun: oklch(86% 0.13 95);
+	--sky: oklch(82% 0.07 230);
+
+	/* Grid line tint — ink on paper (light) */
+	--grid-line: oklch(20% 0.025 260 / 0.05);
+
+	/* Display serif (applied to headings/tagline) */
+	--font-display: "Instrument Serif", "IBM Plex Serif", Georgia, serif;
 }
 
 [data-theme="dark"] {
-	/* Dark theme — zed.dev offgray */
-	--bg-base: hsl(218 13% 7.5%);
-	--bg-elevated: #121316;
+	/* Dark theme — warm-tinted deep ink (OKLch) */
+	--bg-base: oklch(20% 0.015 260);
+	--bg-elevated: oklch(24% 0.02 260);
 	--bg-primary: var(--bg-elevated);
 	--bg-sidebar: var(--bg-base);
-	--text: #e5e7eb;
+	--text: oklch(92% 0.01 260);
 	--text-primary: var(--text);
-	--text-secondary: #b3b8c2;
-	--text-muted: #9ca3af;
-	--border: color-mix(in oklab, #6a7282 22%, transparent);
+	--text-secondary: oklch(72% 0.015 260);
+	--text-muted: oklch(58% 0.02 260);
+	--border: oklch(30% 0.015 260);
 	--border-color: var(--border);
-	--accent: color-mix(in oklch, oklch(48% 0.23 264) 60%, white);
+	--accent: oklch(68% 0.19 35);
 	--accent-color: var(--accent);
-	--accent-hover: color-mix(in oklch, oklch(48% 0.23 264) 40%, white);
+	--accent-hover: oklch(74% 0.18 35);
+
+	/* Cover flourish palette — lifted for dark background */
+	--tomato: oklch(68% 0.19 35);
+	--mint: oklch(70% 0.11 165);
+	--sun: oklch(75% 0.12 95);
+	--sky: oklch(72% 0.08 230);
+
+	/* Grid line tint — paper on ink (dark) */
+	--grid-line: oklch(92% 0.01 260 / 0.06);
 }
 
 /* Reset Pico defaults */
