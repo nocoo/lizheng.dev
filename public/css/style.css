@@ -26,15 +26,15 @@
 	--text: oklch(20% 0.025 260);
 	--text-primary: var(--text);
 	--text-secondary: oklch(38% 0.02 260);
-	--text-muted: oklch(56% 0.015 260);
+	--text-muted: oklch(50% 0.015 260);
 	--border: oklch(86% 0.012 85);
 	--border-color: var(--border);
-	--accent: oklch(63% 0.19 35);
+	--accent: oklch(54% 0.18 35);
 	--accent-color: var(--accent);
-	--accent-hover: oklch(56% 0.19 35);
+	--accent-hover: oklch(48% 0.17 35);
 
 	/* Cover flourish palette (tomato accent + tinted pastels) */
-	--tomato: oklch(63% 0.19 35);
+	--tomato: oklch(54% 0.18 35);
 	--mint: oklch(78% 0.1 165);
 	--sun: oklch(86% 0.13 95);
 	--sky: oklch(82% 0.07 230);
@@ -56,7 +56,7 @@
 	--text: oklch(92% 0.01 260);
 	--text-primary: var(--text);
 	--text-secondary: oklch(72% 0.015 260);
-	--text-muted: oklch(58% 0.02 260);
+	--text-muted: oklch(64% 0.02 260);
 	--border: oklch(30% 0.015 260);
 	--border-color: var(--border);
 	--accent: oklch(68% 0.19 35);
