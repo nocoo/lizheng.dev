@@ -6,7 +6,9 @@ themeToggle.addEventListener("click", () => {
 	const currentTheme = html.getAttribute("data-theme");
 	const newTheme = currentTheme === "dark" ? "light" : "dark";
 	html.setAttribute("data-theme", newTheme);
-	localStorage.setItem("theme", newTheme);
+	try {
+		localStorage.setItem("theme", newTheme);
+	} catch {}
 });
 
 // Set current year in footer
