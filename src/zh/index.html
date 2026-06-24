@@ -84,7 +84,7 @@
       <main class="content">
         <article class="resume">
           <section id="summary">
-            <h2>{{summaryTitle}}</h2>
+            <h2><span class="num">01</span> {{summaryTitle}}</h2>
             <p class="summary-subtitle"><strong>{{summarySubtitle}}</strong></p>
             {{#each summary}}
             <p>{{this}}</p>
@@ -94,7 +94,7 @@
           <hr>
 
           <section id="experience">
-            <h2>{{experienceTitle}}</h2>
+            <h2><span class="num">02</span> {{experienceTitle}}</h2>
             {{#each jobs}}
             <div class="job">
               <div class="job-header">
@@ -116,7 +116,7 @@
           <hr>
 
           <section id="education">
-            <h2>{{educationTitle}}</h2>
+            <h2><span class="num">03</span> {{educationTitle}}</h2>
             {{#each education}}
             <div class="edu">
               <div class="edu-header">
@@ -133,14 +133,14 @@
           <hr>
 
           <section id="patent">
-            <h2>{{patentTitle}}</h2>
+            <h2><span class="num">04</span> {{patentTitle}}</h2>
             <p><strong>{{patent.id}}</strong> – {{patent.name}} <a href="{{patent.url}}" target="_blank" rel="noopener" class="patent-link" aria-label="View Patent"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a></p>
           </section>
 
           <hr>
 
           <section id="leadership">
-            <h2>{{leadershipTitle}}</h2>
+            <h2><span class="num">05</span> {{leadershipTitle}}</h2>
             {{#each leadership}}
             <p>{{this}}</p>
             {{/each}}
@@ -149,7 +149,7 @@
           <hr>
 
           <section id="beyond">
-            <h2>{{beyondTitle}}</h2>
+            <h2><span class="num">06</span> {{beyondTitle}}</h2>
             {{#each beyond}}
             <p>{{this}}</p>
             {{/each}}

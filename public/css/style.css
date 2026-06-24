@@ -398,6 +398,31 @@ body {
 	text-align: center;
 }
 
+/* Squiggle underline on tagged words (tagline) */
+.marked {
+	position: relative;
+	color: var(--text-primary);
+	font-style: normal;
+	white-space: nowrap;
+}
+
+.marked svg {
+	position: absolute;
+	left: -2%;
+	right: -2%;
+	bottom: -0.15em;
+	width: 104%;
+	height: 0.26em;
+	pointer-events: none;
+}
+
+.marked svg path {
+	fill: none;
+	stroke: var(--accent);
+	stroke-width: 4;
+	stroke-linecap: round;
+}
+
 /* Sidebar Links */
 .sidebar-links {
 	display: flex;
@@ -471,11 +496,14 @@ h2 {
 	line-height: 1.2;
 }
 
-h2::before {
-	content: "# ";
-	color: var(--text-muted);
-	font-weight: 400;
-	opacity: 0.7;
+h2 .num {
+	font-family: var(--font-mono);
+	font-size: 0.7rem;
+	font-weight: 500;
+	color: var(--accent);
+	vertical-align: 0.45em;
+	margin-right: 0.6rem;
+	letter-spacing: 0.05em;
 }
 
 h3 {
@@ -969,10 +997,6 @@ a:hover {
 	.cross-divider::after,
 	.top-left::after {
 		display: none;
-	}
-
-	h2::before {
-		content: "";
 	}
 
 	.top-left,

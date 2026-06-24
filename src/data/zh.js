@@ -7,7 +7,8 @@ export default {
 		"李征是一位资深工程领导者，拥有十余年构建复杂、高影响力移动应用的经验。",
 	name: "李征",
 	jobTitle: "Principal Software Engineering Manager @ Microsoft",
-	tagline: "15年 Web 和移动软件开发经验<br>正在为AI时代重塑自己",
+	tagline:
+		'15年 Web 和移动软件开发经验<br>正在为AI时代<span class="marked">重塑自己<svg viewBox="0 0 260 18" preserveAspectRatio="none"><path d="M3 12 C 50 4, 120 17, 180 9 S 250 5, 257 11"/></svg></span>',
 
 	// Resume sections
 	summaryTitle: "职业概述",

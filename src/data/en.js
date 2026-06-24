@@ -8,7 +8,7 @@ export default {
 	name: "Zheng Li",
 	jobTitle: "Principal Software Engineering Manager @ Microsoft",
 	tagline:
-		"15 years building web & mobile software.<br>Now rebuilding myself for the AI era.",
+		'15 years building web & mobile software.<br>Now <span class="marked">rebuilding myself<svg viewBox="0 0 260 18" preserveAspectRatio="none"><path d="M3 12 C 50 4, 120 17, 180 9 S 250 5, 257 11"/></svg></span> for the AI era.',
 
 	// Resume sections
 	summaryTitle: "Professional Summary",
