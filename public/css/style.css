@@ -317,14 +317,20 @@ body {
 	align-items: flex-start;
 }
 
-/* Avatar - 200px, centered */
+/* Avatar - 200px, centered, borderless with soft shadow */
 .avatar {
 	width: 200px;
 	height: 200px;
 	border-radius: 50%;
 	object-fit: cover;
 	margin-bottom: var(--spacing);
-	border: 3px solid var(--border-color);
+	box-shadow: 0 6px 20px oklch(20% 0.025 260 / 0.12);
+}
+
+[data-theme="dark"] .avatar {
+	box-shadow:
+		0 6px 24px oklch(0% 0 0 / 0.5),
+		0 0 0 1px oklch(92% 0.01 260 / 0.12);
 }
 
 /* Controls */
