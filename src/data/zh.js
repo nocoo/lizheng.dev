@@ -2,7 +2,7 @@ export default {
 	lang: "zh",
 	alternateLang: "en",
 	alternateUrl: "/en/",
-	title: "李征 - 微软首席软件工程经理",
+	title: "Zheng Li - Principal Software Engineering Manager @ Microsoft",
 	description:
 		"李征是一位资深工程领导者，拥有十余年构建复杂、高影响力移动应用的经验。",
 	name: "李征",
