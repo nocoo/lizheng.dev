@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>(()=>{var t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t)})()</script>
   <title>{{title}}</title>
   <meta name="description" content="{{description}}" />
   <link rel="icon" type="image/png" href="/favicon.png" />
@@ -32,7 +33,40 @@
       --sans:  'IBM Plex Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont,
                'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
       --mono:  'IBM Plex Mono', ui-monospace, 'JetBrains Mono', Menlo, monospace;
+
+      --grid-line: oklch(20% 0.025 260 / 0.05);
     }
+
+    [data-theme="dark"] {
+      --bg:        oklch(20% 0.015 260);
+      --paper:     oklch(24% 0.02 260);
+      --ink:       oklch(92% 0.01 260);
+      --ink-soft:  oklch(72% 0.015 260);
+      --muted:     oklch(58% 0.02 260);
+      --rule:      oklch(30% 0.015 260);
+      --tomato:    oklch(68% 0.19 35);
+      --mint:      oklch(70% 0.11 165);
+      --sun:       oklch(75% 0.12 95);
+      --sky:       oklch(72% 0.08 230);
+      --grid-line: oklch(92% 0.01 260 / 0.06);
+    }
+
+    [data-theme="dark"] .flourish .blob {
+      mix-blend-mode: screen;
+    }
+
+    [data-theme="dark"] .flourish .blob.b1 {
+      opacity: 0.4;
+    }
+
+    [data-theme="dark"] .flourish .blob.b2 {
+      opacity: 0.3;
+    }
+
+    [data-theme="dark"] .flourish .star {
+      opacity: 0.35;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
@@ -314,7 +348,7 @@
     .grid-lines {
       position: absolute;
       inset: 0;
-      background-image: linear-gradient(to right, oklch(20% 0.025 260 / 0.04) 1px, transparent 1px);
+      background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px);
       background-size: 80px 100%;
     }
     .star {
