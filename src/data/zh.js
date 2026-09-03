@@ -1,7 +1,4 @@
 export default {
-	lang: "zh",
-	alternateLang: "en",
-	alternateUrl: "/en/",
 	title: "Zheng Li - Principal Software Engineering Manager @ Microsoft",
 	description:
 		"李征是一位资深工程领导者，拥有十余年构建复杂、高影响力移动应用的经验。",
@@ -89,6 +86,4 @@ export default {
 		"李征是一个 INFJ 型人格，兼具长期系统思考与深入个体关注的特点。他热衷于探索各种效率工具、自动化工作流与知识系统，从 Raycast 到 Notion、从 PARA 到自定义命令行，他将这套系统同样运用于管理、工程与生活之中。",
 		"他始终相信：好的工具能延伸思维，而任何系统——不论是软件、组织还是自我——都值得认真设计与持续优化。",
 	],
-
-	copyright: "© {year} 李征. 保留所有权利。",
 };

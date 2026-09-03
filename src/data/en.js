@@ -1,7 +1,4 @@
 export default {
-	lang: "en",
-	alternateLang: "zh",
-	alternateUrl: "/zh/",
 	title: "Zheng Li - Principal Software Engineering Manager @ Microsoft",
 	description:
 		"Zheng Li is a veteran engineering leader at Microsoft with over a decade of experience shipping complex, user-facing mobile applications at scale.",
@@ -89,6 +86,4 @@ export default {
 		"Zheng is an INFJ, often balancing long-term systems thinking with deep individual focus. He is passionate about efficiency tools, automation workflows, and personal knowledge systems—from command palette launchers to structured digital habits (Notion, PARA, Raycast, etc.).",
 		"He believes that great tools extend the mind, and that every system—from software to self—deserves thoughtful iteration.",
 	],
-
-	copyright: "© {year} Zheng Li. All rights reserved.",
 };
