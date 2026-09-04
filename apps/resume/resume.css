@@ -1,3 +1,19 @@
+@font-face {
+	font-family: "Newsreader Variable";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2")
+		format("woff2");
+}
+@font-face {
+	font-family: "Source Sans 3 Variable";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("@fontsource-variable/source-sans-3/files/source-sans-3-latin-wght-normal.woff2")
+		format("woff2");
+}
 :root {
 	--paper: #f9f8f4;
 	--ink: #282d29;

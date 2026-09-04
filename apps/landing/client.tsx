@@ -1,6 +1,4 @@
 import { setupHandheld } from "../../packages/experience/handheld";
-import "@fontsource-variable/space-grotesk/latin.css";
-import "@fontsource-variable/geist-mono/latin.css";
 import "@fontsource/silkscreen/400.css";
 import "../../packages/experience/base.css";
 import "./landing.css";
