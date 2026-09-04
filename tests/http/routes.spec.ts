@@ -41,7 +41,7 @@ for (const surface of ["resume", "landing"])
 				expect(html).toContain(
 					`<html lang="${locale === "zh" ? "zh-CN" : "en"}">`,
 				);
-				expect(html).toContain(`v${version}`);
+				expect(html.replace(/<!--.*?-->/g, "")).toContain(`v${version}`);
 				expect(html).toContain(
 					surface === "resume" ? "resume-document" : "console-shell",
 				);

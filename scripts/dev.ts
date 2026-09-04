@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { createServer as createViteServer } from "vite";
+import manifest from "../package.json" with { type: "json" };
 import { loadContent } from "../packages/content/model";
 import {
 	legacyRedirect,
@@ -46,6 +47,24 @@ server.on("request", async (request, response) => {
 			response.writeHead(404).end("Not Found");
 			return;
 		}
+		if (url.pathname === "/api/live") {
+			response
+				.writeHead(200, {
+					"Content-Type": "application/json; charset=utf-8",
+					"Cache-Control": "no-store",
+				})
+				.end(
+					JSON.stringify({
+						status: "ok",
+						service: "lizheng-dev",
+						surface,
+						version: manifest.version,
+						deployment: "local-preview",
+					}),
+				);
+			return;
+		}
+
 		const metadata = metadataFile(surface, url.pathname);
 		if (metadata) {
 			response
@@ -53,8 +72,8 @@ server.on("request", async (request, response) => {
 				.end(metadata.body);
 			return;
 		}
-		if (url.pathname === "/en.md" || url.pathname === "/zh.md") {
-			const locale = url.pathname === "/zh.md" ? "zh" : "en";
+		if (/^\/(en|zh)(?:\.md|\/content\.md)$/.test(url.pathname)) {
+			const locale = url.pathname.startsWith("/zh") ? "zh" : "en";
 			response
 				.writeHead(200, { "Content-Type": "text/markdown; charset=utf-8" })
 				.end((await loadContent(surface, locale)).markdown);
@@ -69,13 +88,7 @@ server.on("request", async (request, response) => {
 				.end();
 			return;
 		}
-		if (["/en", "/zh"].includes(url.pathname)) {
-			response
-				.writeHead(308, { Location: `${url.pathname}/${url.search}` })
-				.end();
-			return;
-		}
-		if (["/en/", "/zh/"].includes(url.pathname)) {
+		if (["/en", "/zh", "/en/", "/zh/"].includes(url.pathname)) {
 			const { renderPage } = await vite.ssrLoadModule(
 				"/packages/publishing/render.tsx",
 			);
@@ -83,7 +96,7 @@ server.on("request", async (request, response) => {
 				url.pathname,
 				await renderPage(
 					surface,
-					url.pathname === "/zh/" ? "zh" : "en",
+					url.pathname.startsWith("/zh") ? "zh" : "en",
 					undefined,
 					true,
 				),
