@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.0 — 2026-09-05
+
+- Rebuild both sites from public Markdown: a bilingual editorial résumé and an interactive handheld portfolio, each with light/dark themes and responsive layouts.
+- Share the orange four-square brand and favicon, preserve natural portrait color, and add quiet footer versions and MADE IN BEIJING breathing indicators.
+- Preserve all legacy blog 301 redirects, add /api/live, canonical/hreflang/structured data, public Markdown and agent metadata.
+- Replace the old build with React 19, Vite 8, TypeScript 7 and a current Cloudflare Worker; update and audit all dependencies.
+- Enforce 95%+ logic coverage, zero lint, real HTTP integration, dependency/secrets scans, size budgets and isolated Husky gates. Preserve CI-triggered deployment using the validated Worker/assets artifact.
+- Chromium and WebKit full experience matrices pass. Further Firefox infrastructure, performance baselines and mandatory browser CI are continuing after this first release, as authorized.
+
 All notable changes to this project are documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/), and adheres to [Semantic Versioning](https://semver.org/).
 
