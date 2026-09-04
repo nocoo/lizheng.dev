@@ -1,6 +1,6 @@
 # 06 — 技术架构与版本决策
 
-状态：实现方案，当前 package.json 和生产构建尚未切换。版本在 2026-09-05 查询 npm registry 的 latest 与 peerDependencies，不使用猜测版本。
+状态：React/Vite/TS7 工具链、两套新视图、Markdown 预渲染和本机预览已实现；生产 Worker 与部署入口待设计定稿后切换。下文完整架构仍包含后续质量收紧项，当前证据以 10 为准。版本在 2026-09-05 查询 npm registry 的 latest 与 peerDependencies。
 
 ## 技术选择
 
@@ -22,7 +22,9 @@
 | wrangler | 4.129.0 | Cloudflare 开发、绑定类型与部署 |
 | @cloudflare/workers-types | 5.20260904.1 | 参考最新平台类型；应用 Env 由 Wrangler 生成 |
 
-另已查询 @types/react 19.2.18、@types/react-dom 19.2.7、gray-matter 4.0.3、remark 15.0.1、remark-gfm 4.0.1。M1 检查 React 插件的可选 peer 依赖及 Markdown 安全解析配置后精确锁定。版本快照不等于兼容性测试已经通过；M1 必须实际安装、类型检查、构建与运行。开始实施时重新核对安全补丁，直接依赖用精确版本，提交 bun.lock，CI frozen install。
+设计阶段实际安装 React 19.2.8、Vite 8.2.2、TypeScript 7.0.2、React plugin 6.1.1、React types 19.2.18 / 19.2.7、gray-matter 4.0.3、marked 18.0.11、Playwright 1.63.0、sharp 0.35.4。全部直接依赖已精确锁定并通过 frozen install、严格类型检查、静态构建和 Chrome 运行。Markdown 使用 marked tokens 转 React 元素，不插入任意原始 HTML。
+
+表格中的 Vitest 5、Biome 2.5.12、Wrangler 4.129 和完整 axe 集成仍为后续升级目标；当前沿用已通过检查的 Vitest 4.1.9、Biome 2.5.0、Wrangler 4.100.0，不把版本查询当作安装记录。
 
 包管理与脚本入口使用 Bun 1.4.0（本机版本）。框架构建/测试使用受支持的 Node 24 LTS 或兼容更新版本，避免把 Bun 管理依赖误解为强迫所有第三方工具运行在 Bun 内。生产执行环境是 Cloudflare workerd。
 
@@ -32,43 +34,32 @@ Astro 7.3.1 和 @astrojs/cloudflare 14.3.0 均已查询。后者 peer 要求 Ast
 
 为满足 TypeScript 7 严格检查，并避免双编译器或忽略 peer 冲突，本轮不选 Astro。Vite + React 的全部业务及视图源文件使用 TS/TSX，可由同一 TypeScript 7 门禁覆盖。新的预渲染编排是小型 TypeScript 构建模块，不继承旧 build.js 模板引擎。
 
-## 目标代码结构
+## 当前代码结构
 
-以下路径为计划创建，不表示目前存在：
+为加快设计迭代，采用较浅的实际目录：
 
     apps/
-      resume/
-        src/ResumePage.tsx
-        src/components/
-        src/styles/
-        src/client.ts
-      landing/
-        src/LandingPage.tsx
-        src/components/Handheld.tsx
-        src/components/Screen.tsx
-        src/styles/
-        src/client.tsx
+      resume/                  ResumePage、Markdown、client、resume.css
+      landing/                 LandingPage、client、landing.css
     packages/
-      content/src/             Markdown allowlist、schema、typed model
-      experience/src/          locale/theme、掌机状态转换、navigation model
-      publishing/src/          HTML metadata、JSON-LD、Markdown、sitemap
+      content/model.ts         四份 Markdown allowlist 与内容模型
+      experience/              新图标、偏好控件、主题初始化、基础样式
+      publishing/              新 HTML/JSON-LD 渲染、预览路由与元信息端点
     worker/
-      index.ts                 新边缘入口
-      legacy-redirects.ts      精确保留的旧 301 兼容规则
+      index.ts                 暂时保留的生产 Worker；301 回归继续执行
     scripts/
-      build.ts                 新预渲染和资源打包流程
-      verify-test-bindings.ts
-      run-integration.ts
-      gate-security.ts
-      check-budgets.ts
-    tests/
-      unit/
-      integration/
-      e2e/
+      dev.ts                   Host 分流、Vite SSR/HMR，端口 7046
+      build-design.tsx         四页面静态 HTML、hash 资产、Markdown 构建
+      create-portraits.ts       原图生成新照片和四阶点阵图
+      review-design.ts         按需截图和浏览器交互 smoke
+    design-public/             本轮新资产
+    tests/                     现有 53 个构建/Worker 回归
     docs/content/              四份公开 Markdown 内容源
-    dist/                      最终唯一部署目录，Git 忽略
+    .design-dist/              新设计构建输出，Git 忽略
+    .design-review/            本机截图、PDF 和检查记录，Git 忽略
+    dist/                      当前生产构建输出
 
-两套 UI 不共享旧组件或旧 CSS。共享模块只容纳新写的语义、数据和行为；避免为了统一视觉而将掌机风格带入正式简历。
+两套 UI 不共享旧组件或旧 CSS。后续收紧阶段再把掌机内联状态提炼为独立 ViewModel、合并新预览与 Worker 的 301 兼容模块、完善 schema、CSP、隔离测试与门禁。以下数据流的 dist 指最终生产切换后的目标；当前同等静态页面输出到 .design-dist。
 
 ## 构建与数据流
 
