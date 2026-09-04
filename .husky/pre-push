@@ -1,3 +1,1 @@
-bun run lint
-bun run typecheck
-bun run test
+bun scripts/gates.ts pre-push

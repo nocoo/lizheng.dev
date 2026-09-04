@@ -17,7 +17,7 @@
 :root {
 	--paper: #f9f8f4;
 	--ink: #282d29;
-	--muted: #777c72;
+	--muted: #6b7265;
 	--accent: #637350;
 	--line: #dddfd5;
 	--serif: "Newsreader Variable", "Songti SC", "Noto Serif CJK SC", serif;
@@ -112,7 +112,6 @@ body {
 .resume-sidebar nav a span {
 	font-family: var(--mono);
 	font-size: 9px;
-	opacity: 0.7;
 }
 .resume-sidebar nav a:hover,
 .resume-sidebar nav a[aria-current] {

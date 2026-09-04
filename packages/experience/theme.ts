@@ -1,5 +1,5 @@
 export type Theme = "light" | "dark";
-export function savedTheme(): Theme | undefined {
+function savedTheme(): Theme | undefined {
 	try {
 		const value = localStorage.getItem("zl-theme");
 		return value === "light" || value === "dark" ? value : undefined;

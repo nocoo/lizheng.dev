@@ -9,6 +9,7 @@ import {
 } from "../../packages/experience/handheld";
 import { Icon } from "../../packages/experience/Icons";
 import { Preferences } from "../../packages/experience/Preferences";
+import { Version } from "../../packages/experience/Version";
 
 function PixelStar({ className = "" }: { className?: string }) {
 	return (
@@ -333,9 +334,12 @@ export function LandingPage({ content }: { content: PageContent }) {
 				</div>
 			</main>
 			<footer className="landing-footer" lang="en">
-				<span>{meta.copyright.replace("{year}", content.year)}</span>
+				<span>
+					{meta.copyright.replace("{year}", content.year)}
+					<Version />
+				</span>
 				<span className="footer-location">
-					<span className="location-dot" />
+					<span className="location-dot" aria-hidden="true" />
 					{meta.location}
 					<span className="footer-time">UTC +08:00</span>
 				</span>

@@ -15,6 +15,7 @@ await build({
 	publicDir: false,
 	build: {
 		outDir: output,
+		assetsInlineLimit: 0,
 		manifest: true,
 		rolldownOptions: {
 			input: {

@@ -1,7 +1,15 @@
+@font-face {
+	font-family: "Silkscreen";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("@fontsource/silkscreen/files/silkscreen-latin-400-normal.woff2")
+		format("woff2");
+}
 :root {
 	--page: #f0f0e9;
 	--ink: #30372e;
-	--muted: #858a7c;
+	--muted: #68705f;
 	--accent: #bf5c3c;
 	--line: #d4d8cb;
 	--shell-top: #e7e6da;
@@ -176,7 +184,7 @@ body::before {
 	margin: 0;
 }
 .desktop-instructions p span {
-	opacity: 0.7;
+	font-size: 0.96em;
 }
 .console-scene {
 	position: relative;
@@ -864,7 +872,6 @@ body::before {
 .caption-edition {
 	margin-left: auto;
 	font-size: 8px;
-	opacity: 0.7;
 }
 .landing-footer {
 	max-width: 1320px;
@@ -883,14 +890,8 @@ body::before {
 	align-items: center;
 	gap: 9px;
 }
-.location-dot {
-	width: 4px;
-	height: 4px;
-	background: #889978;
-	border-radius: 50%;
-}
+
 .footer-time {
-	opacity: 0.55;
 	margin-left: 8px;
 	font-size: 8px;
 }

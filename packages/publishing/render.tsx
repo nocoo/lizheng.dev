@@ -1,4 +1,4 @@
-import { renderToStaticMarkup } from "react-dom/server";
+import { renderToStaticMarkup, renderToString } from "react-dom/server";
 import { LandingPage } from "../../apps/landing/LandingPage";
 import { ResumePage } from "../../apps/resume/ResumePage";
 import { type Locale, loadContent, type Surface } from "../content/model";
@@ -38,7 +38,8 @@ export async function renderPage(
 	}
 	const origin =
 		surface === "resume" ? "https://lizheng.dev" : "https://lizheng.me";
-	const markup = renderToStaticMarkup(
+	const render = surface === "landing" ? renderToString : renderToStaticMarkup;
+	const markup = render(
 		surface === "resume" ? (
 			<ResumePage content={content} />
 		) : (

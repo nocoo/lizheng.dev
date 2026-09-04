@@ -1,28 +1,26 @@
 # lizheng.dev / lizheng.me
 
-One repository serves a bilingual résumé at lizheng.dev and a personal landing page at lizheng.me on Cloudflare Workers. Legacy blog URLs on lizheng.me redirect permanently to lizheng.blog.
+Two independent experiences, one Cloudflare Worker: a bilingual résumé at [lizheng.dev](https://lizheng.dev) and a tactile handheld portfolio at [lizheng.me](https://lizheng.me). Both support English/Chinese and light/dark. Legacy blog URLs on lizheng.me retain their exact 301 redirects to lizheng.blog.
 
-The new React 19 / Vite 8 / TypeScript 7 experiences are ready for local design review. Both sites have English/Chinese and light/dark modes. The résumé uses an editorial reading layout; the personal page is a tactile, interactive handheld console.
+Content comes from the four public Markdown documents in [docs/content](docs/content/README.md). React 19, Vite 8 and TypeScript 7 generate complete HTML; core information and links work without JavaScript. The résumé uses a lightweight DOM client, and the handheld hydrates its interactive controls.
 
-Start with the [design preview guide](docs/10-design-preview.md), [active documentation index](docs/README.md), and [public content corpus](docs/content/README.md). This phase prioritizes visual iteration; full 6DQ and coverage gates follow design approval.
+```sh
+bun install --frozen-lockfile
+bun run dev
+bun run build
+bun run gate:commit
+bun run gate:push
+bunx playwright install chromium firefox webkit
+bun run test:browser
+```
 
-Current local commands:
+Local Caddy previews use 127.0.0.1:7046:
 
-    bun install --frozen-lockfile
-    bun run dev
-    bun run build:design
-    bun run review:design
-    bun run lint
-    bun run typecheck
-    bun run test:coverage
+- [Résumé](https://lizheng-dev.dev.hexly.ai)
+- [Personal page](https://lizheng-me.dev.hexly.ai)
 
-Local Caddy serves both previews through one Vite/SSR server on 127.0.0.1:7046:
+L2 and L3 use isolated workerd configurations, ports 17046/27046, and separate test assets. Husky enforces static checks, 95%+ logic coverage and a build before commits; real HTTP, secrets/dependency scans and size budgets before pushes. See [release implementation](docs/11-release-implementation.md) for measured results and remaining verification.
 
-- Résumé: <https://lizheng-dev.dev.hexly.ai>
-- Personal page: <https://lizheng-me.dev.hexly.ai>
+The existing GitHub CI → Release pipeline is retained. Successful main CI uploads a verified Worker/assets artifact; Release deploys that exact artifact to Cloudflare and verifies all four public hostnames, versions, languages and legacy redirects. package.json is the version source; the UI footer and /api/live consume it.
 
-`review:design` uses locally installed Google Chrome and writes fresh screenshots to the ignored .design-review directory. It does not lock visual snapshots. `build:design` writes the new static HTML, client assets, and public Markdown into .design-dist. `assets:design` regenerates both portrait treatments from the original photograph.
-
-Production remains on the existing Cloudflare implementation during design review. `build`, `deploy`, and `dev:legacy` still address that implementation. Main CI triggers production deployment, so the design work is committed locally without pushing.
-
-Historical documentation is archived and must not be read proactively; see [CLAUDE.md](CLAUDE.md).
+[Active documentation](docs/README.md) explains the architecture and contracts. [CLAUDE.md](CLAUDE.md) prohibits proactive access to expired documentation in docs/archive.

@@ -34,3 +34,6 @@ coverage/
 .test-results/
 playwright-report/
 *.tmp/
+
+.release-worker/
+release-artifact.tgz

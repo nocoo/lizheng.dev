@@ -2,6 +2,7 @@ import type { PageContent } from "../../packages/content/model";
 import { Brand } from "../../packages/experience/Brand";
 import { Icon } from "../../packages/experience/Icons";
 import { Preferences } from "../../packages/experience/Preferences";
+import { Version } from "../../packages/experience/Version";
 import { Markdown } from "./Markdown";
 
 export function ResumePage({ content }: { content: PageContent }) {
@@ -46,7 +47,10 @@ export function ResumePage({ content }: { content: PageContent }) {
 							{zh ? "打印 / PDF" : "Print / PDF"}
 						</button>
 						<p className="sidebar-location">
-							BEIJING, CHINA
+							<span className="location-signature" lang="en">
+								<span className="location-dot" aria-hidden="true" />
+								MADE IN BEIJING
+							</span>
 							<br />
 							39.90° N · 116.40° E
 						</p>
@@ -114,7 +118,10 @@ export function ResumePage({ content }: { content: PageContent }) {
 						</section>
 					))}
 					<footer className="resume-footer">
-						<p lang="en">{meta.copyright.replace("{year}", content.year)}</p>
+						<p lang="en">
+							{meta.copyright.replace("{year}", content.year)}
+							<Version />
+						</p>
 						<a href="#main">
 							{zh ? "回到顶部" : "Back to top"}
 							<span aria-hidden="true">↑</span>

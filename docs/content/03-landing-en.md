@@ -8,7 +8,7 @@ name: "Zheng Li"
 role: "Principal Software Engineering Manager @ Microsoft"
 eyebrow: "Hello · I'm"
 canonical: "https://lizheng.me/en/"
-location: "made in Beijing"
+location: "MADE IN BEIJING"
 copyright: "© {year} Zheng Li"
 ---
 

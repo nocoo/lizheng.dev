@@ -1,5 +1,1 @@
-gitleaks protect --staged --no-banner
-
-bun run lint
-bun run typecheck
-bun run test:coverage
+bun scripts/gates.ts pre-commit

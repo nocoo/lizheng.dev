@@ -4,16 +4,16 @@ import { parse } from "yaml";
 
 export type Locale = "en" | "zh";
 export type Surface = "resume" | "landing";
-export interface PublicLink {
+interface PublicLink {
 	label: string;
 	href: string;
 }
-export interface ContentSection {
+interface ContentSection {
 	id: string;
 	title: string;
 	tokens: Token[];
 }
-export interface ContentMeta {
+interface ContentMeta {
 	id: string;
 	surface: string;
 	locale: string;

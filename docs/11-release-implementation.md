@@ -5,7 +5,7 @@
 ## Implemented foundation
 
 - Production entry now builds the four approved React pages from the public Markdown allowlist. The legacy UI, builder, scripts and duplicate images are retired. The original photograph is retained in assets/source/portrait.jpeg outside the public build.
-- Root package.json owns the version. Both brand headers display a monospace version pill. /api/live returns status, service, surface, version, and the Cloudflare deployment ID without caching.
+- Root package.json owns the version. Both footers display a quiet version label (the user explicitly moved it away from the logo). /api/live returns status, service, surface, version, and the Cloudflare deployment ID without caching.
 - Host routing, all 12 legacy blog 301 patterns, query preservation, locale roots, Markdown endpoints, sitemaps and internal asset guards share the new Worker. Language routes with and without a slash return 200; canonical URLs retain the slash.
 - A strict content parser rejects wrong metadata identity, missing/reordered sections, incomplete jobs/degrees/achievements/patent, nested HTML and unsafe links. Markdown exports contain only the four allowlisted documents.
 - Theme storage failure handling, keyboard navigation, handheld transitions, bounded tilt, reduced motion changes and listener disposal have covered logic modules.
@@ -30,3 +30,11 @@ Cloudflare compatibility_date is 2026-09-04, the current UTC date at validation.
 The requested /su-release X+1 means 2.1.0 → 3.0.0. Follow the local command definition: package/lock, changelog, green commit, push, v3.0.0 tag, GitHub Release, Worker deployment and a CI check after five minutes. The existing CI-success → Release flow is retained; release must use the exact CI-validated commit and artifact.
 
 Before cutover, Wrangler authenticated successfully. The previous complete production version is `4fa4f704-e665-4f35-a08a-f646d5ffe2b7` (2026-07-02). If cutover regresses, restore it with `bunx wrangler rollback 4fa4f704-e665-4f35-a08a-f646d5ffe2b7`, then verify both sites and redirects. Do not rewrite main history.
+
+## First-release authorization
+
+The user explicitly approved publishing v3.0.0 before the remaining browser/performance/6DQ work is complete, then continuing that work. This changes the release sequence, not the final quality requirements. Current Chromium full-matrix checks pass, including axe (no WCAG A/AA violations), all interaction flows, no-JS and printing. WebKit is being verified; Firefox has a local hostname/proxy 502 that is being isolated. No failing browser gate is being bypassed: the existing CI did not previously include L3; it will become mandatory once the cross-browser infrastructure is verified.
+
+The user also moved version labels into both footers and requested MADE IN BEIJING with a subtle asymmetrical breathing light on both surfaces. The light animates only opacity/transform; reduced-motion gets a static glow.
+
+Husky now waits for all tasks and fails on any failed task. A separate temporary Git repository verified that seven injected commit/push failures are blocked and restored operations succeed. OSV and Knip are mandatory; system-installed Gitleaks is explicitly recognized as a binary, not an npm dependency.

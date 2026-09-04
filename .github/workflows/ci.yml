@@ -7,11 +7,44 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   quality:
-    uses: nocoo/base-ci/.github/workflows/bun-quality.yml@aec4adc1a817c56790d1698329ef9398a15a754a  # v2026.5
+    uses: nocoo/base-ci/.github/workflows/bun-quality.yml@830346a575841cee2808abab6001d0bfa8980c1a
     with:
+      bun-version: "1.4.0"
       ignore-scripts: true
+      pre-command: "bun run check:docs && bun run check:deps && bun run types:check"
       test-command: "bun run test:coverage"
+      lint-command: "bun run lint"
       typecheck-command: "bun run typecheck"
+      enable-l2: "true"
+      l2-command: "bun run test:http"
     secrets: inherit
+
+  artifact:
+    name: Verify and package Worker
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: "26"
+      - uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: "1.4.0"
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bun run check:hooks
+      - run: bun run check:budgets
+      - run: bunx wrangler deploy --dry-run --outdir .release-worker
+      - run: tar -czf release-artifact.tgz dist .release-worker
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: worker-${{ github.sha }}
+          path: release-artifact.tgz
+          if-no-files-found: error
+          retention-days: 14
