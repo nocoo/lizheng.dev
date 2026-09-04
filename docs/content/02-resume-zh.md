@@ -8,7 +8,7 @@ name: "李征"
 role: "Principal Software Engineering Manager @ Microsoft"
 tagline: "15年 Web 和移动软件开发经验\n正在为AI时代重塑自己"
 canonical: "https://lizheng.dev/zh/"
-copyright: "© {year} 李征. 保留所有权利。"
+copyright: "© {year} Zheng Li. All rights reserved."
 ---
 
 ## 职业概述

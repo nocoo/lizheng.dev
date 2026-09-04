@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { PageContent } from "../../packages/content/model";
+import { Brand } from "../../packages/experience/Brand";
 import { Icon } from "../../packages/experience/Icons";
 import { Preferences } from "../../packages/experience/Preferences";
 
@@ -41,15 +42,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 				{zh ? "跳到个人信息与链接" : "Skip to profile and links"}
 			</a>
 			<header className="landing-header">
-				<a className="landing-wordmark" href={`/${locale}/`}>
-					<span className="mark-grid" aria-hidden="true">
-						<i />
-						<i />
-						<i />
-						<i />
-					</span>
-					zheng li<span className="wordmark-dot">.</span>
-				</a>
+				<Brand locale={locale} />
 				<span className="header-edition">PERSONAL SPACE — VOL. 01</span>
 				<div className="landing-header-right">
 					<a
@@ -65,9 +58,9 @@ export function LandingPage({ content }: { content: PageContent }) {
 			</header>
 			<main className="landing-main">
 				<div className="landing-intro">
-					<div className="intro-kicker">
+					<div className="intro-kicker" lang="en">
 						<span className="tiny-square" />
-						{zh ? "PLAYER 01 / 李征" : "PLAYER 01 / ZHENG LI"}
+						PLAYER 01 / ZHENG LI
 					</div>
 					<h1>
 						{zh ? (
@@ -100,13 +93,9 @@ export function LandingPage({ content }: { content: PageContent }) {
 							</>
 						)}
 					</p>
-					<div className="intro-invitation">
+					<div className="intro-invitation" lang="en">
 						<span className="invitation-line" />
-						<span>
-							{zh
-								? "按下开始，认识一下。"
-								: "A familiar feeling. A new adventure."}
-						</span>
+						<span>A familiar feeling. A new adventure.</span>
 					</div>
 					<div className="desktop-instructions">
 						<span className="keyboard-keys" aria-hidden="true">
@@ -129,9 +118,9 @@ export function LandingPage({ content }: { content: PageContent }) {
 				</div>
 				<div className="console-scene">
 					<div className="scene-halo" />
-					<div className="orbit-label">
+					<div className="orbit-label" lang="en">
 						<span />
-						{zh ? "为下一段旅程，重新开机" : "REBUILDING FOR THE NEXT ERA"}
+						REBUILDING FOR THE NEXT ERA
 					</div>
 					<div className="console-position">
 						<div className="console-shell" data-console>
@@ -220,7 +209,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 										</nav>
 										<div className="lcd-about" aria-hidden={panel !== "about"}>
 											<PixelStar />
-											<p>{zh ? "探索永不结束。" : "STAY CURIOUS."}</p>
+											<p lang="en">STAY CURIOUS.</p>
 											<span>
 												{zh
 													? "每一个系统，都值得认真迭代。"
@@ -228,11 +217,11 @@ export function LandingPage({ content }: { content: PageContent }) {
 											</span>
 											<small>{zh ? "按 B 返回" : "PRESS B TO RETURN"}</small>
 										</div>
-										<div className="lcd-footer">
+										<div className="lcd-footer" lang="en">
 											<span>
 												{panel === "home" ? "01 / EXPLORE" : "02 / PHILOSOPHY"}
 											</span>
-											<span>{zh ? "选择 · 开启" : "SELECT · EXPLORE"}</span>
+											<span>SELECT · EXPLORE</span>
 										</div>
 									</div>
 									<div className="lcd-glass" aria-hidden="true" />
@@ -354,18 +343,14 @@ export function LandingPage({ content }: { content: PageContent }) {
 							</div>
 						</div>
 					</div>
-					<div className="console-caption">
+					<div className="console-caption" lang="en">
 						<span className="caption-dot" />
-						<p>
-							{zh
-								? "一些熟悉的按键。一个全新的开始。"
-								: "OLD-SCHOOL SOUL. NEXT-CHAPTER MIND."}
-						</p>
+						<p>OLD-SCHOOL SOUL. NEXT-CHAPTER MIND.</p>
 						<span className="caption-edition">ZL–001</span>
 					</div>
 				</div>
 			</main>
-			<footer className="landing-footer">
+			<footer className="landing-footer" lang="en">
 				<span>{meta.copyright.replace("{year}", "2026")}</span>
 				<span className="footer-location">
 					<span className="location-dot" />
@@ -373,7 +358,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 					<span className="footer-time">UTC +08:00</span>
 				</span>
 				<a href="https://lizheng.blog/">
-					{zh ? "故事还在继续" : "The story continues"}
+					The story continues
 					<Icon name="arrow" />
 				</a>
 			</footer>

@@ -20,5 +20,6 @@ These four files, including their frontmatter, are the future publishing source 
 - Preserve all facts and complete paragraphs; do not replace this corpus with summaries.
 - Keep the two languages independent where the original wording differs. Flag inconsistent years and claims in [the content contract](../02-content-contract.md).
 - A new UI may change presentation and interaction labels; it may not invent employers, dates, contacts, projects, metrics, or achievements.
+- User-approved presentation edit (2026-09-05): copyright remains English in both locales; the landing location signature is “made in Beijing” in both. Chinese frontmatter reflects this preference; the extracted body prose is unchanged.
 - The original photo is identity material. New crops, dithering, responsive formats, and OG images are newly produced assets; legacy CSS and illustrated decorations are not carried forward.
 - Only the four explicit entries may produce public Markdown endpoints, llms.txt entries, or structured data. Never glob all docs into a site bundle.

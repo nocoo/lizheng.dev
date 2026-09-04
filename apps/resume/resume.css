@@ -33,17 +33,6 @@ body {
 	align-items: center;
 	justify-content: space-between;
 }
-.resume-wordmark {
-	font-family: var(--serif);
-	font-size: 40px;
-	font-weight: 550;
-	letter-spacing: -3px;
-	line-height: 1;
-	text-decoration: none;
-}
-.resume-wordmark span {
-	color: var(--accent);
-}
 .resume-topbar-right {
 	display: flex;
 	gap: 40px;
@@ -195,7 +184,7 @@ body {
 	width: 112px;
 	height: 132px;
 	object-fit: cover;
-	filter: saturate(0.25);
+	filter: saturate(0.9) contrast(0.98);
 }
 .portrait-caption {
 	display: block;
@@ -402,9 +391,6 @@ html[lang="zh-CN"] .identity-row h1 {
 	.resume-topbar {
 		margin: 0 24px;
 		padding: 21px 0;
-	}
-	.resume-wordmark {
-		font-size: 34px;
 	}
 	.resume-topbar-right {
 		gap: 16px;

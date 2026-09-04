@@ -50,7 +50,7 @@ Both roots currently show a transient Redirecting... document and select /zh/ fo
 
 All four pages expose a title, description, canonical URL, and en/zh/x-default alternate links. x-default targets the English page. Root canonicals point to the respective domain root. Exact page titles and descriptions are preserved in each public file's frontmatter.
 
-The landing footer replaces {year} at runtime. On the extraction date this means © 2026 Zheng Li / © 2026 李征. The résumé script writes “© 2026 Zheng Li. All rights reserved.” in both languages. The Chinese data contains “© {year} 李征. 保留所有权利。”; the corpus keeps that intended localized value and records the existing rendering defect here.
+The landing footer replaces {year} at runtime. On the extraction date this means © 2026 Zheng Li / © 2026 李征. The résumé script writes “© 2026 Zheng Li. All rights reserved.” in both languages. The extracted Chinese data contained “© {year} 李征. 保留所有权利。”. After design review on 2026-09-05, the user requested English decorative text in Chinese mode: both Chinese content entries now use English copyright, and the landing location signature is “made in Beijing”. This is an approved presentation edit after extraction.
 
 The live HTTP capture does not execute browser scripts. Footer and theme runtime behavior above was verified by reading the current scripts; it is not claimed as a browser screenshot observation.
 

@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Zheng Li</title><rect width="64" height="64" rx="14" fill="#303d2f"/><path d="M15 21h22v5L21 43h16v5H14v-5l16-17H15Zm28-6h6v33h-6Z" fill="#dfdfcf"/><path d="M52 42h6v6h-6Z" fill="#cf7754"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Zheng Li</title>
+  <style>
+    .background { fill: #f0f0e9; }
+    .mark { fill: #bf5c3c; }
+    @media (prefers-color-scheme: dark) {
+      .background { fill: #1e2824; }
+      .mark { fill: #e79670; }
+    }
+  </style>
+  <rect class="background" width="64" height="64" rx="14" />
+  <g class="mark" transform="rotate(-5 32 32)">
+    <rect x="16" y="16" width="13" height="13" />
+    <rect x="35" y="16" width="13" height="13" />
+    <rect x="16" y="35" width="13" height="13" />
+    <rect x="35" y="35" width="13" height="13" />
+  </g>
+</svg>

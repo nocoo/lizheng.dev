@@ -1,4 +1,5 @@
 import type { PageContent } from "../../packages/content/model";
+import { Brand } from "../../packages/experience/Brand";
 import { Icon } from "../../packages/experience/Icons";
 import { Preferences } from "../../packages/experience/Preferences";
 import { Markdown } from "./Markdown";
@@ -12,13 +13,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 				{zh ? "跳到正文" : "Skip to content"}
 			</a>
 			<header className="resume-topbar">
-				<a
-					className="resume-wordmark"
-					href={`/${locale}/`}
-					aria-label={meta.name}
-				>
-					zl<span>.</span>
-				</a>
+				<Brand locale={locale} />
 				<div className="resume-topbar-right">
 					<a
 						className="personal-link"
@@ -34,8 +29,8 @@ export function ResumePage({ content }: { content: PageContent }) {
 			<main id="main" className="resume-layout">
 				<aside className="resume-sidebar">
 					<div className="sidebar-inner">
-						<span className="index-label">
-							{zh ? "个人履历" : "CURRICULUM VITAE"}
+						<span className="index-label" lang="en">
+							CURRICULUM VITAE
 						</span>
 						<div className="sidebar-rule" />
 						<nav aria-label={zh ? "章节导航" : "On this page"}>
@@ -59,11 +54,9 @@ export function ResumePage({ content }: { content: PageContent }) {
 				</aside>
 				<div className="resume-document">
 					<div className="resume-hero">
-						<p className="resume-eyebrow">
+						<p className="resume-eyebrow" lang="en">
 							<span />
-							{zh
-								? "工程 · 领导力 · 持续探索"
-								: "ENGINEERING · LEADERSHIP · CURIOSITY"}
+							ENGINEERING · LEADERSHIP · CURIOSITY
 						</p>
 						<div className="identity-row">
 							<div>
@@ -121,7 +114,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 						</section>
 					))}
 					<footer className="resume-footer">
-						<p>{meta.copyright.replace("{year}", "2026")}</p>
+						<p lang="en">{meta.copyright.replace("{year}", "2026")}</p>
 						<a href="#main">
 							{zh ? "回到顶部" : "Back to top"}
 							<span aria-hidden="true">↑</span>

@@ -54,29 +54,6 @@ body::before {
 	align-items: center;
 	gap: 32px;
 }
-.landing-wordmark {
-	display: flex;
-	align-items: center;
-	font-size: 23px;
-	font-weight: 600;
-	letter-spacing: -1px;
-	text-decoration: none;
-}
-.wordmark-dot {
-	color: var(--accent);
-}
-.mark-grid {
-	display: grid;
-	grid-template-columns: 5px 5px;
-	gap: 3px;
-	margin-right: 13px;
-	transform: rotate(-5deg);
-}
-.mark-grid i {
-	width: 5px;
-	height: 5px;
-	background: var(--accent);
-}
 .header-edition {
 	font-family: var(--mono);
 	color: var(--muted);
@@ -1124,18 +1101,6 @@ html[lang="zh-CN"] .intro-description {
 	.landing-header {
 		margin: 0 22px;
 		padding: 23px 0;
-	}
-	.landing-wordmark {
-		font-size: 20px;
-	}
-	.mark-grid {
-		margin-right: 9px;
-		grid-template-columns: 4px 4px;
-		gap: 2px;
-	}
-	.mark-grid i {
-		width: 4px;
-		height: 4px;
 	}
 	.resume-link {
 		display: none;

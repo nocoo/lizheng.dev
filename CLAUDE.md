@@ -20,6 +20,8 @@ Do not copy the previous UI, CSS, components, template engine, browser scripts, 
 - The four publishable documents listed in docs/content/README.md are the content source of truth. Engineering documents and archives must never be bundled into the public site or agent exports.
 - Preserve facts, links, both languages, and all six résumé sections. Record discrepancies instead of silently reconciling years, titles, or achievements.
 - lizheng.dev: formal, readable résumé; English/Chinese × light/dark; conservative layout.
+- Keep the résumé portrait naturally colored; only mild saturation/contrast softening, never near-monochrome. Decorative labels, copyright, and location signatures stay English in Chinese mode; localize substantive content and functional guidance.
+- Both surfaces share the landing page's orange four-square mark and Space Grotesk wordmark. The favicon follows that mark and palette; keep the résumé's reading typography otherwise independent.
 - lizheng.me: high quality, tactile retro handheld portfolio; original branding; designed screen, physical controls, typography, imagery, and motion. Support desktop and mobile.
 - Semantic HTML, keyboard access, SEO, agent-readable content, and progressive enhancement must support the visual design. Do not replace the designed experience with a generic accessibility or crawler page.
 

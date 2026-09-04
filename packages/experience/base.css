@@ -46,6 +46,49 @@ button {
 .skip-link:focus {
 	top: 16px;
 }
+.brand-wordmark {
+	--brand-accent: #bf5c3c;
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	font-family: "Space Grotesk Variable", sans-serif;
+	font-size: 23px;
+	font-weight: 600;
+	letter-spacing: -1px;
+	text-decoration: none;
+}
+[data-theme="dark"] .brand-wordmark {
+	--brand-accent: #e79670;
+}
+.brand-dot {
+	color: var(--brand-accent);
+}
+.brand-grid {
+	display: grid;
+	grid-template-columns: 5px 5px;
+	gap: 3px;
+	margin-right: 13px;
+	transform: rotate(-5deg);
+}
+.brand-grid i {
+	width: 5px;
+	height: 5px;
+	background: var(--brand-accent);
+}
+@media (max-width: 480px) {
+	.brand-wordmark {
+		font-size: 20px;
+	}
+	.brand-grid {
+		margin-right: 9px;
+		grid-template-columns: 4px 4px;
+		gap: 2px;
+	}
+	.brand-grid i {
+		width: 4px;
+		height: 4px;
+	}
+}
 .preferences {
 	display: flex;
 	align-items: center;
