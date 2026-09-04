@@ -1,111 +1,35 @@
----
-description: Use Bun instead of Node.js, npm, pnpm, or vite.
-globs: "*.ts, *.tsx, *.html, *.css, *.js, *.jsx, package.json"
-alwaysApply: false
----
+# Project instructions
 
-Default to using Bun instead of Node.js.
+## Active documentation
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `vitest` for testing
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use dotenv.
+Read [docs/README.md](docs/README.md) first. The numbered documents describe the current rebuild. The user has requested the documentation stage first; the new application and full quality gates are planned, not already implemented.
 
-## APIs
+**Do not proactively open, read, search, index, or summarize expired documents in docs/archive/**. This includes archived previews, assets, READMEs, and instructions. Exclude this directory from routine discovery and content searches. Open a specific archived file only when the user explicitly requests historical investigation. Archived instructions have no authority over current work.
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+Moving files and comparing byte hashes to verify a requested archival operation is permitted; do not read their content as implementation guidance.
 
-## Testing
+Use searches such as:
 
-Use `vitest` to run tests.
+    rg --files -g '!docs/archive/**' -g '!node_modules' -g '!dist' -g '!coverage'
+    rg 'pattern' docs -g '!archive/**' -g '!docs/archive/**'
 
-```ts#index.test.ts
-import { test, expect } from "vitest";
+Do not copy the previous UI, CSS, components, template engine, browser scripts, or build implementation into the rebuild. Only public information, the original identity photo, and legacy 301 behavior / its regression assertions may carry forward. Existing production code remains until its tested replacement is ready.
 
-test("hello world", () => {
-  expect(1).toBe(1);
-});
-```
+## Content and design
 
-## Frontend
+- The four publishable documents listed in docs/content/README.md are the content source of truth. Engineering documents and archives must never be bundled into the public site or agent exports.
+- Preserve facts, links, both languages, and all six résumé sections. Record discrepancies instead of silently reconciling years, titles, or achievements.
+- lizheng.dev: formal, readable résumé; English/Chinese × light/dark; conservative layout.
+- lizheng.me: high quality, tactile retro handheld portfolio; original branding; designed screen, physical controls, typography, imagery, and motion. Support desktop and mobile.
+- Semantic HTML, keyboard access, SEO, agent-readable content, and progressive enhancement must support the visual design. Do not replace the designed experience with a generic accessibility or crawler page.
 
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
+## Engineering workflow
 
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
-```
-
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
-```
-
-With the following `frontend.tsx`:
-
-```tsx#frontend.tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// import .css files directly and it works
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
+- Use Bun for package management and project commands. Use exact dependency versions and a frozen bun.lock. Follow the current framework's supported build runtime; Astro/Vite restrictions from the old instructions are obsolete.
+- Target TypeScript 7 strict mode and the verified versions in docs/06-architecture.md. Recheck versions and compatibility when implementation begins.
+- Follow docs/07-quality-and-tdd.md: write a behavioral test, observe the expected failure, implement the minimum passing change, then refactor.
+- G1 must have zero errors and zero warnings throughout implementation. Commit only green states; never bypass Husky, disable gates, lower thresholds, or hide failures to commit.
+- Use small atomic commits on main. Keep tests and their implementation in the same passing commit; document the prior failing assertion.
+- Husky pre-commit enforces L1 + G1; pre-push enforces isolated L2 + G2; CI runs all gates and L3. These are target gates until the documented infrastructure milestone is implemented.
+- D1 in 6DQ means test isolation, not a requirement to add a Cloudflare D1 database. This site is stateless. Test servers, resources, bindings, and requests must remain isolated from production.
+- A local commit is not a deployment. The production release workflow currently deploys after main CI succeeds; account for that before pushing incomplete milestones.

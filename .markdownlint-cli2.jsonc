@@ -1,0 +1,10 @@
+{
+	"globs": ["README.md", "CLAUDE.md", "docs/*.md", "docs/content/*.md"],
+	"ignores": ["docs/archive/**"],
+	"config": {
+		// Preserve complete source paragraphs without an arbitrary line length.
+		"MD013": false,
+		// The source résumé repeats the same university for its two degrees.
+		"MD024": false
+	}
+}
