@@ -19,7 +19,19 @@ export default defineConfig({
 	},
 	projects: [
 		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
-		{ name: "firefox", use: { ...devices["Desktop Firefox"] } },
+		{
+			name: "firefox",
+			use: {
+				...devices["Desktop Firefox"],
+				launchOptions: {
+					firefoxUserPrefs: {
+						"network.proxy.type": 0,
+						"network.dns.localDomains":
+							"resume.lizheng-test.localhost,landing.lizheng-test.localhost",
+					},
+				},
+			},
+		},
 		{ name: "webkit", use: { ...devices["Desktop Safari"] } },
 	],
 	webServer: {
