@@ -16,12 +16,14 @@
 	},
 	"routes": [
 		{
-			"pattern": "lizheng.dev/*",
-			"zone_name": "lizheng.dev"
+			"pattern": "lizheng.dev",
+			"zone_name": "lizheng.dev",
+			"custom_domain": true
 		},
 		{
-			"pattern": "www.lizheng.dev/*",
-			"zone_name": "lizheng.dev"
+			"pattern": "www.lizheng.dev",
+			"zone_name": "lizheng.dev",
+			"custom_domain": true
 		},
 		{
 			"pattern": "lizheng.me/*",
