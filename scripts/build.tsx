@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { build, type Manifest } from "vite";
@@ -6,7 +6,8 @@ import { loadContent, type Surface } from "../packages/content/model";
 import { renderPage } from "../packages/publishing/render";
 import { metadataFile } from "../packages/publishing/routes";
 
-const output = resolve(".design-dist");
+const destination = resolve(process.argv[2] ?? "dist");
+const output = `${destination}.tmp`;
 await rm(output, { recursive: true, force: true });
 await build({
 	configFile: false,
@@ -61,6 +62,8 @@ for (const surface of ["resume", "landing"] as Surface[]) {
 	}
 }
 await rm(`${output}/.vite`, { recursive: true });
+await rm(destination, { recursive: true, force: true });
+await rename(output, destination);
 console.info(
-	"Built four complete pages and public Markdown into .design-dist. Production dist is unchanged.",
+	`Built four complete pages and public Markdown into ${destination}`,
 );

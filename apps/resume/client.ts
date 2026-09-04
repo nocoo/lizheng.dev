@@ -1,7 +1,7 @@
-import "@fontsource-variable/newsreader";
-import "@fontsource-variable/source-sans-3";
-import "@fontsource-variable/geist-mono";
-import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/newsreader/latin.css";
+import "@fontsource-variable/source-sans-3/latin.css";
+import "@fontsource-variable/geist-mono/latin.css";
+import "@fontsource-variable/space-grotesk/latin.css";
 import "../../packages/experience/base.css";
 import "./resume.css";
 import { setupPreferences } from "../../packages/experience/theme";

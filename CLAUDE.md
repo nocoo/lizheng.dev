@@ -2,7 +2,7 @@
 
 ## Active documentation
 
-Read [docs/README.md](docs/README.md) first. The numbered documents describe the current rebuild. Implementation is now authorized. The latest user instruction is **design first, then tighten quality**: rapidly implement both complete visual experiences and local HTTPS previews, iterate with the user, then lock behavior, coverage, and the full 6DQ gates after visual approval. See docs/10-design-preview.md for current status.
+Read [docs/README.md](docs/README.md) first. The user has approved both designs and authorized full implementation, 6DQ hardening, a major release, push to main, and Cloudflare Worker deployment. Require at least 95% coverage in every logic metric, zero lint warnings/errors, maintained versions and /api/live on both surfaces. Preserve and strengthen the existing CI/CD. Update all dependencies to current stable versions and remove unused dependencies before release.
 
 **Do not proactively open, read, search, index, or summarize expired documents in docs/archive/**. This includes archived previews, assets, READMEs, and instructions. Exclude this directory from routine discovery and content searches. Open a specific archived file only when the user explicitly requests historical investigation. Archived instructions have no authority over current work.
 
@@ -29,9 +29,9 @@ Do not copy the previous UI, CSS, components, template engine, browser scripts, 
 
 - Use Bun for package management and project commands. Use exact dependency versions and a frozen bun.lock. Follow the current framework's supported build runtime; Astro/Vite restrictions from the old instructions are obsolete.
 - Target TypeScript 7 strict mode and the verified versions in docs/06-architecture.md. Recheck versions and compatibility when implementation begins.
-- During the current visual iteration, retain basic lint, strict types, secrets checks, and existing regression tests. Do not freeze draft layouts with exhaustive snapshots or coverage thresholds. The full TDD/6DQ sequence in docs/07-quality-and-tdd.md resumes after the user approves the design.
+- Follow Red/Green/Refactor for behavior changes now that the design is approved. Lock the approved visuals with browser regression checks.
 - G1 must have zero errors and zero warnings throughout implementation. Commit only green states; never bypass Husky, disable gates, lower thresholds, or hide failures to commit.
 - Use small atomic commits on main. Keep tests and their implementation in the same passing commit; document the prior failing assertion.
-- Husky pre-commit enforces L1 + G1; pre-push enforces isolated L2 + G2; CI runs all gates and L3. These are target gates until the documented infrastructure milestone is implemented.
+- Husky pre-commit enforces L1 + G1; pre-push enforces isolated L2 + G2; CI runs all gates and L3. All gates must be active before release.
 - D1 in 6DQ means test isolation, not a requirement to add a Cloudflare D1 database. This site is stateless. Test servers, resources, bindings, and requests must remain isolated from production.
 - A local commit is not a deployment. The production release workflow currently deploys after main CI succeeds; account for that before pushing incomplete milestones.

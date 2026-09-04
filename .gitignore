@@ -28,3 +28,9 @@ coverage/
 !.dev.vars.example
 .env*
 !.env.example
+
+# Isolated test output
+.test-dist/
+.test-results/
+playwright-report/
+*.tmp/

@@ -1,6 +1,12 @@
 import { useState } from "react";
 import type { PageContent } from "../../packages/content/model";
 import { Brand } from "../../packages/experience/Brand";
+import {
+	activate,
+	type HandheldAction,
+	initialHandheld,
+	transition,
+} from "../../packages/experience/handheld";
 import { Icon } from "../../packages/experience/Icons";
 import { Preferences } from "../../packages/experience/Preferences";
 
@@ -20,22 +26,14 @@ function PixelStar({ className = "" }: { className?: string }) {
 export function LandingPage({ content }: { content: PageContent }) {
 	const { locale, meta, links, intro } = content;
 	const zh = locale === "zh";
-	const [selected, setSelected] = useState(0);
-	const [panel, setPanel] = useState<"home" | "about">("home");
-	const [boot, setBoot] = useState(0);
-	const move = (direction: number) => {
-		setPanel("home");
-		setSelected(
-			(current) => (current + direction + links.length) % links.length,
-		);
-	};
-	const openSelected = () => {
-		const anchor = document.querySelector<HTMLAnchorElement>(
-			`[data-screen-link="${selected}"]`,
-		);
-		if (panel === "about") setPanel("home");
-		else anchor?.click();
-	};
+	const [state, setState] = useState(initialHandheld);
+	const { selected, panel, boot } = state;
+	const dispatch = (action: HandheldAction) =>
+		setState((current) => transition(current, action, links.length));
+	const move = (delta: number) => dispatch({ type: "move", delta });
+	const setSelected = (index: number) => dispatch({ type: "focus", index });
+	const openSelected = () => activate(state, () => dispatch({ type: "back" }));
+
 	return (
 		<>
 			<a className="skip-link" href="#screen">
@@ -247,11 +245,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 											type="button"
 											className="dpad-left"
 											aria-label={zh ? "上一个页面" : "Previous screen"}
-											onClick={() =>
-												setPanel((current) =>
-													current === "home" ? "about" : "home",
-												)
-											}
+											onClick={() => dispatch({ type: "select" })}
 										>
 											<span />
 										</button>
@@ -262,11 +256,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 											type="button"
 											className="dpad-right"
 											aria-label={zh ? "下一个页面" : "Next screen"}
-											onClick={() =>
-												setPanel((current) =>
-													current === "home" ? "about" : "home",
-												)
-											}
+											onClick={() => dispatch({ type: "select" })}
 										>
 											<span />
 										</button>
@@ -286,7 +276,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 											type="button"
 											className="button-b"
 											aria-label={zh ? "B：返回" : "B: Back"}
-											onClick={() => setPanel("home")}
+											onClick={() => dispatch({ type: "back" })}
 										/>
 										<span>B</span>
 									</div>
@@ -310,11 +300,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 										aria-label={
 											zh ? "Select：切换屏幕" : "Select: Switch screen"
 										}
-										onClick={() =>
-											setPanel((current) =>
-												current === "home" ? "about" : "home",
-											)
-										}
+										onClick={() => dispatch({ type: "select" })}
 									/>
 									<span>SELECT</span>
 								</div>
@@ -324,11 +310,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 										aria-label={
 											zh ? "Start：重新开始" : "Start: Restart presentation"
 										}
-										onClick={() => {
-											setPanel("home");
-											setSelected(0);
-											setBoot((current) => current + 1);
-										}}
+										onClick={() => dispatch({ type: "start" })}
 									/>
 									<span>START</span>
 								</div>
@@ -351,7 +333,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 				</div>
 			</main>
 			<footer className="landing-footer" lang="en">
-				<span>{meta.copyright.replace("{year}", "2026")}</span>
+				<span>{meta.copyright.replace("{year}", content.year)}</span>
 				<span className="footer-location">
 					<span className="location-dot" />
 					{meta.location}

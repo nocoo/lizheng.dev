@@ -1,0 +1,36 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "lizheng-dev-l2-test",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-09-04",
+	"compatibility_flags": ["nodejs_compat"],
+	"workers_dev": false,
+	"preview_urls": false,
+	"vars": {
+		"ENVIRONMENT": "test",
+		"LANDING_HOST": "landing.lizheng-test.localhost"
+	},
+	"assets": {
+		"directory": ".test-dist/l2",
+		"binding": "ASSETS",
+		"html_handling": "none",
+		"not_found_handling": "none",
+		"run_worker_first": true
+	},
+	"env": {
+		"l3": {
+			"name": "lizheng-dev-l3-test",
+			"vars": {
+				"ENVIRONMENT": "test",
+				"LANDING_HOST": "landing.lizheng-test.localhost"
+			},
+			"assets": {
+				"directory": ".test-dist/l3",
+				"binding": "ASSETS",
+				"html_handling": "none",
+				"not_found_handling": "none",
+				"run_worker_first": true
+			}
+		}
+	}
+}

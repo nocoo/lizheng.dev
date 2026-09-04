@@ -1,6 +1,6 @@
 # Active documentation
 
-Baseline date: 2026-09-05. Status: design-first implementation and local preview. The latest user instruction postpones exhaustive 6DQ/coverage gates until visual approval.
+Baseline date: 2026-09-05. Status: both designs approved; full 6DQ hardening and major release authorized. See 11 for current evidence.
 
 ## Reading order
 
@@ -17,6 +17,8 @@ Baseline date: 2026-09-05. Status: design-first implementation and local preview
 | [08 — Delivery plan](08-delivery-plan.md) | Atomic main commits, acceptance checkpoints, cutover and rollback |
 | [09 — Documentation verification](09-documentation-verification.md) | Evidence for this stage and implementation items still pending |
 | [10 — Design preview](10-design-preview.md) | Current iteration phase, local HTTPS entry points, implementation and review evidence |
+
+| [11 — Release implementation](11-release-implementation.md) | Current quality evidence, release plan and rollback |
 
 ## Authority and status
 

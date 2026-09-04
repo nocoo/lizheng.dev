@@ -30,6 +30,8 @@ export function Preferences({ locale }: { locale: Locale }) {
 				className="theme-toggle"
 				type="button"
 				data-theme-toggle
+				aria-pressed={false}
+				suppressHydrationWarning
 				aria-label={
 					locale === "zh" ? "切换浅色与深色主题" : "Toggle light and dark theme"
 				}

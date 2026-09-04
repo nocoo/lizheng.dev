@@ -23,10 +23,14 @@ export function legacyRedirect(surface: Surface, url: URL): string | undefined {
 		return `https://lizheng.blog${url.pathname}${url.search}`;
 	return undefined;
 }
-export function selectSurface(host: string): Surface {
-	return ["lizheng.me", "www.lizheng.me", "lizheng-me.dev.hexly.ai"].includes(
-		host.split(":")[0] ?? "",
-	)
+export function selectSurface(host: string, landingHost?: string): Surface {
+	return [
+		"lizheng.me",
+		"www.lizheng.me",
+		"lizheng-me.dev.hexly.ai",
+		landingHost,
+		landingHost ? `www.${landingHost}` : undefined,
+	].includes(host.toLowerCase().split(":")[0] as string)
 		? "landing"
 		: "resume";
 }
@@ -47,7 +51,7 @@ export function metadataFile(
 	if (path === "/llms.txt")
 		return {
 			type: "text/plain",
-			body: `# Zheng Li\n\n${surface === "resume" ? "Professional résumé" : "Personal portfolio"}. Engineering leader at Microsoft.\n\n- [English](${origin}/en.md)\n- [中文](${origin}/zh.md)\n`,
+			body: `# Zheng Li\n\n${surface === "resume" ? "Professional résumé" : "Personal portfolio"}. Engineering leader at Microsoft.\n\n- [English](${origin}/en/content.md)\n- [中文](${origin}/zh/content.md)\n`,
 		};
 	if (path === "/sitemap-index.xml")
 		return {

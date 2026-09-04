@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import worker, { type Env } from "../worker/index";
+import worker from "../worker/index";
 
 // Minimal ASSETS mock: records every URL the worker forwards to the asset store,
 // and returns a 200 so we can assert routing decisions without real files.
@@ -71,39 +71,6 @@ describe("cover host — 301 legacy blog redirects", () => {
 	});
 });
 
-describe("cover host — HTML route rewrite to /cover/*", () => {
-	test("/ rewrites to /cover/", async () => {
-		const { res, calls } = await call("https://lizheng.me/");
-		expect(res.status).toBe(200);
-		expect(calls[0]).toBe("https://lizheng.me/cover/");
-	});
-
-	test("/en/ rewrites to /cover/en/", async () => {
-		const { calls } = await call("https://lizheng.me/en/");
-		expect(calls[0]).toBe("https://lizheng.me/cover/en/");
-	});
-
-	test("/en (no trailing slash) normalizes to /cover/en/", async () => {
-		const { calls } = await call("https://lizheng.me/en");
-		expect(calls[0]).toBe("https://lizheng.me/cover/en/");
-	});
-
-	test("/zh/ rewrites to /cover/zh/", async () => {
-		const { calls } = await call("https://lizheng.me/zh/");
-		expect(calls[0]).toBe("https://lizheng.me/cover/zh/");
-	});
-
-	test("/zh (no trailing slash) normalizes to /cover/zh/", async () => {
-		const { calls } = await call("https://lizheng.me/zh");
-		expect(calls[0]).toBe("https://lizheng.me/cover/zh/");
-	});
-
-	test("www subdomain is also treated as a cover host", async () => {
-		const { calls } = await call("https://www.lizheng.me/en/");
-		expect(calls[0]).toBe("https://www.lizheng.me/cover/en/");
-	});
-});
-
 describe("cover host — 302 fallback for unknown paths", () => {
 	test("unknown path defaults to /en/", async () => {
 		const { res } = await call("https://lizheng.me/random-thing");
@@ -117,25 +84,5 @@ describe("cover host — 302 fallback for unknown paths", () => {
 		});
 		expect(res.status).toBe(302);
 		expect(res.headers.get("location")).toBe("https://lizheng.me/zh/");
-	});
-});
-
-describe("cover host — static asset passthrough", () => {
-	test("file with extension passes through unchanged", async () => {
-		const { calls } = await call("https://lizheng.me/css/style.css");
-		expect(calls[0]).toBe("https://lizheng.me/css/style.css");
-	});
-});
-
-describe("non-cover host (lizheng.dev)", () => {
-	test("request passes straight to assets with no rewrite", async () => {
-		const { calls } = await call("https://lizheng.dev/en/");
-		expect(calls[0]).toBe("https://lizheng.dev/en/");
-	});
-
-	test("unknown path is NOT redirected (no 302 fallback off cover host)", async () => {
-		const { res, calls } = await call("https://lizheng.dev/random-thing");
-		expect(calls[0]).toBe("https://lizheng.dev/random-thing");
-		expect(res.status).toBe(200);
 	});
 });

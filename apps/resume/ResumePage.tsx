@@ -114,7 +114,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 						</section>
 					))}
 					<footer className="resume-footer">
-						<p lang="en">{meta.copyright.replace("{year}", "2026")}</p>
+						<p lang="en">{meta.copyright.replace("{year}", content.year)}</p>
 						<a href="#main">
 							{zh ? "回到顶部" : "Back to top"}
 							<span aria-hidden="true">↑</span>
