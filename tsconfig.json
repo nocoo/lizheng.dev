@@ -3,7 +3,9 @@
 		"target": "ESNext",
 		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"types": ["bun-types", "@cloudflare/workers-types"],
+		"jsx": "react-jsx",
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"types": ["bun-types", "@cloudflare/workers-types", "vite/client"],
 		"strict": true,
 		"noEmit": true,
 		"skipLibCheck": true,
@@ -12,6 +14,15 @@
 		"esModuleInterop": true,
 		"resolveJsonModule": true
 	},
-	"include": ["src/**/*", "tests/**/*", "worker/**/*", "*.js", "*.ts"],
+	"include": [
+		"apps/**/*",
+		"packages/**/*",
+		"scripts/**/*.ts",
+		"scripts/**/*.tsx",
+		"tests/**/*",
+		"worker/**/*",
+		"*.js",
+		"*.ts"
+	],
 	"exclude": ["node_modules", "dist"]
 }

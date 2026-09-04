@@ -19,6 +19,8 @@ node_modules/
 # Build output
 dist/
 coverage/
+.design-dist/
+.design-review/
 
 # wrangler files
 .wrangler

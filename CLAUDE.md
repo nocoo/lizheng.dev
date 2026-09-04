@@ -2,7 +2,7 @@
 
 ## Active documentation
 
-Read [docs/README.md](docs/README.md) first. The numbered documents describe the current rebuild. The user has requested the documentation stage first; the new application and full quality gates are planned, not already implemented.
+Read [docs/README.md](docs/README.md) first. The numbered documents describe the current rebuild. Implementation is now authorized. The latest user instruction is **design first, then tighten quality**: rapidly implement both complete visual experiences and local HTTPS previews, iterate with the user, then lock behavior, coverage, and the full 6DQ gates after visual approval. See docs/10-design-preview.md for current status.
 
 **Do not proactively open, read, search, index, or summarize expired documents in docs/archive/**. This includes archived previews, assets, READMEs, and instructions. Exclude this directory from routine discovery and content searches. Open a specific archived file only when the user explicitly requests historical investigation. Archived instructions have no authority over current work.
 
@@ -27,7 +27,7 @@ Do not copy the previous UI, CSS, components, template engine, browser scripts, 
 
 - Use Bun for package management and project commands. Use exact dependency versions and a frozen bun.lock. Follow the current framework's supported build runtime; Astro/Vite restrictions from the old instructions are obsolete.
 - Target TypeScript 7 strict mode and the verified versions in docs/06-architecture.md. Recheck versions and compatibility when implementation begins.
-- Follow docs/07-quality-and-tdd.md: write a behavioral test, observe the expected failure, implement the minimum passing change, then refactor.
+- During the current visual iteration, retain basic lint, strict types, secrets checks, and existing regression tests. Do not freeze draft layouts with exhaustive snapshots or coverage thresholds. The full TDD/6DQ sequence in docs/07-quality-and-tdd.md resumes after the user approves the design.
 - G1 must have zero errors and zero warnings throughout implementation. Commit only green states; never bypass Husky, disable gates, lower thresholds, or hide failures to commit.
 - Use small atomic commits on main. Keep tests and their implementation in the same passing commit; document the prior failing assertion.
 - Husky pre-commit enforces L1 + G1; pre-push enforces isolated L2 + G2; CI runs all gates and L3. These are target gates until the documented infrastructure milestone is implemented.
