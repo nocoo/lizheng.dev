@@ -40,7 +40,7 @@ Husky pre-commit waits for staged secrets, G1, L1 and build. Pre-push waits for 
 
 ## Browser and performance artifacts
 
-Sixteen Chromium full-page baseline images in tests/browser/snapshots/darwin cover both sites, languages, themes and viewports. A subsequent comparison run passed all 21 Chromium tests without updating snapshots. Only the dynamic footer version is masked. Stable snapshots pause decoration; ordinary behavioral/performance checks retain normal motion. CI uses macos-26 arm64 to match the reviewed font rasterization. Linux is independently used for HTTP, static/unit/security and production artifact jobs.
+Sixteen Chromium full-page baseline images in tests/browser/snapshots/darwin cover both sites, languages, themes and viewports. A subsequent comparison run passed all 21 Chromium tests without updating snapshots. Only the dynamic footer version is masked. Stable snapshots pause decoration; ordinary behavioral/performance checks retain normal motion. CI uses macos-26 arm64. Its system CJK font revision differs from local macOS, so reviewed CI variants are stored in darwin-ci; screenshot thresholds remain unchanged. Explicit loopback host entries avoid intermittent WebKit DNS failures. Linux is independently used for HTTP, static/unit/security and production artifact jobs.
 
 CI uploads screenshot diffs, failed-run trace/video, axe results and performance raw samples. The browser job is mandatory before production artifact creation. Firefox explicitly bypasses proxies for its loopback test hostnames. Development remains on 7046; L2 and L3 use 17046 and 27046 with their own assets and temporary state. External navigation is intercepted; redirects are never followed to the blog in tests.
 
@@ -68,3 +68,5 @@ Before v3 cutover, the previous complete deployment was 4fa4f704-e665-4f35-a08a-
 ## Scope of evidence
 
 Browser and touch checks use automated desktop engines and emulated viewports. Physical iOS/Android devices and real-user Web Vitals are not claimed as verified. There is no database or external write path. The two local Caddy HTTPS previews and their live endpoints also pass with the trusted local mkcert CA.
+
+The v3.0.1 CI correctly blocked deployment on eight platform-font snapshot differences and ten WebKit hostname-resolution failures. These were reproduced/reviewed and addressed with separate CI font baselines and explicit test-only loopback mappings. The v3.0.2 follow-up also adds seven local-development/HMR regression checks (see 12). Its CI and deployment must be verified before declaring completion.

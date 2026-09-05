@@ -13,6 +13,7 @@ bun run gate:push
 bunx playwright install chromium firefox webkit
 bun run test:browser
 bun run test:performance
+bun run test:development
 ```
 
 Local Caddy previews use 127.0.0.1:7046:
@@ -25,3 +26,5 @@ L2 and L3 use isolated workerd configurations, ports 17046/27046, and separate t
 The existing GitHub CI → Release pipeline is retained. Successful main CI uploads a verified Worker/assets artifact; Release deploys that exact artifact to Cloudflare and verifies all four public hostnames, versions, languages and legacy redirects. package.json is the version source; the UI footer and /api/live consume it.
 
 [Active documentation](docs/README.md) explains the architecture and contracts. [CLAUDE.md](CLAUDE.md) prohibits proactive access to expired documentation in docs/archive.
+
+[Local development behavior](docs/12-local-development.md) describes first-paint styles, React/CSS hot updates and content refresh tests.

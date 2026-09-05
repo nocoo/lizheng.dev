@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.2] - 2026-09-05
+
+- Eliminate unstyled local refreshes by loading preview CSS with the initial HTML; warm Vite/React entry modules.
+- Preserve CSS/React hot-edit state and refresh public Markdown and server-rendered résumé templates, retaining theme and reading position.
+- Add seven isolated development regressions to CI; use reviewed runner-specific CJK snapshots and explicit loopback host mappings for WebKit.
+
 ## [3.0.1] - 2026-09-05
 
 - Provision both résumé hosts as Cloudflare Custom Domains, including the previously missing www DNS record and managed certificate.

@@ -18,6 +18,7 @@ Baseline date: 2026-09-05. Status: both designs approved; full 6DQ hardening and
 | [09 — Documentation verification](09-documentation-verification.md) | Content extraction and archive audit from M0 |
 | [10 — Design preview](10-design-preview.md) | Approved design, local HTTPS entry points and review evidence |
 | [11 — Release implementation](11-release-implementation.md) | Current quality evidence, release plan and rollback |
+| [12 — Local development](12-local-development.md) | Styles on first paint, HMR and isolated editing regression tests |
 
 ## Authority and status
 
