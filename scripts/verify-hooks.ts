@@ -16,6 +16,9 @@ const env = {
 	...process.env,
 	PATH: `${bin}:${process.env.PATH}`,
 	NO_COLOR: undefined,
+	REAL_BUN: bun,
+	REAL_GATE: gate,
+	FIXTURE_ISOLATION: join(root, "isolation.ts"),
 };
 function git(
 	args: string[],
@@ -55,14 +58,46 @@ try {
 	}
 	await writeFile(
 		join(bin, "bun"),
-		'#!/bin/sh\nif [ "$2" = "$FAIL_GATE" ]; then exit 1; fi\nexit 0\n',
+		`#!/bin/sh
+if [ "$2" = "$FAIL_GATE" ]; then exit 1; fi
+case "$2" in
+  check:static) exec "$REAL_BUN" "$REAL_GATE" static ;;
+  check:security) exec "$REAL_BUN" "$REAL_GATE" security ;;
+  test:http) exec "$REAL_BUN" "$FIXTURE_ISOLATION" ;;
+esac
+exit 0
+`,
 		{ mode: 0o755 },
+	);
+	for (const scanner of ["gitleaks", "osv-scanner"])
+		await writeFile(
+			join(bin, scanner),
+			`#!/bin/sh
+if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
+if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
+exit 0
+`,
+			{ mode: 0o755 },
+		);
+	await writeFile(
+		join(root, "isolation.ts"),
+		`
+import { assertIsolation } from ${JSON.stringify(resolve("packages/quality/isolation.ts"))};
+const config = ${await readFile("wrangler.test.jsonc", "utf8")};
+if (process.env.FAIL_GATE === "isolation") config.name = "lizheng-dev";
+assertIsolation(config, "l2", 17046);
+`,
 	);
 	await writeFile(join(root, "fixture.txt"), "fixture\n");
 	git(["add", "."]);
 	for (const failure of [
 		"check:staged",
 		"check:static",
+		"lint",
+		"typecheck",
+		"types:check",
+		"check:deps",
+		"check:docs",
 		"test:coverage",
 		"build",
 	])
@@ -71,11 +106,20 @@ try {
 	const remote = join(root, "remote.git");
 	git(["init", "--bare", "--quiet", remote]);
 	git(["remote", "add", "origin", remote]);
-	for (const failure of ["test:http", "check:security", "check:budgets"])
+	for (const failure of [
+		"test:http",
+		"isolation",
+		"check:security",
+		"check:budgets",
+		"gitleaks",
+		"gitleaks-missing",
+		"osv-scanner",
+		"osv-scanner-missing",
+	])
 		git(["push", "origin", "HEAD"], 1, { FAIL_GATE: failure });
 	git(["push", "origin", "HEAD"]);
 	console.info(
-		"Real Git fixture blocked all seven injected failures and accepted restored commit/push.",
+		"Real Git fixture blocked all 17 injected failures, including nested static/security gates and production-resource isolation, and accepted restored commit/push.",
 	);
 } finally {
 	await rm(root, { recursive: true, force: true });
