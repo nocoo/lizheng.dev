@@ -40,7 +40,9 @@ export default defineConfig({
 		command: "env -u NO_COLOR bun scripts/test-server.ts l3",
 		url: "http://127.0.0.1:27046/api/live",
 		reuseExistingServer: false,
-		timeout: 60000,
+		timeout: 120000,
+		stdout: "pipe",
+		stderr: "pipe",
 		gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },
 	},
 });
