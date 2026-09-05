@@ -23,7 +23,8 @@ if ((await build.exited) !== 0) throw new Error("Test build failed");
 const configuration = [
 	"--config",
 	"wrangler.test.jsonc",
-	...(layer === "l3" ? ["--env", "l3"] : []),
+	"--env",
+	layer === "l3" ? "l3" : "",
 ];
 const bundleDirectory = `.test-dist/${layer}-worker`;
 const environment = {

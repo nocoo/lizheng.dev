@@ -4,7 +4,8 @@
 
 - Eliminate unstyled local refreshes by loading preview CSS with the initial HTML; warm Vite/React entry modules.
 - Preserve CSS/React hot-edit state and refresh public Markdown and server-rendered résumé templates, retaining theme and reading position.
-- Add seven isolated development regressions to CI; use reviewed runner-specific CJK snapshots and explicit loopback host mappings for WebKit.
+- Add eight isolated development regressions to CI; use reviewed runner-specific CJK snapshots and explicit loopback host mappings.
+- Keep generated build/test files out of preview refreshes; give each CI browser engine its own runner and fixed Worker artifact, with retained runtime diagnostics.
 
 ## [3.0.1] - 2026-09-05
 
