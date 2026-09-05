@@ -39,6 +39,8 @@ jobs:
           bun-version: "1.4.0"
       - run: bun install --frozen-lockfile --ignore-scripts
       - run: bunx playwright install --with-deps chromium firefox webkit
+      - name: Resolve test hosts only to IPv4 loopback
+        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
       - run: bun run test:browser
       - run: bun run test:performance
       - uses: actions/upload-artifact@v7.0.1
@@ -50,6 +52,7 @@ jobs:
             playwright-report
           if-no-files-found: error
           retention-days: 14
+          include-hidden-files: true
 
   artifact:
     name: Verify and package Worker
