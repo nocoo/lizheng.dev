@@ -1,6 +1,7 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import {
 	cp,
+	mkdir,
 	mkdtemp,
 	readFile,
 	rm,
@@ -101,6 +102,34 @@ for (const surface of ["resume", "landing"])
 		await page.evaluate(() => document.fonts.ready);
 		expect(failedResources).toEqual([]);
 	});
+
+test("build and test artifacts never reload an editing session", async ({
+	page,
+}) => {
+	await page.goto("http://landing.lizheng-test.localhost:27046/en/");
+	await page
+		.locator("html")
+		.evaluate((node) => node.setAttribute("data-hmr-session", "original"));
+	for (const directory of [
+		"dist",
+		"dist.tmp",
+		".test-dist/l2",
+		".test-results",
+		"playwright-report",
+		".design-dist",
+	]) {
+		await mkdir(join(fixture, directory), { recursive: true });
+		await writeFile(
+			join(fixture, directory, "index.html"),
+			"<html><body>Generated output</body></html>",
+		);
+	}
+	await page.waitForTimeout(600);
+	await expect(page.locator("html")).toHaveAttribute(
+		"data-hmr-session",
+		"original",
+	);
+});
 
 test("public Markdown edits refresh the visible content", async ({ page }) => {
 	await page.goto("http://landing.lizheng-test.localhost:27046/en/");

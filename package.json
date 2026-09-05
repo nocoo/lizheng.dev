@@ -5,7 +5,7 @@
 	"private": true,
 	"scripts": {
 		"build": "bun scripts/build.tsx",
-		"dev": "bun --watch scripts/dev.ts",
+		"dev": "bun scripts/dev.ts",
 		"build:design": "bun scripts/build.tsx .design-dist",
 		"assets:design": "bun scripts/create-portraits.ts",
 		"review:design": "bun scripts/review-design.ts",

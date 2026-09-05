@@ -46,7 +46,20 @@ const vite = await createViteServer({
 			clientFiles: ["./apps/resume/client.ts", "./apps/landing/client.tsx"],
 			ssrFiles: ["./packages/publishing/render.tsx"],
 		},
-		watch: { ignored: ["**/docs/archive/**", "**/.test-results/**"] },
+		watch: {
+			ignored: [
+				"**/docs/archive/**",
+				"**/dist/**",
+				"**/dist.tmp/**",
+				"**/.test-dist/**",
+				"**/.test-results/**",
+				"**/playwright-report/**",
+				"**/.design-dist/**",
+				"**/.design-review/**",
+				"**/coverage/**",
+				"**/.release-worker/**",
+			],
+		},
 		fs: {
 			allow: [resolve("."), realpathSync("node_modules")],
 			deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/docs/**"],
