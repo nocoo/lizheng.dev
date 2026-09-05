@@ -218,6 +218,50 @@ body::before {
 .scene-halo::after {
 	inset: 84px;
 }
+.adventure-details {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	user-select: none;
+}
+.adventure-ball,
+.adventure-sparkles,
+.adventure-grass {
+	position: absolute;
+	animation: adventure-arrive 0.8s 0.3s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+.adventure-ball {
+	width: 112px;
+	left: 8px;
+	bottom: 43px;
+}
+.adventure-ball svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	filter: drop-shadow(3px 6px 5px #26372c1a);
+}
+.adventure-sparkles {
+	top: 46px;
+	left: 28px;
+	width: 40px;
+	height: 40px;
+	color: var(--accent);
+	animation-delay: 0.5s;
+}
+.adventure-grass {
+	width: 40px;
+	height: 34px;
+	right: 12px;
+	bottom: 166px;
+	color: #899974;
+	transform: rotate(8deg);
+	animation-delay: 0.6s;
+}
+[data-theme="dark"] .adventure-ball {
+	filter: brightness(0.85) saturate(0.85);
+}
 .orbit-label {
 	position: absolute;
 	top: 42px;
@@ -944,6 +988,16 @@ html[lang="zh-CN"] .intro-description {
 		transform: translateY(0);
 	}
 }
+@keyframes adventure-arrive {
+	from {
+		opacity: 0;
+		translate: 0 8px;
+	}
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
+}
 @keyframes screen-wake {
 	from {
 		opacity: 0.15;
@@ -981,6 +1035,19 @@ html[lang="zh-CN"] .intro-description {
 	}
 }
 @media (max-width: 1100px) {
+	.adventure-ball {
+		width: 90px;
+		left: -12px;
+	}
+	.adventure-sparkles {
+		left: 0;
+		top: 10px;
+		width: 30px;
+	}
+	.adventure-grass {
+		right: -8px;
+		width: 30px;
+	}
 	.landing-main {
 		margin-left: 44px;
 		margin-right: 44px;
@@ -1099,6 +1166,24 @@ html[lang="zh-CN"] .intro-description {
 	}
 }
 @media (max-width: 480px) {
+	.adventure-ball {
+		width: 76px;
+		left: 0;
+		bottom: 24px;
+	}
+	.adventure-sparkles {
+		width: 26px;
+		height: 26px;
+		top: -15px;
+		left: 6px;
+	}
+	.adventure-grass {
+		width: 28px;
+		height: 24px;
+		top: -9px;
+		right: 4px;
+		bottom: auto;
+	}
 	.landing-header {
 		margin: 0 22px;
 		padding: 23px 0;
@@ -1193,7 +1278,10 @@ html[lang="zh-CN"] .intro-description {
 @media (prefers-reduced-motion: reduce) {
 	.console-position,
 	.landing-intro,
-	.lcd-content {
+	.lcd-content,
+	.adventure-ball,
+	.adventure-sparkles,
+	.adventure-grass {
 		animation: none;
 	}
 	.console-position {

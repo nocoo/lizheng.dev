@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.0.3] - 2026-09-05
+
+- Add original adventure-game decorations around the handheld: a shaded ember-and-ivory capsule ball, pixel sparkles and a grass motif, without brand names or character assets.
+- Adapt placement for mobile and dark mode; keep decorations outside navigation and controls, with a brief entrance and static reduced-motion presentation.
+
 ## [3.0.2] - 2026-09-05
 
 - Eliminate unstyled local refreshes by loading preview CSS with the initial HTML; warm Vite/React entry modules.

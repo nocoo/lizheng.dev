@@ -21,6 +21,16 @@ The parser validates identity, required metadata, all six résumé sections, job
 
 Both sites retain the approved naturally colored résumé photo, orange four-square brand/favicon and decorative English labels. Both location signatures say MADE IN BEIJING, with subtle nonlinear breathing lights and static reduced-motion glow.
 
+### Adventure decoration follow-up — v3.0.3
+
+The handheld now has original SVG capsule-ball, pixel-sparkle and grass decorations, with theme-aware shading and responsive placement. They introduce no dependency or resource request, take no layout space, stay outside the navigation/controls and remain hidden from assistive technology. A finite entrance settles to a static scene; reduced motion skips it. See [05](05-landing-design.md) for the visual specification.
+
+The local HTTPS review exercised 16 site/language/theme/viewport combinations, controls and routing. All 63 production-browser checks passed across Chromium, Firefox and WebKit, with zero axe violations. A separate local check confirmed pointer passthrough, no running decoration animations after entrance and immediate reduced-motion presentation. G1 passed with zero lint warnings/errors, and all 26 direct dependency pins still match registry latest.
+
+All four cold-performance cases passed with three samples each and normal motion. Handheld median LCP was 896ms at 390px and 916ms at 1440px; CLS remained below 0.0005, with measured interactions at most 48ms. The unchanged résumé cases also passed. These are local lab observations using the existing throttled model, not field metrics.
+
+The initial screenshot run detected the intended decoration change in all eight landing baselines. Pixel comparison confirmed that every changed pixel belongs to the new decorations and that none overlaps an existing local/CI rendering difference. Only those pixels were transferred to the CI baselines, retaining the runner's original CJK typography and every other pixel. The local comparison rerun passed with the original 0.001 threshold and no additional masks. Résumé baselines remain unchanged. Publishing uses the existing mandatory CI gates and validated-artifact deployment flow.
+
 ## 6DQ evidence
 
 | Dimension | Implemented gate and observed result |

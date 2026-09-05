@@ -10,6 +10,7 @@ import {
 import { Icon } from "../../packages/experience/Icons";
 import { Preferences } from "../../packages/experience/Preferences";
 import { Version } from "../../packages/experience/Version";
+import { AdventureDetails } from "./AdventureDetails";
 
 function PixelStar({ className = "" }: { className?: string }) {
 	return (
@@ -117,6 +118,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 				</div>
 				<div className="console-scene">
 					<div className="scene-halo" />
+					<AdventureDetails />
 					<div className="orbit-label" lang="en">
 						<span />
 						REBUILDING FOR THE NEXT ERA
