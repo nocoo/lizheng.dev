@@ -30,7 +30,8 @@
 		"gate:push": "bun scripts/gates.ts pre-push",
 		"check:budgets": "bun scripts/check-budgets.ts",
 		"check:hooks": "bun scripts/verify-hooks.ts",
-		"test:performance": "env -u NO_COLOR playwright test --config playwright.performance.config.ts"
+		"test:performance": "env -u NO_COLOR playwright test --config playwright.performance.config.ts",
+		"test:development": "env -u NO_COLOR playwright test --config playwright.development.config.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.12",

@@ -1,3 +1,4 @@
+import { realpathSync } from "node:fs";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
@@ -11,19 +12,67 @@ import {
 	selectSurface,
 } from "../packages/publishing/routes";
 
-const port = 7046;
+const testMode = process.argv[2] === "--test";
+const port = testMode ? 27046 : 7046;
 const server = createServer();
 const vite = await createViteServer({
 	configFile: false,
-	plugins: [react()],
+	cacheDir: resolve(".test-dist/dev-cache"),
+	optimizeDeps: {
+		include: ["react", "react-dom/client", "react/jsx-dev-runtime"],
+	},
+	plugins: [
+		react(),
+		{
+			name: "resume-document-refresh",
+			handleHotUpdate({ file, server: developmentServer }) {
+				if (
+					file.endsWith(".tsx") &&
+					(file.startsWith(resolve("apps/resume")) ||
+						file.startsWith(resolve("packages/experience")))
+				)
+					developmentServer.ws.send({
+						type: "custom",
+						event: "resume:refresh",
+					});
+			},
+		},
+	],
 	publicDir: resolve("design-public"),
 	appType: "custom",
 	server: {
 		middlewareMode: true,
-		fs: { deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/docs/**"] },
-		allowedHosts: ["lizheng-dev.dev.hexly.ai", "lizheng-me.dev.hexly.ai"],
+		warmup: {
+			clientFiles: ["./apps/resume/client.ts", "./apps/landing/client.tsx"],
+			ssrFiles: ["./packages/publishing/render.tsx"],
+		},
+		watch: { ignored: ["**/docs/archive/**", "**/.test-results/**"] },
+		fs: {
+			allow: [resolve("."), realpathSync("node_modules")],
+			deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/docs/**"],
+		},
+		allowedHosts: [
+			"lizheng-dev.dev.hexly.ai",
+			"lizheng-me.dev.hexly.ai",
+			...(testMode
+				? ["resume.lizheng-test.localhost", "landing.lizheng-test.localhost"]
+				: []),
+		],
 		hmr: { server },
 	},
+});
+
+const publicContent = new Set(
+	[
+		"01-resume-en.md",
+		"02-resume-zh.md",
+		"03-landing-en.md",
+		"04-landing-zh.md",
+	].map((file) => resolve("docs/content", file)),
+);
+vite.watcher.add([...publicContent]);
+vite.watcher.on("change", (file) => {
+	if (publicContent.has(file)) vite.ws.send({ type: "full-reload", path: "*" });
 });
 
 server.on("request", async (request, response) => {
@@ -32,7 +81,10 @@ server.on("request", async (request, response) => {
 			request.url ?? "/",
 			`http://${request.headers.host ?? "localhost"}`,
 		);
-		const surface = selectSurface(url.hostname);
+		const surface = selectSurface(
+			url.hostname,
+			testMode ? "landing.lizheng-test.localhost" : undefined,
+		);
 		const redirect = legacyRedirect(surface, url);
 		response.setHeader("X-Robots-Tag", "noindex, nofollow");
 		if (redirect) {
@@ -97,7 +149,13 @@ server.on("request", async (request, response) => {
 				await renderPage(
 					surface,
 					url.pathname.startsWith("/zh") ? "zh" : "en",
-					undefined,
+					{
+						script: `/apps/${surface}/client.${surface === "resume" ? "ts" : "tsx"}`,
+						css: [
+							"/packages/experience/base.css",
+							`/apps/${surface}/${surface}.css`,
+						],
+					},
 					true,
 				),
 			);

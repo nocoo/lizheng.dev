@@ -42,6 +42,7 @@ jobs:
       - name: Resolve test hosts only to IPv4 loopback
         run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
       - run: bun run test:browser
+      - run: bun run test:development
       - run: bun run test:performance
       - uses: actions/upload-artifact@v7.0.1
         if: always()
