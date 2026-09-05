@@ -9,7 +9,7 @@
 - First deployment ID: a4d61e18-5a64-41c8-9f41-5d8dec502610. All four public hostnames subsequently passed the read-only production verifier: /api/live v3.0.0, both language pages and all applicable blog 301s.
 - The first Release job correctly failed its post-deployment check because www.lizheng.dev had no public DNS record (NXDOMAIN). Added that Custom Domain and retained the existing lizheng.dev Custom Domain. Cloudflare now manages their DNS/certificates; .me retains its existing Routes. No domain name changed, no TLS validation was disabled.
 - package.json is the single version source. Version text is quiet in both footers, as requested. /api/live returns status, service, surface, version and the Cloudflare deployment ID with no-store.
-- The hardening follow-up is version 3.0.1. Its final CI/deployment evidence is recorded after verification, not inferred from a local commit.
+- The hardening and local-development follow-up is version 3.0.2. Its final CI/deployment evidence is recorded after verification, not inferred from a local commit.
 
 ## Implemented architecture
 
@@ -40,7 +40,7 @@ Husky pre-commit waits for staged secrets, G1, L1 and build. Pre-push waits for 
 
 ## Browser and performance artifacts
 
-Sixteen Chromium full-page baseline images in tests/browser/snapshots/darwin cover both sites, languages, themes and viewports. A subsequent comparison run passed all 21 Chromium tests without updating snapshots. Only the dynamic footer version is masked. Stable snapshots pause decoration; ordinary behavioral/performance checks retain normal motion. CI uses macos-26 arm64. Its system CJK font revision differs from local macOS, so reviewed CI variants are stored in darwin-ci; screenshot thresholds remain unchanged. Explicit loopback host entries avoid intermittent WebKit DNS failures. Linux is independently used for HTTP, static/unit/security and production artifact jobs.
+Sixteen Chromium full-page baseline images in tests/browser/snapshots/darwin cover both sites, languages, themes and viewports. A subsequent comparison run passed all 21 Chromium tests without updating snapshots. Only the dynamic footer version is masked. Stable snapshots pause decoration; ordinary behavioral/performance checks retain normal motion. CI uses macos-26 arm64. Its system CJK font revision differs from local macOS, so reviewed CI variants are stored in darwin-ci; screenshot thresholds remain unchanged. Explicit loopback host entries keep test DNS deterministic. Linux is independently used for HTTP, static/unit/security and production artifact jobs.
 
 CI uploads screenshot diffs, failed-run trace/video, axe results and performance raw samples. The browser job is mandatory before production artifact creation. Firefox explicitly bypasses proxies for its loopback test hostnames. Development remains on 7046; L2 and L3 use 17046 and 27046 with their own assets and temporary state. External navigation is intercepted; redirects are never followed to the blog in tests.
 
@@ -55,7 +55,7 @@ Cold performance uses Chromium, 4× CPU throttling, 1.6 Mbps down / 0.75 Mbps up
 
 All pass the unchanged 2500 ms / 0.05 / 200 ms budgets. No >50 ms long tasks were reported in these local samples. Event Timing measures the tested actions in a lab; it is not a claim about real-user INP. CI measures its own three samples and preserves them as artifacts.
 
-Compressed production resources: résumé JS 763 bytes, CSS 3778 bytes, fonts 132240 bytes, imagery 25278 bytes; total ≤167039 bytes. Handheld JS 65231 bytes, CSS 6664 bytes, fonts 53820 bytes, imagery 984 bytes; total ≤130244 bytes. The size gate traverses imported assets rather than counting only entry files.
+Compressed production resources: résumé JS 763 bytes, CSS 3778 bytes, fonts 132240 bytes, imagery 25278 bytes; total ≤167039 bytes. Handheld JS 65237 bytes, CSS 6664 bytes, fonts 53820 bytes, imagery 984 bytes; total ≤130251 bytes. The size gate traverses imported assets rather than counting only entry files.
 
 ## Dependency and release pipeline
 
@@ -69,4 +69,6 @@ Before v3 cutover, the previous complete deployment was 4fa4f704-e665-4f35-a08a-
 
 Browser and touch checks use automated desktop engines and emulated viewports. Physical iOS/Android devices and real-user Web Vitals are not claimed as verified. There is no database or external write path. The two local Caddy HTTPS previews and their live endpoints also pass with the trusted local mkcert CA.
 
-The v3.0.1 CI correctly blocked deployment on eight platform-font snapshot differences and ten WebKit hostname-resolution failures. These were reproduced/reviewed and addressed with separate CI font baselines and explicit test-only loopback mappings. The v3.0.2 follow-up also adds eight local-development/HMR regression checks (see 12). Its CI and deployment must be verified before declaring completion.
+The v3.0.1 CI correctly blocked deployment on eight platform-font snapshot differences and ten WebKit connection failures. The fonts were reviewed and CI baselines added; test-only loopback mappings made DNS deterministic. A subsequent run exposed a more specific cause of connection failures: Wrangler exited during the suite, followed by an esbuild watcher deadlock. CI 33932806478 passed all Chromium/Firefox tests and visual comparisons before the runtime exited during WebKit (51 passed, 12 failed). Browser/HTTP tests now bundle the isolated Worker once and run that fixed artifact with --no-bundle, retaining actual workerd/assets and all assertions. Startup output and Wrangler logs are preserved, and an unexpected runtime exit fails explicitly. The v3.0.2 release was rechecked at 00:25:11 UTC, more than five minutes after publication; CI was still running and subsequently failed as described.
+
+The v3.0.2 follow-up also adds eight local-development/HMR regression checks (see 12). Its final CI and deployment must be verified before declaring completion.

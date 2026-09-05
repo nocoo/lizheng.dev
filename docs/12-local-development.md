@@ -29,4 +29,6 @@ Observed Red: blocking client JavaScript left both pages with zero stylesheets a
 
 The browser/performance suites use workerd and production assets; this suite specifically verifies the development renderer and Vite HMR. Keep both kinds of checks, since a correct production build does not prove the local editing experience is correct.
 
+The actual Caddy HTTPS entry points were also checked in system Chrome with trusted certificates: both pages had two stylesheets and their intended font/background while the client entry was blocked. Both established their wss:// HMR connection with no page errors.
+
 Vite owns UI hot updates. The start command runs one Bun server process; after changing the server bootstrap or its HTTP routing setup, restart bun run dev. This avoids the nested Bun watcher terminating the server on bootstrap edits.

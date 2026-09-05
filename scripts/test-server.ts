@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { mkdtemp, rm } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { assertIsolation } from "../packages/quality/isolation";
 import config from "../wrangler.test.jsonc";
 
@@ -20,15 +20,41 @@ const build = Bun.spawn(["bun", "scripts/build.tsx", `.test-dist/${layer}`], {
 	stderr: "inherit",
 });
 if ((await build.exited) !== 0) throw new Error("Test build failed");
+const configuration = [
+	"--config",
+	"wrangler.test.jsonc",
+	...(layer === "l3" ? ["--env", "l3"] : []),
+];
+const bundleDirectory = `.test-dist/${layer}-worker`;
+const environment = {
+	...process.env,
+	WRANGLER_SEND_METRICS: "false",
+	WRANGLER_LOG_PATH: resolve(`.test-results/${layer}-wrangler.log`),
+};
+// Exercise a fixed Worker artifact, as production does. An esbuild watch
+// process must not rebuild or terminate the server during browser assertions.
+const bundle = Bun.spawn(
+	[
+		"bunx",
+		"wrangler",
+		"deploy",
+		...configuration,
+		"--dry-run",
+		"--outdir",
+		bundleDirectory,
+	],
+	{ stdout: "inherit", stderr: "inherit", env: environment },
+);
+if ((await bundle.exited) !== 0) throw new Error("Test Worker bundling failed");
 const state = await mkdtemp(join(tmpdir(), "lizheng-test-"));
 const child = spawn(
 	"bunx",
 	[
 		"wrangler",
 		"dev",
-		"--config",
-		"wrangler.test.jsonc",
-		...(layer === "l3" ? ["--env", "l3"] : []),
+		join(bundleDirectory, "index.js"),
+		"--no-bundle",
+		...configuration,
 		"--local",
 		"--ip",
 		"127.0.0.1",
@@ -40,7 +66,7 @@ const child = spawn(
 		"--inspector-port",
 		"0",
 	],
-	{ stdio: "inherit", env: { ...process.env, WRANGLER_SEND_METRICS: "false" } },
+	{ stdio: "inherit", env: environment },
 );
 let closing = false;
 async function close() {
@@ -52,7 +78,12 @@ async function close() {
 }
 process.once("SIGINT", close);
 process.once("SIGTERM", close);
-child.once("exit", async (code) => {
+child.once("exit", async (code, signal) => {
 	await rm(state, { recursive: true, force: true });
-	process.exitCode = code ?? 0;
+	if (!closing) {
+		console.error(
+			`Test Worker exited unexpectedly: code=${code}, signal=${signal}`,
+		);
+		process.exitCode = code || 1;
+	}
 });
