@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1] - 2026-09-05
+
+- Provision both résumé hosts as Cloudflare Custom Domains, including the previously missing www DNS record and managed certificate.
+- Make résumé navigation/print adapters disposable and resilient when IntersectionObserver is unavailable.
+- Require Chromium, Firefox and WebKit, 16 visual baselines, axe and three-sample throttled performance checks before producing deployable CI artifacts.
+- Verify 17 Git-hook failure paths; record 196 passing unit tests, ≥99.67% logic coverage, 63 browser checks and current dependency/security evidence.
+
 ## 3.0.0 — 2026-09-05
 
 - Rebuild both sites from public Markdown: a bilingual editorial résumé and an interactive handheld portfolio, each with light/dark themes and responsive layouts.
