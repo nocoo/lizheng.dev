@@ -9,7 +9,7 @@
 - First deployment ID: a4d61e18-5a64-41c8-9f41-5d8dec502610. All four public hostnames subsequently passed the read-only production verifier: /api/live v3.0.0, both language pages and all applicable blog 301s.
 - The first Release job correctly failed its post-deployment check because www.lizheng.dev had no public DNS record (NXDOMAIN). Added that Custom Domain and retained the existing lizheng.dev Custom Domain. Cloudflare now manages their DNS/certificates; .me retains its existing Routes. No domain name changed, no TLS validation was disabled.
 - package.json is the single version source. Version text is quiet in both footers, as requested. /api/live returns status, service, surface, version and the Cloudflare deployment ID with no-store.
-- The hardening and local-development follow-up is version 3.0.2. Its final CI/deployment evidence is recorded after verification, not inferred from a local commit.
+- The hardening and local-development follow-up v3.0.2 is deployed. [CI 33933967229](https://github.com/nocoo/lizheng.dev/actions/runs/33933967229) passed on fa3a4023d569ac037eadee24560ded80b656d33c. [Release 33934123422](https://github.com/nocoo/lizheng.dev/actions/runs/33934123422) deployed its validated artifact and passed all four public-host verifications at 00:48:00 UTC. Deployment ID: b204d7fd-b425-4d0c-bea7-cdaec124645f. Both primary live endpoints independently returned v3.0.2 and that deployment ID. The published v3.0.2 tag remains unchanged; these follow-up commits repair test/development infrastructure.
 
 ## Implemented architecture
 
@@ -55,7 +55,7 @@ Cold performance uses Chromium, 4× CPU throttling, 1.6 Mbps down / 0.75 Mbps up
 
 All pass the unchanged 2500 ms / 0.05 / 200 ms budgets. No >50 ms long tasks were reported in these local samples. Event Timing measures the tested actions in a lab; it is not a claim about real-user INP. CI measures its own three samples and preserves them as artifacts.
 
-Compressed production resources: résumé JS 763 bytes, CSS 3778 bytes, fonts 132240 bytes, imagery 25278 bytes; total ≤167039 bytes. Handheld JS 65237 bytes, CSS 6664 bytes, fonts 53820 bytes, imagery 984 bytes; total ≤130251 bytes. The size gate traverses imported assets rather than counting only entry files.
+Compressed production resources: résumé JS 763 bytes, CSS 3778 bytes, fonts 132240 bytes, imagery 25278 bytes; total ≤167039 bytes. Handheld JS 65262 bytes, CSS 6664 bytes, fonts 53820 bytes, imagery 984 bytes; total ≤130281 bytes. The size gate traverses imported assets rather than counting only entry files.
 
 ## Dependency and release pipeline
 
@@ -73,4 +73,4 @@ The v3.0.1 CI correctly blocked deployment on eight platform-font snapshot diffe
 
 Browser/HTTP tests now compile their launcher for Node, build the Worker once with Wrangler's dry-run, and start it using Miniflare's API. This uses the same real workerd and assets, with the explicit user-worker/asset binding and routing settings from the isolated configuration. It removes the Bun server supervisor and long-running Wrangler development CLI/proxy from production-asset tests. Bun still manages dependencies and builds the application; Vite still owns local editing. Startup output, bundler logs and failures remain visible. Each browser engine has its own macOS runner, workerd process and evidence artifact; all 63 assertions remain mandatory. Chromium's job also runs the development and performance suites sequentially. Coverage, visual and performance thresholds are unchanged.
 
-The v3.0.2 follow-up also adds eight local-development/HMR regression checks (see 12). Its final CI and deployment must be verified before declaring completion.
+The v3.0.2 follow-up adds eight local-development/HMR regression checks (see 12). Final CI 33933967229 passed all 63 browser tests across the three engines, all eight development checks, four cold-performance scenarios, four HTTP matrices, L1/G1/G2, hook fault injection and artifact validation. No assertions, snapshots or thresholds were relaxed to resolve the runtime failures. Release 33934123422 then passed deployment and the production verifier.
