@@ -84,6 +84,14 @@ export function ResumePage({ content }: { content: PageContent }) {
 									fetchPriority="high"
 								/>
 								<span className="portrait-caption">ZHENG LI / 李征</span>
+								<img
+									className="resume-keepsake"
+									src="/design-assets/capsule.svg"
+									width="42"
+									height="48"
+									alt=""
+									aria-hidden="true"
+								/>
 							</div>
 						</div>
 						<p className="resume-tagline">{meta.tagline}</p>

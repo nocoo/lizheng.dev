@@ -186,6 +186,7 @@ body {
 	font-weight: 500;
 }
 .portrait-frame {
+	position: relative;
 	transform: rotate(3deg);
 	padding: 7px 7px 9px;
 	border: 1px solid var(--line);
@@ -194,12 +195,22 @@ body {
 	margin-right: 12px;
 	background: var(--paper);
 }
-.portrait-frame img {
+.portrait-frame > img:not(.resume-keepsake) {
 	display: block;
 	width: 112px;
 	height: 132px;
 	object-fit: cover;
 	filter: saturate(0.9) contrast(0.98);
+}
+.portrait-frame .resume-keepsake {
+	position: absolute;
+	left: -22px;
+	bottom: -17px;
+	width: 42px;
+	height: auto;
+	pointer-events: none;
+	user-select: none;
+	transform: rotate(-9deg);
 }
 .portrait-caption {
 	display: block;
@@ -447,7 +458,12 @@ html[lang="zh-CN"] .identity-row h1 {
 		margin: 4px 3px 0 0;
 		padding: 5px;
 	}
-	.portrait-frame img {
+	.portrait-frame .resume-keepsake {
+		width: 32px;
+		left: -14px;
+		bottom: -14px;
+	}
+	.portrait-frame > img:not(.resume-keepsake) {
 		width: 76px;
 		height: 94px;
 	}
@@ -516,7 +532,8 @@ html[lang="zh-CN"] .identity-row h1 {
 	.resume-topbar,
 	.resume-sidebar,
 	.print-button,
-	.resume-footer a {
+	.resume-footer a,
+	.resume-keepsake {
 		display: none;
 	}
 	.resume-layout {
@@ -583,7 +600,7 @@ html[lang="zh-CN"] .identity-row h1 {
 	.identity-row h1 {
 		font-size: 48px;
 	}
-	.portrait-frame img {
+	.portrait-frame > img:not(.resume-keepsake) {
 		width: 64px;
 		height: 80px;
 	}

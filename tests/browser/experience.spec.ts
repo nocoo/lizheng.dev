@@ -68,7 +68,7 @@ for (const surface of ["resume", "landing"])
 						).toBeVisible();
 						expect(
 							await page
-								.locator(".portrait-frame img")
+								.locator(".portrait-frame > img:not(.resume-keepsake)")
 								.evaluate((node) => getComputedStyle(node).filter),
 						).toContain("saturate(0.9)");
 					} else {
