@@ -8,7 +8,8 @@ export default defineConfig({
 	reporter: [["list"], ["json", { outputFile: ".test-results/http.json" }]],
 	outputDir: ".test-results/http",
 	webServer: {
-		command: "env -u NO_COLOR bun scripts/test-server.ts l2",
+		command:
+			"bun build scripts/test-server.ts --target=node --packages=external --outfile=.test-dist/test-server-l2.mjs && node .test-dist/test-server-l2.mjs l2",
 		url: "http://127.0.0.1:17046/api/live",
 		reuseExistingServer: false,
 		timeout: 60000,

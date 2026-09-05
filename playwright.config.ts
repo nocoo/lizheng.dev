@@ -37,7 +37,8 @@ export default defineConfig({
 		{ name: "webkit", use: { ...devices["Desktop Safari"] } },
 	],
 	webServer: {
-		command: "env -u NO_COLOR bun scripts/test-server.ts l3",
+		command:
+			"bun build scripts/test-server.ts --target=node --packages=external --outfile=.test-dist/test-server-l3.mjs && node .test-dist/test-server-l3.mjs l3",
 		url: "http://127.0.0.1:27046/api/live",
 		reuseExistingServer: false,
 		timeout: 120000,

@@ -42,7 +42,7 @@ jobs:
         with:
           bun-version: "1.4.0"
       - run: bun install --frozen-lockfile --ignore-scripts
-      - run: bunx playwright install --with-deps chromium firefox webkit
+      - run: bunx playwright install --with-deps ${{ matrix.browser }}
       - name: Resolve test hosts only to IPv4 loopback
         run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
       # Each engine owns its runner and workerd process. Reusing a single

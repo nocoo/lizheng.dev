@@ -27,6 +27,7 @@
         "husky": "9.1.7",
         "jsdom": "30.0.1",
         "knip": "6.34.0",
+        "miniflare": "5.20260903.0-alpha",
         "sharp": "0.35.4",
         "typescript": "7.0.2",
         "vite": "8.2.2",
