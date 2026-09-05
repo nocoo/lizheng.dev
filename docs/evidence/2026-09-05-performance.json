@@ -1,0 +1,230 @@
+{
+  "date": "2026-09-05",
+  "applicationVersion": "3.0.0",
+  "platform": "macOS 26 arm64, Playwright 1.63.0 Chromium",
+  "scope": "local workerd, laboratory measurements, not real-user INP",
+  "runs": [
+    {
+      "surface": "resume",
+      "width": 390,
+      "model": "Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+      "samples": [
+        {
+          "lcp": 520,
+          "cls": 0.04371656828703704,
+          "interactions": [
+            32,
+            32,
+            32
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 472,
+          "cls": 0.04371656828703704,
+          "interactions": [
+            32,
+            32,
+            32
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 476,
+          "cls": 0.04371656828703704,
+          "interactions": [
+            32,
+            32,
+            32
+          ],
+          "longTasks": []
+        }
+      ],
+      "median": {
+        "lcp": 476,
+        "cls": 0.04371656828703704,
+        "interaction": 32
+      }
+    },
+    {
+      "surface": "resume",
+      "width": 1440,
+      "model": "Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+      "samples": [
+        {
+          "lcp": 488,
+          "cls": 0.001450197564688893,
+          "interactions": [
+            32,
+            32,
+            32
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 492,
+          "cls": 0.001450197564688893,
+          "interactions": [
+            32,
+            32,
+            32
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 516,
+          "cls": 0.001450197564688893,
+          "interactions": [
+            32,
+            32,
+            32
+          ],
+          "longTasks": []
+        }
+      ],
+      "median": {
+        "lcp": 492,
+        "cls": 0.001450197564688893,
+        "interaction": 32
+      }
+    },
+    {
+      "surface": "landing",
+      "width": 390,
+      "model": "Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+      "samples": [
+        {
+          "lcp": 908,
+          "cls": 0.0004608316516302628,
+          "interactions": [
+            32,
+            32,
+            32,
+            32,
+            32,
+            32,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 908,
+          "cls": 0.0004608054368471036,
+          "interactions": [
+            40,
+            40,
+            40,
+            24,
+            24,
+            24,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 908,
+          "cls": 0.0004608316516302628,
+          "interactions": [
+            56,
+            56,
+            56,
+            24,
+            24,
+            24,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16
+          ],
+          "longTasks": []
+        }
+      ],
+      "median": {
+        "lcp": 908,
+        "cls": 0.0004608316516302628,
+        "interaction": 40
+      }
+    },
+    {
+      "surface": "landing",
+      "width": 1440,
+      "model": "Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+      "samples": [
+        {
+          "lcp": 924,
+          "cls": 0.0004927928661613307,
+          "interactions": [
+            40,
+            40,
+            40,
+            32,
+            32,
+            32,
+            24,
+            24,
+            24,
+            24,
+            24,
+            24
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 928,
+          "cls": 0.0004927928661613307,
+          "interactions": [
+            48,
+            48,
+            48,
+            32,
+            32,
+            32,
+            24,
+            24,
+            24,
+            24,
+            24,
+            24
+          ],
+          "longTasks": []
+        },
+        {
+          "lcp": 924,
+          "cls": 0.0004927510156880027,
+          "interactions": [
+            48,
+            48,
+            48,
+            32,
+            32,
+            32,
+            24,
+            24,
+            24,
+            24,
+            24,
+            24
+          ],
+          "longTasks": []
+        }
+      ],
+      "median": {
+        "lcp": 924,
+        "cls": 0.0004927928661613307,
+        "interaction": 48
+      }
+    }
+  ]
+}

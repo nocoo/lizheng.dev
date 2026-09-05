@@ -1,8 +1,6 @@
 # 10 — 设计优先的本机预览
 
-2026-09-05，用户已授权开始实现，并调整顺序为“先松后紧”：先快速实现两个访问面的完整视觉效果，通过本机预览迭代设计；用户满意后，再加强 6DQ、覆盖率和行为/视觉锁定。
-
-本文件的阶段顺序优先于 07、08 中原有的逐功能严格 TDD 和先铺完整门禁的计划。保留现有 Husky、零 lint、严格类型检查、secret 检查及旧 301 回归；不为草稿布局建立全套快照与新覆盖率硬门槛。
+设计已获用户批准，预览用于日常开发；完整质量与生产状态见 11。先松后紧的设计探索阶段已结束，当前逻辑变更执行 TDD 与完整门禁。
 
 ## 本机约定
 
@@ -13,14 +11,14 @@
 | 正式简历 | <https://lizheng-dev.dev.hexly.ai> |
 | 掌机落地页 | <https://lizheng-me.dev.hexly.ai> |
 | 主开发服务 | 127.0.0.1:7046 |
-| 后续独立 L2 | 17046，预留 |
-| 后续独立 L3 | 27046，预留 |
+| 独立 L2 | 17046，已实现 |
+| 独立 L3 | 27046，已实现 |
 
 Caddy 使用已有本机 wildcard mkcert 证书。证书和私钥不入库。DNS 的 wildcard A 记录已指向 127.0.0.1，因此无需改 hosts。配置前备份，validate 成功后 graceful reload。
 
 ## 当前范围
 
-新应用从四份公开 Markdown 构建，两套视图、样式和浏览器逻辑重新编写。原始人像生成新的照片及点阵衍生。旧生产构建和 Worker 暂时保留，避免设计草稿触发上线；设计构建输出独立目录。仅本地提交 main，不推送生产。
+新应用从四份公开 Markdown 构建。生产已切换至相同的新实现；本机预览与 L2/L3 仍使用独立端口和构建资产，避免测试请求生产。
 
 ## 启动与迭代
 
@@ -37,10 +35,10 @@ Caddy 使用已有本机 wildcard mkcert 证书。证书和私钥不入库。DNS
 | --- | --- |
 | bun run dev | 新页面开发服务，TSX/CSS 支持 Vite 热更新 |
 | bun run build:design | 输出四份完整 HTML、hash CSS/JS、公开 Markdown 和元信息至 .design-dist |
-| bun run assets:design | 从原始 profile.jpeg 重建照片和点阵图 |
+| bun run assets:design | 从assets/source/portrait.jpeg 重建照片和点阵图 |
 | bun run review:design | 使用本机 Chrome 截图并检查交互；输出至 .design-review，不锁定视觉基线 |
-| bun run lint / typecheck / test:coverage | 现有 Husky 执行的基本质量检查 |
-| bun run dev:legacy / build | 仍对应旧生产实现 |
+| bun run check:static / test:coverage | 当前 G1 与 ≥95% L1 门禁 |
+| bun run build | 当前生产构建至 dist |
 
 ## 已实现的设计
 
@@ -52,7 +50,7 @@ Caddy 使用已有本机 wildcard mkcert 证书。证书和私钥不入库。DNS
 
 全部 UI、CSS、浏览器逻辑与构建模块均新写。正文来自四份公开 Markdown。字体通过 Fontsource 自托管：Newsreader、Source Sans 3、Geist Mono、Space Grotesk、Silkscreen，采用对应包中的 OFL 授权；不依赖外部字体请求。新照片约 25 KiB，点阵图 984 bytes。
 
-## 本轮验证证据
+## 设计定稿时的验证证据
 
 - Chrome 检查两站 × 两语言 × 两主题 × 1440×900 / 390×844，共 16 组截图；未出现页面运行错误或横向溢出。LCD 内容完整展示。
 - 补查 320×568 与 844×390 中文页面，无横向溢出；手机完整机身可纵向滚动。
@@ -71,6 +69,4 @@ Caddy 使用已有本机 wildcard mkcert 证书。证书和私钥不入库。DNS
 
 本次调整重新通过 16 组浏览器组合及交互 smoke，并人工检查了中文简历浅/深主题照片、共享字标和 favicon 两种配色；静态构建、类型检查、零 lint 与文档检查通过。
 
-设计等待用户评审。完整 6DQ 评级、跨浏览器矩阵、axe/对比度与触控目标系统检查、真实 Worker 集成、生产 CSP/缓存、正式 OG 配图、独立掌机 ViewModel、内容 schema 与覆盖率门禁尚未完成。下一步先依据视觉反馈修改，不提前冻结本版布局。
-
-生产 lizheng.dev / lizheng.me 和 Cloudflare Worker 未切换；旧 UI/构建仅保留用于当前生产与回滚，新访问面不引用它们。工作按工具链、简历、掌机与预览分别提交到本地 main，未推送触发生产部署。
+当前设计已批准并上线，旧 UI/构建已移除。版本仅在 footer 显示；两站地点签名统一为 MADE IN BEIJING，左侧暖色电源灯使用不对称曲线呼吸，减少运动模式保留静态光晕。生产和质量的最新证据均以 11 为准。

@@ -1,6 +1,6 @@
 # 06 — 技术架构与版本决策
 
-状态：React/Vite/TS7 工具链、两套新视图、Markdown 预渲染和本机预览已实现；生产 Worker 与部署入口待设计定稿后切换。下文完整架构仍包含后续质量收紧项，当前证据以 10 为准。版本在 2026-09-05 查询 npm registry 的 latest 与 peerDependencies。
+状态：两套新视图、Markdown 预渲染、生产 Worker、本机预览和 CI/CD 已实现；v3.0.0 已部署。当前质量证据以 11 为准。2026-09-05 核对 npm registry latest 与 peerDependencies，并安装以下版本。
 
 ## 技术选择
 
@@ -14,19 +14,18 @@
 | react / react-dom | 19.2.8 | 两站新组件；构建时渲染，掌机端渐进增强 |
 | vite | 8.2.2 | 客户端/构建端模块处理、CSS 与资产清单 |
 | @vitejs/plugin-react | 6.1.1 | React 编译集成；声明支持 Vite ^8.0.0 |
-| vitest | 5.0.0 | L1 和真实 HTTP L2 的断言运行器 |
-| @playwright/test | 1.62.1 | L3、视觉和浏览器行为 |
+| vitest | 5.0.0 | L1 与覆盖率；L2 使用 Playwright request |
+| @playwright/test | 1.63.0 | L3、视觉和浏览器行为 |
 | @axe-core/playwright | 4.13.0 | A11y 自动检查 |
 | @biomejs/biome | 2.5.12 | 格式、JS/TS/TSX/CSS 静态检查 |
 | husky | 9.1.7 | Git 门禁 |
 | wrangler | 4.129.0 | Cloudflare 开发、绑定类型与部署 |
-| @cloudflare/workers-types | 5.20260904.1 | 参考最新平台类型；应用 Env 由 Wrangler 生成 |
+| yaml / marked | 2.9.0 / 18.0.11 | Frontmatter 与安全 Markdown token 解析 |
+| knip | 6.34.0 | 无用依赖、文件与导出检查 |
 
-设计阶段实际安装 React 19.2.8、Vite 8.2.2、TypeScript 7.0.2、React plugin 6.1.1、React types 19.2.18 / 19.2.7、gray-matter 4.0.3、marked 18.0.11、Playwright 1.63.0、sharp 0.35.4。全部直接依赖已精确锁定并通过 frozen install、严格类型检查、静态构建和 Chrome 运行。Markdown 使用 marked tokens 转 React 元素，不插入任意原始 HTML。
+全部直接依赖精确锁定并通过 frozen install、严格类型检查和静态构建。gray-matter 与冗余 workers-types 已移除，worker-configuration.d.ts 由 Wrangler 从实际配置生成。Markdown tokens 转 React 元素，不插入任意原始 HTML。Fontsource 5.3.0、sharp 0.35.4 用于自托管字体和离线资产生成。
 
-表格中的 Vitest 5、Biome 2.5.12、Wrangler 4.129 和完整 axe 集成仍为后续升级目标；当前沿用已通过检查的 Vitest 4.1.9、Biome 2.5.0、Wrangler 4.100.0，不把版本查询当作安装记录。
-
-包管理与脚本入口使用 Bun 1.4.0（本机版本）。框架构建/测试使用受支持的 Node 24 LTS 或兼容更新版本，避免把 Bun 管理依赖误解为强迫所有第三方工具运行在 Bun 内。生产执行环境是 Cloudflare workerd。
+包管理与脚本使用 Bun 1.4.0；本机与 CI 验证 Node 26。生产执行环境是 Cloudflare workerd。
 
 ## 已评估的方案
 
@@ -36,30 +35,28 @@ Astro 7.3.1 和 @astrojs/cloudflare 14.3.0 均已查询。后者 peer 要求 Ast
 
 ## 当前代码结构
 
-为加快设计迭代，采用较浅的实际目录：
-
-    apps/
-      resume/                  ResumePage、Markdown、client、resume.css
-      landing/                 LandingPage、client、landing.css
-    packages/
-      content/model.ts         四份 Markdown allowlist 与内容模型
-      experience/              新图标、偏好控件、主题初始化、基础样式
-      publishing/              新 HTML/JSON-LD 渲染、预览路由与元信息端点
-    worker/
-      index.ts                 暂时保留的生产 Worker；301 回归继续执行
-    scripts/
-      dev.ts                   Host 分流、Vite SSR/HMR，端口 7046
-      build-design.tsx         四页面静态 HTML、hash 资产、Markdown 构建
-      create-portraits.ts       原图生成新照片和四阶点阵图
-      review-design.ts         按需截图和浏览器交互 smoke
-    design-public/             本轮新资产
-    tests/                     现有 53 个构建/Worker 回归
+    apps/resume/               静态简历、Markdown renderer、DOM client、CSS
+    apps/landing/              React 掌机视图、hydration client、CSS
+    packages/content/          四份 Markdown allowlist 与强校验模型
+    packages/experience/       品牌、主题、掌机状态、DOM 适配器和样式
+    packages/publishing/       HTML/JSON-LD、host/locale/301 路由、CSP
+    packages/quality/          gate runner 与测试资源/请求隔离 guard
+    worker/index.ts            生产 Worker、live、资产和公开端点
+    scripts/build.tsx          四页面、hash 资产与 Markdown 原子构建
+    scripts/dev.ts             Vite SSR/HMR，端口 7046
+    scripts/test-server.ts     独立 workerd，L2 17046 / L3 27046
+    scripts/gates.ts           Husky 与 CI 的分层检查入口
+    scripts/verify-hooks.ts    临时 Git 仓库中的故障注入
+    scripts/verify-production.ts 只读生产发布验证，不跟随 301
+    design-public/             新照片、点阵、favicon 和社交图
+    assets/source/             原始人像，不发布
+    tests/                     L1、真实 HTTP、浏览器快照和性能实验
     docs/content/              四份公开 Markdown 内容源
-    .design-dist/              新设计构建输出，Git 忽略
-    .design-review/            本机截图、PDF 和检查记录，Git 忽略
-    dist/                      当前生产构建输出
+    dist/                      生产构建输出
+    .test-dist/                隔离测试构建，Git 忽略
+    .test-results/             截图、trace、axe、性能记录，Git 忽略
 
-两套 UI 不共享旧组件或旧 CSS。后续收紧阶段再把掌机内联状态提炼为独立 ViewModel、合并新预览与 Worker 的 301 兼容模块、完善 schema、CSP、隔离测试与门禁。以下数据流的 dist 指最终生产切换后的目标；当前同等静态页面输出到 .design-dist。
+旧 UI、样式、模板、builder 和浏览器代码均已退役；只保留公开事实、原始人像和 301 契约。共享模块均为本轮新实现。
 
 ## 构建与数据流
 
@@ -67,7 +64,7 @@ Astro 7.3.1 和 @astrojs/cloudflare 14.3.0 均已查询。后者 peer 要求 Ast
 2. 标准 Markdown AST 转换为 Content Model；拒绝任意脚本、未知 frontmatter 和未经允许的原始 HTML。使用成熟解析库，不重新发明字符串替换模板。正文中重复的学校名是合法信息，渲染后的 heading id 使用稳定且唯一的记录标识。
 3. Vite 分别构建静态渲染入口与两个客户端入口，生成带内容 hash 的资源 manifest。
 4. 构建端使用 react-dom/server 渲染四份完整页面，注入 canonical、hreflang、JSON-LD、manifest 资源与安全的序列化初始数据。
-5. 输出对应的 Markdown、robots、llms、sitemap 与新 OG 图像；所有产物只来自 allowlist。
+5. 输出对应的 Markdown、robots、llms、sitemap 与新 OG 图像；页面正文与 Markdown 只来自 allowlist；元信息端点由 Worker 生成。
 6. 打包两个访问面至 dist/_sites/resume 与 dist/_sites/landing；静态资源在独立命名空间下，防止文件名冲突。
 7. Worker 按域名重写至内部资产；直接请求 /_sites/ 返回 404。不把内部 URL 泄漏到 Location、canonical 或资源引用。
 
@@ -87,7 +84,7 @@ View：两个独立 React 视图及必要的 DOM 适配器。动画响应已经�
 
 ## Cloudflare 与缓存
 
-- 保留四个生产域名和 Worker lizheng-dev；测试 Worker 使用 lizheng-dev-test。
+- 保留四个生产域名和 Worker lizheng-dev；测试 Worker 使用 lizheng-dev-l2-test / lizheng-dev-l3-test。lizheng.dev 与 www.lizheng.dev 采用 Custom Domains，自动管理 DNS 和证书；.me 两域保留原 Routes。
 - 使用 Workers Static Assets；所有 HTML 必经域名选择与 301 判定，资产路由与 binding 由最新 schema 核对。
 - 新配置设置实施当天 compatibility_date，启用必要 nodejs_compat；通过 Wrangler 生成 Env 类型，启用 observability。
 - 带 hash 的资源长期 immutable 缓存；HTML、内容 Markdown 与语言重定向使用可更新的短缓存策略。不得给未改名的人像设一年 immutable 后原地替换。
@@ -126,4 +123,4 @@ LCP/INP 的长期目标应以真实用户数据验证。实施期用固定移动
 - [Astro registry](https://registry.npmjs.org/astro/latest)、[Astro checker peers](https://registry.npmjs.org/@astrojs%2fcheck/latest)。
 - [Cloudflare Workers best practices](https://developers.cloudflare.com/workers/best-practices/workers-best-practices/)。
 - [Astro Cloudflare deployment guide](https://docs.astro.build/en/guides/deploy/cloudflare/)：用于方案评估。
-- 其余版本同样来自 npm registry 对应包的 /latest；本次只有查询，尚未升级项目依赖。
+- 其余版本同样来自 npm registry 对应包的 /latest；直接依赖已全部升级并经过 Knip 与 OSV 检查。

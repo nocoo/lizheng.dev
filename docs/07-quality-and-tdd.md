@@ -1,6 +1,6 @@
 # 07 — 6DQ、Husky 与测试驱动开发
 
-状态：以下为设计定稿后的完整质量目标。用户已调整为先迭代设计，再收紧 6DQ，当前执行范围见 10。基本 lint、TS7、旧回归及手动浏览器 smoke 已运行；不能把现有 53 个测试通过称作新项目已达到 6DQ。
+状态：设计已批准，已进入完整质量门禁。v3.0.0 按用户授权先发布；门禁及后续质量证据见 11。旧 builder 不再属于覆盖率统计口径。
 
 ## nmem 来源
 
@@ -16,7 +16,7 @@
 
 | 维度 | 范围与通过条件 | 时机 |
 | --- | --- | --- |
-| L1 Unit/Component | 内容加载/校验、路由、locale/theme、掌机 ViewModel、元信息和发布模型；逻辑覆盖率各指标 ≥90%，301 分支 100% | pre-commit，目标 <30s |
+| L1 Unit/Component | 内容加载/校验、路由、locale/theme、掌机 ViewModel、元信息和发布模型；逻辑覆盖率各指标 ≥95%，301 分支 100% | pre-commit，目标 <30s |
 | L2 Integration/HTTP | 完整构建 + 真实 Worker + 真实资产；全部公开路由类别和两个访问域名族，逐项核对状态/内容/头/链接 | pre-push，目标 <3min |
 | L3 System/E2E | 浏览器真实阅读、主题语言切换、键盘/触控掌机、外链、打印、无 JS、慢网与视觉/A11y | CI 与阶段评审 |
 | G1 Static Analysis | TS7 strict + noUncheckedIndexedAccess；TS/TSX/CSS/脚本/文档静态检查 0 error、0 warning | pre-commit，与 L1 并行 |
@@ -71,7 +71,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 
 基础矩阵：两个站 × en/zh × light/dark × 桌面 1440×900 / 手机 390×844。另测 320×568、768×1024、手机横屏 844×390、200% 缩放。
 
-浏览器：Chromium 完整矩阵；WebKit 和 Firefox 跑核心流程及代表性小屏。补充真实 iOS Safari / Android Chrome 的手动交互抽查。
+浏览器：Chromium、WebKit、Firefox 均执行完整矩阵，并模拟触控。真实 iOS Safari / Android Chrome 的实机抽查属于后续人工验收，不将模拟器结果冒充实机证据。
 
 | 场景 | 通过标准 |
 | --- | --- |
@@ -85,11 +85,11 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 | 外链 | 验证 href/新窗口意图并拦截外网请求，不对 LinkedIn/GitHub/博客做业务操作 |
 | 视觉 | 字体、光影、机壳比例、像素头像、中文断行、主题材质人工签查 |
 
-自动视觉快照使用固定字体、时钟、主题与视口；稳定画面快照可冻结装饰动画，但必须另有正常动画的行为检查和录屏。不能只测 reduced-motion 后宣布真实动画通过。
+自动视觉快照固定浏览器、字体、主题与视口，按平台保存基线，遮罩页脚动态版本号；稳定画面快照可冻结装饰动画，但必须另有正常动画的行为检查和录屏。不能只测 reduced-motion 后宣布真实动画通过。
 
 ## G1 与文档检查
 
-计划命令：check:types（TS7）、lint（Biome error-on-warnings）、check:docs（Markdown 格式/内部链接/公开 allowlist）。lint 覆盖新应用 TSX/CSS、Worker 和脚本，不沿用现有“HTML 全排除”作为新架构豁免。
+实现命令：typecheck（TS7）、lint（Biome error-on-warnings）、check:docs（Markdown 格式/内部链接/公开 allowlist）。lint 覆盖新应用 TSX/CSS、Worker 和脚本，不沿用现有“HTML 全排除”作为新架构豁免。
 
 不使用 @ts-ignore、关闭 strict、隐藏 warning、扩大 ignore 或修改阈值来换取绿色。例外需有具体原因和追踪，不允许整树豁免。
 
@@ -108,7 +108,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 
 仍须满足：
 
-1. 独立 wrangler.test.jsonc，Worker 名 lizheng-dev-test；不含生产 routes/Custom Domains、账号凭据或生产资源 ID。
+1. 独立 wrangler.test.jsonc，Worker 名 lizheng-dev-l2-test / lizheng-dev-l3-test；不含生产 routes/Custom Domains、账号凭据或生产资源 ID。
 2. 构建前解析测试配置与资产路径；测试资源名统一 -test 后缀。开发 7046、L2 17046、L3 27046，工作目录临时隔离。
 3. 运行时验证本地/测试 origin 和实际配置；不能只设置 TEST=true 就放行。
 4. HTTP/浏览器设置出网 allowlist；拦截真实外链导航，redirect 不自动跟随。
@@ -130,8 +130,6 @@ hook 调用一个等待所有子任务的 gate runner，保留每项退出码，
 
 只维护 Husky 一套 hooks；旧 scripts/setup-hooks.sh 的 .git/hooks 软链机制在 M1 退役。CI 重跑门禁，防止本地 hook 未安装产生绕过。
 
-## 当前差距与目标评级
+## 证据与评级
 
-目前已有 L1 模板/Worker 测试、Biome、类型检查和 Husky 文件；覆盖率仅统计 build.js，pre-push 仍重复 L1，缺少真实 HTTP L2、浏览器 L3、完整 G2 和隔离验证。
-
-目标是六维全部有证据的 S；当前文档阶段不授予新系统评级。无存储的 N/A 必须有理由，不能把没有执行的 L2/L3 写成 N/A。
+实际 L1/L2/L3、G1/G2、D1 命令和结果记录在 11。UI 行为通过浏览器测试；应用逻辑覆盖率阈值四项均为 95%。Husky 门禁使用真实临时 Git fixture 验证失败能阻断，CI 重跑检查并只打包通过验证的源码。没有存储的子项为 N/A，真实设备和真实用户 Web Vitals 不计为已验证。
