@@ -97,6 +97,16 @@ for (const surface of ["resume", "landing"])
 						fullPage: true,
 						animations: "disabled",
 					});
+					if (info.project.name === "chromium")
+						await expect(page).toHaveScreenshot(
+							`${surface}-${locale}-${theme}-${width}.png`,
+							{
+								fullPage: true,
+								animations: "disabled",
+								mask: [page.locator(".site-version")],
+								maxDiffPixelRatio: 0.001,
+							},
+						);
 					expect(errors).toEqual([]);
 					await page.locator("[data-theme-toggle]").click();
 					await expect(page.locator("html")).toHaveAttribute(
@@ -178,7 +188,7 @@ for (const surface of ["resume", "landing"])
 		await context.route("**/*", (route) => {
 			try {
 				assertLocalRequest(route.request().url());
-				return route.request().resourceType() === "image"
+				return ["image", "font"].includes(route.request().resourceType())
 					? route.abort()
 					: route.continue();
 			} catch {
@@ -205,6 +215,32 @@ for (const surface of ["resume", "landing"])
 		}
 		await context.close();
 	});
+
+test("handheld responds to touch on a narrow screen", async ({ browser }) => {
+	const context = await browser.newContext({
+		hasTouch: true,
+		viewport: { width: 390, height: 844 },
+	});
+	await context.route("**/*", (route) => {
+		try {
+			assertLocalRequest(route.request().url());
+			return route.continue();
+		} catch {
+			return route.abort();
+		}
+	});
+	const page = await context.newPage();
+	await page.goto(`${origin("landing")}/zh/`);
+	await page.locator(".dpad-down").tap();
+	await expect(page.locator('[data-screen-link="1"]')).toHaveClass(
+		"is-selected",
+	);
+	await page.locator('[aria-label="Select：切换屏幕"]').tap();
+	await expect(page.locator("#screen")).toHaveClass("lcd-screen panel-about");
+	await page.locator(".button-b").tap();
+	await expect(page.locator("#screen")).toHaveClass("lcd-screen panel-home");
+	await context.close();
+});
 
 test("resume print retains identity and full document", async ({
 	page,

@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
 	testDir: "tests/browser",
+	snapshotPathTemplate: "{testDir}/snapshots/{platform}/{arg}{ext}",
 	fullyParallel: true,
 	workers: 3,
 	forbidOnly: true,

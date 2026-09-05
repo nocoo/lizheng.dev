@@ -24,9 +24,36 @@ jobs:
       l2-command: "bun run test:http"
     secrets: inherit
 
+  browser:
+    name: L3 browsers, accessibility and performance
+    # Match the reviewed macOS 26 font rasterization for visual baselines.
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: "26"
+      - uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: "1.4.0"
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - run: bunx playwright install --with-deps chromium firefox webkit
+      - run: bun run test:browser
+      - run: bun run test:performance
+      - uses: actions/upload-artifact@v7.0.1
+        if: always()
+        with:
+          name: browser-evidence-${{ github.sha }}
+          path: |
+            .test-results
+            playwright-report
+          if-no-files-found: error
+          retention-days: 14
+
   artifact:
     name: Verify and package Worker
-    needs: quality
+    needs: [quality, browser]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
