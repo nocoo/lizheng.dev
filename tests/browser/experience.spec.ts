@@ -214,7 +214,7 @@ for (const surface of ["resume", "landing"])
 		const page = await context.newPage();
 		await page.goto(`${origin(surface)}/zh/`);
 		await expect(page.locator("h1")).toBeVisible();
-		await expect(page.locator(".site-header .surface-links a")).toHaveCount(3);
+		await expect(page.locator(".site-header .surface-links a")).toHaveCount(4);
 		for (const link of await page
 			.locator(".site-header .surface-links a")
 			.all())

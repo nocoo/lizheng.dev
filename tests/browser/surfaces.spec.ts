@@ -15,7 +15,7 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const surface of ["resume", "landing"]) {
-	test(`${surface}: shared frame and all three surfaces stay available on every screen`, async ({
+	test(`${surface}: shared frame and portfolio stay available on every screen`, async ({
 		page,
 	}) => {
 		for (const locale of ["en", "zh"]) {
@@ -25,9 +25,10 @@ for (const surface of ["resume", "landing"]) {
 			const links = page.locator(".site-header .surface-links a");
 			await expect(links).toHaveText(
 				surface === "resume"
-					? ["Journal↗", "Play↗", "Résumé"]
-					: ["Journal↗", "Play", "Résumé↗"],
+					? ["Journal↗", "Play↗", "Résumé", "Portfolio↗"]
+					: ["Journal↗", "Play", "Résumé↗", "Portfolio↗"],
 			);
+			await expect(links.last()).toHaveAttribute("href", "https://hexly.ai");
 			await expect(
 				page.locator(`.site-header [data-surface-link="${surface}"]`),
 			).toHaveAttribute("aria-current", "true");

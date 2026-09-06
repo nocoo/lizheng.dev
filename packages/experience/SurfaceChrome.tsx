@@ -53,6 +53,11 @@ function SurfaceLinks({
 					{link.id !== surface && <span aria-hidden="true">↗</span>}
 				</a>
 			))}
+			{!footer && (
+				<a href="https://hexly.ai" lang="en">
+					Portfolio<span aria-hidden="true">↗</span>
+				</a>
+			)}
 		</nav>
 	);
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.4] - 2026-09-06
+
+- Add a shared `Portfolio` header link to `https://hexly.ai` on me and dev, matching the blog and keeping all four links visible on narrow screens.
+
 ## [3.1.3] - 2026-09-06
 
 - Keep cached device DOM and state out of layout with `display: none`, avoiding Firefox's repeated deferred-style work while preserving responsive controls and the full visible-device animation.
