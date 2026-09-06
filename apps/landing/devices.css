@@ -102,10 +102,10 @@
 	animation: object-exit 660ms cubic-bezier(0.5, 0.02, 0.76, 0.32) both;
 }
 .device-layer.is-cached {
+	/* Retain prepared DOM without offstage layout or deferred style resolution. */
+	display: none;
 	visibility: hidden;
 	pointer-events: none;
-	/* Keep the prepared DOM, but defer its rendering until the next entrance. */
-	content-visibility: hidden;
 }
 .device-layer.is-cached,
 .device-layer.is-cached * {

@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.1.3] - 2026-09-06
+
+- Keep cached device DOM and state out of layout with `display: none`, avoiding Firefox's repeated deferred-style work while preserving responsive controls and the full visible-device animation.
+- Deliver the approved connected-surface layout and rendering improvements after v3.1.2 passed performance checks but was blocked by Firefox browser-test timeouts.
+
 ## [3.1.2] - 2026-09-06
 
 - Defer rendering of cached, invisible devices while retaining their prepared content and state; restore full rendering during entrance and exit animations.
