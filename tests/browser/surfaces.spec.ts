@@ -73,16 +73,25 @@ for (const surface of ["resume", "landing"]) {
 		const toggle = page.locator("[data-theme-toggle]");
 		await expect(html).toHaveAttribute("data-theme-preference", "system");
 		await expect(html).toHaveAttribute("data-theme", "dark");
+		await expect(
+			page.locator('meta[name="theme-color"]').first(),
+		).toHaveAttribute("content", "#1e2824");
 		await expect(page.locator(".theme-system")).toBeVisible();
 		await toggle.focus();
 		await page.keyboard.press("Enter");
 		await expect(html).toHaveAttribute("data-theme-preference", "light");
 		await expect(html).toHaveAttribute("data-theme", "light");
+		await expect(
+			page.locator('meta[name="theme-color"]').last(),
+		).toHaveAttribute("content", "#f0f0e9");
 		await expect(page.locator(".theme-sun")).toBeVisible();
 		await expect(toggle).toHaveAccessibleName(/Light.*dark/);
 		await page.keyboard.press("Space");
 		await expect(html).toHaveAttribute("data-theme-preference", "dark");
 		await expect(page.locator(".theme-moon")).toBeVisible();
+		await expect(
+			page.locator('meta[name="theme-color"]').first(),
+		).toHaveAttribute("content", "#1e2824");
 		await page.emulateMedia({ colorScheme: "light" });
 		await expect(html).toHaveAttribute("data-theme", "dark");
 		await toggle.click();

@@ -1,4 +1,5 @@
 import type { Locale } from "../content/model";
+import { themeColors } from "./theme-colors";
 
 type ThemePreference = "system" | "light" | "dark";
 const nextTheme: Record<ThemePreference, ThemePreference> = {
@@ -52,6 +53,12 @@ export function setupPreferences() {
 		if (root.dataset.themePreference !== preference)
 			root.dataset.themePreference = preference;
 		if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
+		for (const meta of document.querySelectorAll<HTMLMetaElement>(
+			'meta[name="theme-color"]',
+		)) {
+			if (meta.content !== themeColors[theme])
+				meta.content = themeColors[theme];
+		}
 		for (const button of buttons) {
 			const label = themeLabel(
 				button.dataset.themeLocale === "zh" ? "zh" : "en",

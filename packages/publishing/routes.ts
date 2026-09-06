@@ -4,6 +4,48 @@ export function publicOrigin(surface: Surface) {
 	return surface === "landing" ? "https://lizheng.me" : "https://lizheng.dev";
 }
 
+/** Exact aliases only; preserve the path and query without re-encoding either. */
+export function canonicalHostRedirect(
+	url: URL,
+	testMode = false,
+): string | undefined {
+	const aliases: Record<string, string> = {
+		"www.lizheng.me": "lizheng.me",
+		"www.lizheng.dev": "lizheng.dev",
+		"www.lizheng.blog": "lizheng.blog",
+		...(testMode
+			? {
+					"www.landing.lizheng-test.localhost":
+						"landing.lizheng-test.localhost",
+					"www.resume.lizheng-test.localhost": "resume.lizheng-test.localhost",
+					"www.blog.lizheng-test.localhost": "blog.lizheng-test.localhost",
+				}
+			: {}),
+	};
+	const host = Object.hasOwn(aliases, url.hostname)
+		? aliases[url.hostname]
+		: undefined;
+	if (!host) return undefined;
+	const target = new URL(url);
+	target.hostname = host;
+	if (!host.endsWith(".localhost")) {
+		target.protocol = "https:";
+		target.port = "";
+	}
+	return target.href;
+}
+
+export function iconAssetPath(path: string): string | undefined {
+	const icons: Record<string, string> = {
+		"/favicon.svg": "/favicon.svg",
+		"/favicon.ico": "/favicon.ico",
+		"/apple-touch-icon.png": "/apple-touch-icon.png",
+		"/apple-touch-icon": "/apple-touch-icon.png",
+		"/apple-touch-icon-precomposed.png": "/apple-touch-icon.png",
+	};
+	return icons[path];
+}
+
 // These legacy patterns intentionally retain the production contract exactly.
 const legacyBlogPaths = [
 	/^\/\d{4}\/\d{2}\//,

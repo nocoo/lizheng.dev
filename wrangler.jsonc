@@ -32,6 +32,11 @@
 		{
 			"pattern": "www.lizheng.me/*",
 			"zone_name": "lizheng.me"
+		},
+		{
+			"pattern": "www.lizheng.blog",
+			"zone_name": "lizheng.blog",
+			"custom_domain": true
 		}
 	],
 	"version_metadata": {

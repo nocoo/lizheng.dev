@@ -21,6 +21,45 @@ function fixture(host = "lizheng.dev") {
 	};
 }
 
+for (const domain of ["lizheng.me", "lizheng.dev", "lizheng.blog"])
+	it(`normalizes www.${domain} to its HTTPS apex in one 301`, async () => {
+		for (const path of [
+			"/",
+			"/en/",
+			"/zh/content.md",
+			"/favicon.ico",
+			"/api/live",
+		])
+			for (const method of ["GET", "HEAD"]) {
+				const { request, asset } = fixture(`www.${domain}`);
+				const suffix = "?q=%E4%BD%A0%20a&x=1&x=2";
+				const result = await request(path + suffix, { method });
+				expect(result.status).toBe(301);
+				expect(result.headers.get("location")).toBe(
+					`https://${domain}${path}${suffix}`,
+				);
+				expect(await result.text()).toBe("");
+				expect(asset).not.toHaveBeenCalled();
+			}
+	});
+
+it("serves conventional icon paths from explicit public assets", async () => {
+	for (const path of [
+		"/favicon.ico",
+		"/apple-touch-icon.png",
+		"/apple-touch-icon",
+		"/apple-touch-icon-precomposed.png",
+	]) {
+		const { request, asset } = fixture();
+		expect((await request(path)).status).toBe(200);
+		expect(asset).toHaveBeenCalledOnce();
+		const [forwarded] = asset.mock.calls[0] as unknown as [Request];
+		expect(new URL(forwarded.url).pathname).toBe(
+			path === "/favicon.ico" ? path : "/apple-touch-icon.png",
+		);
+	}
+});
+
 describe("versioned dual-surface edge contract", () => {
 	for (const [host, surface] of [
 		["lizheng.dev", "resume"],
@@ -31,13 +70,20 @@ describe("versioned dual-surface edge contract", () => {
 		it(`${host}: live reports package version without fetching assets`, async () => {
 			const { request, asset } = fixture(host);
 			const result = await request("/api/live");
-			expect(result.status).toBe(200);
-			expect(await result.json()).toMatchObject({
-				status: "ok",
-				version,
-				surface,
-			});
-			expect(result.headers.get("cache-control")).toBe("no-store");
+			if (host?.startsWith("www.")) {
+				expect(result.status).toBe(301);
+				expect(result.headers.get("location")).toBe(
+					`https://${host.slice(4)}/api/live`,
+				);
+			} else {
+				expect(result.status).toBe(200);
+				expect(await result.json()).toMatchObject({
+					status: "ok",
+					version,
+					surface,
+				});
+				expect(result.headers.get("cache-control")).toBe("no-store");
+			}
 			expect(asset).not.toHaveBeenCalled();
 		});
 	}
@@ -83,13 +129,22 @@ for (const host of ["lizheng.me", "www.lizheng.me"]) {
 	for (const path of boundaries)
 		it(`does not redirect boundary ${host}${path} to blog`, async () => {
 			const result = await fixture(host).request(path);
-			expect(result.status).not.toBe(301);
+			expect(result.status).toBe(host.startsWith("www.") ? 301 : 404);
+			expect(result.headers.get("location")).toBe(
+				host.startsWith("www.") ? `https://lizheng.me${path}` : null,
+			);
 		});
 }
 for (const host of ["lizheng.dev", "www.lizheng.dev"])
 	for (const path of legacyPaths)
 		it(`no blog redirect on ${host}${path}`, async () => {
-			expect((await fixture(host).request(path)).status).not.toBe(301);
+			const result = await fixture(host).request(path);
+			if (host.startsWith("www.")) {
+				expect(result.status).toBe(301);
+				expect(result.headers.get("location")).toBe(
+					`https://lizheng.dev${path}`,
+				);
+			} else expect(result.status).not.toBe(301);
 		});
 for (const host of ["lizheng.dev", "lizheng.me"]) {
 	for (const path of [
@@ -186,8 +241,16 @@ it("HEAD does not return a body", async () => {
 });
 it("keeps missing APIs and arbitrary assets at 404", async () => {
 	for (const host of ["lizheng.dev", "lizheng.me", "www.lizheng.me"])
-		for (const path of ["/api/missing", "/missing.css", "/elsewhere"])
-			expect((await fixture(host).request(path)).status).toBe(404);
+		for (const path of ["/api/missing", "/missing.css", "/elsewhere"]) {
+			const result = await fixture(host).request(path);
+			if (host.startsWith("www.")) {
+				expect(result.status).toBe(301);
+				expect(result.headers.get("location")).toBe(
+					`https://${host.slice(4)}${path}`,
+				);
+				expect((await fixture(host.slice(4)).request(path)).status).toBe(404);
+			} else expect(result.status).toBe(404);
+		}
 });
 it("serves hashed assets with immutable cache", async () => {
 	const result = await fixture().request("/assets/a-abc.js");

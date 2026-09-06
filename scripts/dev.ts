@@ -7,6 +7,8 @@ import manifest from "../package.json" with { type: "json" };
 import { loadContent } from "../packages/content/model";
 import { llmsDocument } from "../packages/publishing/documents";
 import {
+	canonicalHostRedirect,
+	iconAssetPath,
 	legacyRedirect,
 	metadataFile,
 	publicOrigin,
@@ -100,7 +102,8 @@ server.on("request", async (request, response) => {
 			url.hostname,
 			testMode ? "landing.lizheng-test.localhost" : undefined,
 		);
-		const redirect = legacyRedirect(surface, url);
+		const redirect =
+			legacyRedirect(surface, url) ?? canonicalHostRedirect(url, testMode);
 		response.setHeader("X-Robots-Tag", "noindex");
 		if (redirect) {
 			response.writeHead(301, { Location: redirect }).end();
@@ -200,6 +203,8 @@ server.on("request", async (request, response) => {
 				.end(html);
 			return;
 		}
+		const icon = iconAssetPath(url.pathname);
+		if (icon) request.url = `${icon}${url.search}`;
 		vite.middlewares(request, response, () => {
 			response.writeHead(404).end("Not Found");
 		});

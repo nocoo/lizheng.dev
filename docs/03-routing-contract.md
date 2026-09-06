@@ -9,7 +9,7 @@
 - 博客跳转目标：<https://lizheng.blog>。
 - 继续使用 Cloudflare Workers + Static Assets，生产 Worker 标识保留 lizheng-dev。
 
-www 和非 www 均可访问；页面 canonical 使用非 www。新实现按 URL.hostname 分域，在本地测试中也正确处理端口。
+2026-09-07 按用户追加要求，两个 www 别名以 301 跳转到对应 HTTPS 主域名，保留 pathname 和 query。旧 .me 博客规则优先，www.me 的旧文章仍直接一跳到 blog。页面 canonical 使用非 www。新增 www.lizheng.blog 自定义域名也由此 Worker 提供固定 301，blog 主域名继续由 Railway 服务。按 URL.hostname 精确匹配别名，本地测试仅使用隔离域名。
 
 ## 旧 301 的精确匹配
 
@@ -51,15 +51,19 @@ www 和非 www 均可访问；页面 canonical 使用非 www。新实现按 URL.
 
 | 优先级 | 请求 | 行为 |
 | --- | --- | --- |
-| 1 | 内部资产前缀 /_sites/、.me 下旧 /cover/* | 404，禁止公开访问内部 HTML |
+| 1 | GET / HEAD 之外的方法 | 405；公开站点不接收写入 |
 | 2 | .me 旧博客模式 | 原样 301 到博客，包括 /sitemap.xml |
-| 3 | /robots.txt、/llms.txt、内容与新 sitemap 端点 | 按访问域名选择显式资源，200 与正确 Content-Type |
-| 4 | / | 302 到对应语言首页；客户端无需先执行语言跳转脚本 |
-| 5 | /en、/zh 及带斜杠形式 | 对应访问面的语言 HTML，200；canonical 为带斜杠 URL |
-| 6 | /assets/*、favicon、touch icon、OG 图片 | 只读取新构建的公开资产 |
-| 7 | 未知路径 | 两个访问面均返回真实 404，不把不存在的内容指向首页 |
+| 3 | 三个已声明的 www 别名 | 301 到对应 HTTPS 主域名，路径和 query 保留 |
+| 4 | 内部资产前缀 /_sites/、/cover/* 等 | 404，禁止公开访问内部 HTML |
+| 5 | /robots.txt、/llms.txt、内容与新 sitemap 端点 | 按访问域名选择显式资源，200 与正确 Content-Type |
+| 6 | / | 302 到对应语言首页；客户端无需先执行语言跳转脚本 |
+| 7 | /en、/zh 及带斜杠形式 | 对应访问面的语言 HTML，200；canonical 为带斜杠 URL |
+| 8 | /assets/*、favicon、touch icon、OG 图片 | 只读取新构建的公开资产 |
+| 9 | 未知路径 | 主域名返回真实 404；www 先归一化后得到同一 404 |
 
 根路径语言响应必须包含 Vary: Accept-Language，并避免把一个用户的语言 302 长期缓存给其他用户。显式语言 URL 不按浏览器偏好再跳转。
+
+公开图标包括 `/favicon.svg`、多尺寸 `/favicon.ico` 和 180px `/apple-touch-icon.png`。`/apple-touch-icon` 与 `/apple-touch-icon-precomposed.png` 直接读取同一 PNG。仅允许这些精确图标路径，不开放任意文件透传。
 
 不得把域名写进测试的网络目的地址来请求生产。测试经本地入口或测试域名区分主机，见 [07](07-quality-and-tdd.md)。
 

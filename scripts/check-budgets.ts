@@ -70,7 +70,16 @@ for (const surface of ["resume", "landing"])
 	}
 // Only reviewed public assets and the four content exports may enter the artifact.
 for (const entry of await readdir(root))
-	if (!["assets", "design-assets", "favicon.svg", "_sites"].includes(entry))
+	if (
+		![
+			"assets",
+			"design-assets",
+			"favicon.svg",
+			"favicon.ico",
+			"apple-touch-icon.png",
+			"_sites",
+		].includes(entry)
+	)
 		throw new Error(`Unexpected public build entry: ${entry}`);
 for (const file of await readdir(`${root}/assets`))
 	if ((await stat(`${root}/assets/${file}`)).size > 1024 * 1024)

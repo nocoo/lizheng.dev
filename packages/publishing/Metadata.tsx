@@ -1,4 +1,5 @@
 import type { PageContent } from "../content/model";
+import { themeColors } from "../experience/theme-colors";
 import { publicOrigin } from "./routes";
 import socialImages from "./social-images.json" with { type: "json" };
 
@@ -35,6 +36,7 @@ export function Metadata({
 				...new Set([
 					"https://lizheng.me/",
 					"https://lizheng.dev/",
+					"https://hexly.ai/",
 					...profile.links.map((link) => link.href),
 				]),
 			],
@@ -45,6 +47,16 @@ export function Metadata({
 			<title>{meta.title}</title>
 			<meta name="description" content={meta.description} />
 			<meta name="robots" content="index, follow, max-image-preview:large" />
+			<meta
+				name="theme-color"
+				media="(prefers-color-scheme: light)"
+				content={themeColors.light}
+			/>
+			<meta
+				name="theme-color"
+				media="(prefers-color-scheme: dark)"
+				content={themeColors.dark}
+			/>
 			<link rel="canonical" href={canonical} />
 			<link rel="alternate" hrefLang="en" href={`${origin}/en/`} />
 			<link rel="alternate" hrefLang="zh-CN" href={`${origin}/zh/`} />

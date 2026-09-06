@@ -22,6 +22,8 @@ beforeEach(() => {
 	remove = vi.fn();
 	delete root.dataset.theme;
 	delete root.dataset.themePreference;
+	document.head.innerHTML =
+		'<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f0f0e9"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e2824">';
 	document.body.innerHTML =
 		'<button data-theme-toggle data-theme-locale="en"></button>';
 	vi.stubGlobal("matchMedia", () => ({
@@ -51,6 +53,11 @@ it.each([null, "invalid", "system"])(
 		matches = true;
 		change?.();
 		expect(root.dataset.theme).toBe("dark");
+		expect(
+			[...document.querySelectorAll('meta[name="theme-color"]')].map((meta) =>
+				meta.getAttribute("content"),
+			),
+		).toEqual(["#1e2824", "#1e2824"]);
 		expect(root.style.colorScheme).toBe("dark");
 		cleanup();
 	},
@@ -163,6 +170,13 @@ it.each([null, "invalid", "system", "light", "dark"])(
 			preference === "system" ? "dark" : preference,
 		);
 		expect(root.style.colorScheme).toBe(root.dataset.theme);
+		expect(
+			[...document.querySelectorAll('meta[name="theme-color"]')].map((meta) =>
+				meta.getAttribute("content"),
+			),
+		).toEqual(
+			Array(2).fill(root.dataset.theme === "dark" ? "#1e2824" : "#f0f0e9"),
+		);
 	},
 );
 

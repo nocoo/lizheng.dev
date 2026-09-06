@@ -3,6 +3,8 @@ import manifest from "../package.json" with { type: "json" };
 const { version } = manifest;
 
 import {
+	canonicalHostRedirect,
+	iconAssetPath,
 	legacyRedirect,
 	metadataFile,
 	publicOrigin,
@@ -49,7 +51,10 @@ export default {
 			headers.set("Allow", "GET, HEAD");
 			return respond("Method Not Allowed", 405);
 		}
-		const redirect = legacyRedirect(surface, url);
+		// Legacy .me posts keep their direct, single-hop redirect to the blog.
+		const redirect =
+			legacyRedirect(surface, url) ??
+			canonicalHostRedirect(url, env.ENVIRONMENT === "test");
 		if (redirect) {
 			headers.set("Location", redirect);
 			headers.set("Cache-Control", "public, max-age=86400");
@@ -81,17 +86,20 @@ export default {
 		const page = /^\/(en|zh)\/?$/.exec(path);
 		const markdown = /^\/(en|zh)(?:\.md|\/content\.md)$/.exec(path);
 		const llms = path === "/llms.txt";
+		const icon = iconAssetPath(path);
 		if (
 			page ||
 			markdown ||
 			llms ||
-			/^\/(?:assets\/|design-assets\/|favicon\.svg$)/.test(path)
+			icon ||
+			/^\/(?:assets\/|design-assets\/)/.test(path)
 		) {
 			const target = new URL(url);
 			target.search = "";
 			if (page) target.pathname = `/_sites/${surface}/${page[1]}/index.html`;
 			if (markdown) target.pathname = `/_sites/${surface}/${markdown[1]}.md`;
 			if (llms) target.pathname = `/_sites/${surface}/llms.txt`;
+			if (icon) target.pathname = icon;
 			const asset = await env.ASSETS.fetch(
 				new Request(target, {
 					method: request.method,

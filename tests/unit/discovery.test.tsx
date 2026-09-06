@@ -126,6 +126,27 @@ for (const surface of ["landing", "resume"] as const)
 			expect(meta("og:image:width")).toBe("1200");
 			expect(meta("og:image:height")).toBe("630");
 			expect(
+				[...document.querySelectorAll('meta[name="theme-color"]')].map(
+					(entry) => [
+						entry.getAttribute("media"),
+						entry.getAttribute("content"),
+					],
+				),
+			).toEqual([
+				["(prefers-color-scheme: light)", "#f0f0e9"],
+				["(prefers-color-scheme: dark)", "#1e2824"],
+			]);
+			expect(
+				document
+					.querySelector('link[rel="apple-touch-icon"]')
+					?.getAttribute("href"),
+			).toBe("/apple-touch-icon.png");
+			expect(
+				document
+					.querySelector('link[type="image/x-icon"]')
+					?.getAttribute("href"),
+			).toBe("/favicon.ico");
+			expect(
 				document
 					.querySelector('head link[type="text/markdown"]')
 					?.getAttribute("href"),
@@ -145,6 +166,7 @@ for (const surface of ["landing", "resume"] as const)
 				expect.arrayContaining([
 					"https://lizheng.me/",
 					"https://lizheng.dev/",
+					"https://hexly.ai/",
 					"https://x.com/zhengli",
 				]),
 			);

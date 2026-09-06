@@ -5,10 +5,41 @@ import { expect, it } from "vitest";
 import { Markdown } from "../../apps/resume/Markdown";
 import { renderPage, themeScript } from "../../packages/publishing/render";
 import {
+	canonicalHostRedirect,
 	metadataFile,
 	selectLocale,
 	selectSurface,
 } from "../../packages/publishing/routes";
+
+it("limits canonical host redirects to declared aliases and keeps local redirects isolated", () => {
+	for (const host of [
+		"lizheng.me",
+		"constructor",
+		"www.hexly.ai",
+		"www.lizheng.me.evil.test",
+		"www.landing.lizheng-test.localhost",
+	]) {
+		expect(
+			canonicalHostRedirect(new URL(`https://${host}/en/`)),
+		).toBeUndefined();
+	}
+	expect(
+		canonicalHostRedirect(
+			new URL("http://www.lizheng.me:8080/zh/?a=%20&b=1&b=2"),
+		),
+	).toBe("https://lizheng.me/zh/?a=%20&b=1&b=2");
+	for (const surface of ["landing", "resume", "blog"]) {
+		expect(
+			canonicalHostRedirect(
+				new URL(
+					`http://www.${surface}.lizheng-test.localhost:17046/en/?q=%E4%BD%A0`,
+				),
+				true,
+			),
+		).toBe(`http://${surface}.lizheng-test.localhost:17046/en/?q=%E4%BD%A0`);
+	}
+});
+
 import { securityHeaders } from "../../packages/publishing/security";
 
 for (const surface of ["resume", "landing"] as const)

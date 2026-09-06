@@ -170,7 +170,18 @@ T1 的浏览器 innerText 与无障碍树已有正常边界，不能把原始文
 
 me 的 12 类旧博客规则继续原样 301，包含 `/sitemap.xml`，保留查询参数、编码与匹配边界；本站 sitemap 仍为 robots → `/sitemap-index.xml` → `/sitemap-pages.xml`。`.dev` 不应用旧博客规则。
 
-www 和无尾斜杠语言 URL 目前有正确 canonical，本轮保持可用。永久归一化跳转作为后续单独决定，不与旧博客跳转混在同一泛化规则中。sitemap 的 lastmod 只有在有真实内容修改时间来源时才增加。
+2026-09-07 用户追加 P1 要求后，www 归一化已纳入实现：me/dev 的 www 以精确主机匹配 301 到对应 apex，旧 .me 博客规则仍优先直接跳到 blog。新增 www.lizheng.blog 也由共享 Worker 提供对应 301。无尾斜杠语言 URL 保持可用并提供正确 canonical。sitemap 的 lastmod 只有在有真实内容修改时间来源时才增加。
+
+### P1/P2 追加修复（2026-09-07）
+
+线上复核发现：me/dev 的 www 语言页直接返回 200，根路径的语言 302 也保留 www；两个平面均缺少传统 ICO、Apple touch icon 和 theme-color。blog 已有有效 favicon 与明暗主题色，但 Apple touch icon 404，www.blog 尚无 DNS。Firefly 的首页分享卡片、touch icon 和人物关联在其仓库修复；三个 www 别名统一由本仓库的边缘路由处理。
+
+- `canonicalHostRedirect` 只接受三个明确声明的 www 域名；永久跳转保留路径、编码和重复查询参数，目标固定为对应 HTTPS 主域名。测试别名只在 test 模式生效并保留本地协议／端口。旧 .me 博客规则仍优先，旧文章不增加中间跳转。
+- 两种语言、两个平面的 Person `sameAs` 增加 `https://hexly.ai/`，继续与现有公开档案去重。
+- `scripts/create-icons.ts` 从现有四方块 SVG 生成含 16/32/48px PNG 图层的真实 ICO，以及不透明的 180px Apple touch icon。HTML 显式链接两类回退图标；裸 `/apple-touch-icon` 和 `-precomposed.png` 别名读取同一 PNG。预算门禁仅增加这两个经审阅的公开文件。
+- 两组带 media 的 theme-color 支持无 JavaScript 的系统主题；首屏主题脚本和手动切换同步浏览器主题色。共享颜色为 `#f0f0e9` / `#1e2824`，CSP 哈希仍由脚本内容自动生成。
+
+先补断言复现了 16 项失败，包括缺少图标／主题色、www 返回 302 而非 301、主题变化后浏览器颜色不同步。修复后 L1 的 259 项通过，真实 Worker HTTP 的 5 组矩阵通过（包含 ICO 各图层解码、Apple PNG、www.blog 和 GET/HEAD），Chrome／Firefox／WebKit 的 6 项主题回归通过。完整 CI 与发布后的线上验证仍由现有流水线执行。
 
 ## 7. 实施顺序与文件范围
 

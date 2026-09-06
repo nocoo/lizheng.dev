@@ -7,18 +7,56 @@ const { version } = manifest;
 import { assertLocalRequest } from "../../packages/quality/isolation";
 
 const base = "http://127.0.0.1:17046";
+
+test("the blog www alias preserves the full path and query in a single canonical 301", async ({
+	request,
+}) => {
+	for (const path of [
+		"/",
+		"/2026/09/post?q=%E4%BD%A0%20a&x=1&x=2",
+		"/favicon.ico",
+	]) {
+		assertLocalRequest(base + path);
+		for (const method of ["GET", "HEAD"]) {
+			const response = await request.fetch(base + path, {
+				method,
+				headers: { Host: "www.blog.lizheng-test.localhost" },
+				maxRedirects: 0,
+			});
+			expect(response.status()).toBe(301);
+			expect(response.headers().location).toBe(
+				`http://blog.lizheng-test.localhost${path}`,
+			);
+			expect(await response.body()).toHaveLength(0);
+		}
+	}
+});
+
 for (const surface of ["resume", "landing"])
 	for (const prefix of ["", "www."]) {
 		const host = `${prefix}${surface}.lizheng-test.localhost`;
+		const apex = `${surface}.lizheng-test.localhost`;
 		test(`${host}: complete route matrix and real assets`, async ({
 			request,
 		}) => {
 			async function get(path: string, headers: Record<string, string> = {}) {
 				assertLocalRequest(base + path);
-				return request.get(base + path, {
+				const response = await request.get(base + path, {
 					headers: { Host: host, ...headers },
 					maxRedirects: 0,
 				});
+				if (
+					prefix &&
+					!response.headers().location?.startsWith("https://lizheng.blog")
+				) {
+					expect(response.status(), `canonical host: ${host}${path}`).toBe(301);
+					expect(response.headers().location).toBe(`http://${apex}${path}`);
+					return request.get(base + path, {
+						headers: { Host: apex, ...headers },
+						maxRedirects: 0,
+					});
+				}
+				return response;
 			}
 			const live = await get("/api/live");
 			expect(await live.json()).toMatchObject({
@@ -33,7 +71,7 @@ for (const surface of ["resume", "landing"])
 			]) {
 				const root = await get("/", { "Accept-Language": accept ?? "" });
 				expect(root.status()).toBe(302);
-				expect(root.headers().location).toBe(`http://${host}/${locale}/`);
+				expect(root.headers().location).toBe(`http://${apex}/${locale}/`);
 			}
 			for (const locale of ["en", "zh"]) {
 				const page = await get(`/${locale}/`);
@@ -74,7 +112,7 @@ for (const surface of ["resume", "landing"])
 				);
 				expect((await get(`/${locale}`)).status()).toBe(200);
 				const head = await request.head(`${base}/${locale}/`, {
-					headers: { Host: host },
+					headers: { Host: apex },
 					maxRedirects: 0,
 				});
 				expect(head.status()).toBe(200);
@@ -118,8 +156,32 @@ for (const surface of ["resume", "landing"])
 				"/sitemap-index.xml",
 				"/sitemap-pages.xml",
 				"/favicon.svg",
+				"/favicon.ico",
+				"/apple-touch-icon.png",
+				"/apple-touch-icon",
+				"/apple-touch-icon-precomposed.png",
 			])
 				expect((await get(path)).status()).toBe(200);
+			const touch = await get("/apple-touch-icon.png");
+			expect(touch.headers()["content-type"]).toContain("image/png");
+			expect(await sharp(await touch.body()).metadata()).toMatchObject({
+				width: 180,
+				height: 180,
+			});
+			const ico = await get("/favicon.ico");
+			expect(ico.headers()["content-type"]).toMatch(
+				/image\/(?:x-icon|vnd.microsoft.icon)/,
+			);
+			const data = await ico.body();
+			expect(data.subarray(0, 6)).toEqual(Buffer.from([0, 0, 1, 0, 3, 0]));
+			for (const [index, size] of [16, 32, 48].entries()) {
+				const entry = 6 + index * 16;
+				const length = data.readUInt32LE(entry + 8);
+				const offset = data.readUInt32LE(entry + 12);
+				expect(
+					await sharp(data.subarray(offset, offset + length)).metadata(),
+				).toMatchObject({ width: size, height: size });
+			}
 			const llms = await get("/llms.txt", {
 				"User-Agent": "Python-urllib/3.14",
 			});
