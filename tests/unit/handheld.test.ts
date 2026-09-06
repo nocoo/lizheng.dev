@@ -204,6 +204,60 @@ it("keeps controls and drag gestures steady instead of moving their hit targets"
 		cleanup();
 	}
 });
+it("holds only running tilt transitions over controls and resumes them on exit or cleanup", () => {
+	const scene = document.querySelector<HTMLElement>(".console-scene");
+	const shell = document.querySelector<HTMLElement>(".console-shell");
+	const button = shell?.querySelector("button");
+	if (!scene || !shell || !button) throw new Error("Missing fixture");
+	const animation = (property: string, initial = "running") => {
+		let state = initial;
+		return {
+			transitionProperty: property,
+			get playState() {
+				return state;
+			},
+			pause: vi.fn(() => {
+				state = "paused";
+			}),
+			play: vi.fn(() => {
+				state = "running";
+			}),
+			cancel: () => {
+				state = "idle";
+			},
+		};
+	};
+	const tilt = animation("transform");
+	const color = animation("background-color");
+	const alreadyPaused = animation("transform", "paused");
+	const entrance = { playState: "running", pause: vi.fn() };
+	Object.defineProperty(shell, "getAnimations", {
+		value: () => [tilt, color, alreadyPaused, entrance],
+	});
+	const cleanup = setupHandheld();
+	button.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }));
+	button.dispatchEvent(new MouseEvent("pointermove", { bubbles: true }));
+	expect(tilt.pause).toHaveBeenCalledOnce();
+	expect(color.pause).not.toHaveBeenCalled();
+	expect(alreadyPaused.pause).not.toHaveBeenCalled();
+	expect(entrance.pause).not.toHaveBeenCalled();
+	scene.dispatchEvent(new MouseEvent("pointermove"));
+	expect(tilt.play).toHaveBeenCalledOnce();
+	button.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }));
+	scene.dispatchEvent(new Event("pointerleave"));
+	expect(tilt.play).toHaveBeenCalledTimes(2);
+	scene.dispatchEvent(new MouseEvent("pointermove", { buttons: 1 }));
+	tilt.cancel();
+	document.dispatchEvent(new Event("visibilitychange"));
+	expect(tilt.play).toHaveBeenCalledTimes(2);
+	tilt.play();
+	button.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }));
+	cleanup();
+	expect(tilt.play).toHaveBeenCalledTimes(4);
+	button.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }));
+	expect(tilt.pause).toHaveBeenCalledTimes(4);
+});
+
 it("tolerates missing optional DOM without leaking listeners", () => {
 	document.body.innerHTML = "";
 	const cleanup = setupHandheld();

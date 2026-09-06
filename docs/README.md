@@ -1,6 +1,6 @@
 # Active documentation
 
-Updated: 2026-09-06. The original rebuild is documented in 11; the six-device personal journey and its current verification are in 13.
+Updated: 2026-09-06. The original rebuild is documented in 11; the six-device personal journey is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14.
 
 ## Reading order
 
@@ -20,6 +20,7 @@ Updated: 2026-09-06. The original rebuild is documented in 11; the six-device pe
 | [11 — Release implementation](11-release-implementation.md) | Current quality evidence, release plan and rollback |
 | [12 — Local development](12-local-development.md) | Styles on first paint, HMR and isolated editing regression tests |
 | [13 — Objects along the way](13-devices-journey.md) | Six interactive personal devices, chapter navigation and motion |
+| [14 — Connected surfaces](14-connected-surfaces.md) | Shared navigation, automatic/light/dark themes, layout and six keepsake families |
 
 ## Authority and status
 

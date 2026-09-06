@@ -1,8 +1,9 @@
 import type { PageContent } from "../../packages/content/model";
-import { Brand } from "../../packages/experience/Brand";
 import { Icon } from "../../packages/experience/Icons";
-import { Preferences } from "../../packages/experience/Preferences";
-import { Version } from "../../packages/experience/Version";
+import {
+	SurfaceFooter,
+	SurfaceHeader,
+} from "../../packages/experience/SurfaceChrome";
 import { Markdown } from "./Markdown";
 
 export function ResumePage({ content }: { content: PageContent }) {
@@ -13,20 +14,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 			<a className="skip-link" href="#main">
 				{zh ? "跳到正文" : "Skip to content"}
 			</a>
-			<header className="resume-topbar">
-				<Brand locale={locale} />
-				<div className="resume-topbar-right">
-					<a
-						className="personal-link"
-						href={`${content.origins?.landing ?? "https://lizheng.me"}/${locale}/`}
-						data-surface-link="landing"
-					>
-						{zh ? "另一面的我" : "The playful side"}
-						<Icon name="arrow" />
-					</a>
-					<Preferences locale={locale} />
-				</div>
-			</header>
+			<SurfaceHeader content={content} />
 			<main id="main" className="resume-layout">
 				<aside className="resume-sidebar">
 					<div className="sidebar-inner">
@@ -86,9 +74,10 @@ export function ResumePage({ content }: { content: PageContent }) {
 								<span className="portrait-caption">ZHENG LI / 李征</span>
 								<img
 									className="resume-keepsake"
-									src="/design-assets/capsule.svg"
-									width="42"
-									height="48"
+									data-keepsake-image
+									src="/design-assets/keepsakes/gameboy.svg"
+									width="200"
+									height="230"
 									alt=""
 									aria-hidden="true"
 								/>
@@ -125,18 +114,9 @@ export function ResumePage({ content }: { content: PageContent }) {
 							</div>
 						</section>
 					))}
-					<footer className="resume-footer">
-						<p lang="en">
-							{meta.copyright.replace("{year}", content.year)}
-							<Version />
-						</p>
-						<a href="#main">
-							{zh ? "回到顶部" : "Back to top"}
-							<span aria-hidden="true">↑</span>
-						</a>
-					</footer>
 				</div>
 			</main>
+			<SurfaceFooter content={content} />
 		</>
 	);
 }

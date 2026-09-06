@@ -2,10 +2,16 @@ export function Icon({
 	name,
 	className = "",
 }: {
-	name: "sun" | "moon" | "arrow" | "print" | "chevron";
+	name: "system" | "sun" | "moon" | "arrow" | "print" | "chevron";
 	className?: string;
 }) {
 	const paths = {
+		system: (
+			<>
+				<rect x="3" y="4" width="18" height="13" rx="2" />
+				<path d="M12 17v4m-4 0h8" />
+			</>
+		),
 		sun: (
 			<>
 				<circle cx="12" cy="12" r="4" />

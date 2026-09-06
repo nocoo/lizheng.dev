@@ -69,7 +69,30 @@ export function setupHandheld() {
 		);
 	const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	const pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+	let heldTilt: Animation[] = [];
+	const releaseTilt = () => {
+		for (const animation of heldTilt)
+			if (animation.playState === "paused") animation.play();
+		heldTilt = [];
+	};
+	const holdTilt = () => {
+		for (const animation of activeShell()?.getAnimations?.() ?? []) {
+			if (
+				"transitionProperty" in animation &&
+				animation.transitionProperty === "transform" &&
+				animation.playState === "running"
+			) {
+				animation.pause();
+				heldTilt.push(animation);
+			}
+		}
+	};
+	const over = (event: PointerEvent) => {
+		if (event.target instanceof Element && event.target.closest("button, a"))
+			holdTilt();
+	};
 	const reset = () => {
+		releaseTilt();
 		const shell = activeShell();
 		shell?.style.setProperty("--tilt-y", "0deg");
 		shell?.style.setProperty("--tilt-x", "0deg");
@@ -77,12 +100,16 @@ export function setupHandheld() {
 		shell?.style.setProperty("--light-y", "20%");
 	};
 	const move = (event: PointerEvent) => {
-		// Keep small controls under the pointer and wheel geometry steady while dragging.
+		// Hold the current pose: ignoring new tilt targets alone leaves the
+		// previous transition moving small controls away from the pointer.
 		if (
 			event.buttons ||
 			(event.target instanceof Element && event.target.closest("button, a"))
-		)
+		) {
+			holdTilt();
 			return;
+		}
+		releaseTilt();
 		const shell = activeShell();
 		if (motion.matches || !pointer.matches || !scene || !shell) return;
 		const rect = scene.getBoundingClientRect();
@@ -148,6 +175,7 @@ export function setupHandheld() {
 			);
 		}
 	};
+	scene?.addEventListener("pointerover", over);
 	scene?.addEventListener("pointermove", move);
 	scene?.addEventListener("pointerleave", reset);
 	motion.addEventListener("change", reset);
@@ -155,6 +183,7 @@ export function setupHandheld() {
 	document.addEventListener("keydown", keydown);
 	return () => {
 		cancelAnimationFrame(frame);
+		scene?.removeEventListener("pointerover", over);
 		scene?.removeEventListener("pointermove", move);
 		scene?.removeEventListener("pointerleave", reset);
 		motion.removeEventListener("change", reset);

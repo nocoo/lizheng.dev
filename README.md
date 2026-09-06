@@ -1,6 +1,6 @@
 # lizheng.dev / lizheng.me
 
-Two independent experiences, one Cloudflare Worker: a bilingual résumé at [lizheng.dev](https://lizheng.dev) and an interactive collection of personal devices at [lizheng.me](https://lizheng.me). Both support English/Chinese and light/dark. Legacy blog URLs on lizheng.me retain their exact 301 redirects to lizheng.blog.
+Two independent experiences, one Cloudflare Worker: a bilingual résumé at [lizheng.dev](https://lizheng.dev) and an interactive collection of personal devices at [lizheng.me](https://lizheng.me). Both support English/Chinese and system/light/dark themes, with a shared frame linking Journal, Play and Résumé. Legacy blog URLs on lizheng.me retain their exact 301 redirects to lizheng.blog.
 
 Content comes from the four public Markdown documents in [docs/content](docs/content/README.md). React 19, Vite 8 and TypeScript 7 generate complete HTML; core information and links work without JavaScript. The résumé uses a lightweight DOM client, and the device gallery hydrates its native screens, controls and chapter navigation.
 
@@ -32,3 +32,5 @@ The existing GitHub CI → Release pipeline is retained. Successful main CI uplo
 [Local development behavior](docs/12-local-development.md) describes first-paint styles, React/CSS hot updates and content refresh tests.
 
 [Objects along the way](docs/13-devices-journey.md) describes the six devices, interactive screens, chapter carousel and motion.
+
+[Connected surfaces](docs/14-connected-surfaces.md) describes the common navigation and widths, compact personal-page footer, automatic theme preference and six document-scoped keepsake families shared with the blog.

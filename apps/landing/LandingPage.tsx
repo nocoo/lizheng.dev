@@ -1,12 +1,12 @@
 import type { PageContent } from "../../packages/content/model";
-import { Brand } from "../../packages/experience/Brand";
-import { Icon } from "../../packages/experience/Icons";
-import { Preferences } from "../../packages/experience/Preferences";
-import { Version } from "../../packages/experience/Version";
+import {
+	SurfaceFooter,
+	SurfaceHeader,
+} from "../../packages/experience/SurfaceChrome";
 import { DeviceGallery } from "./DeviceGallery";
 
 export function LandingPage({ content }: { content: PageContent }) {
-	const { locale, meta } = content;
+	const { locale } = content;
 	const zh = locale === "zh";
 
 	return (
@@ -14,22 +14,8 @@ export function LandingPage({ content }: { content: PageContent }) {
 			<a className="skip-link" href="#screen">
 				{zh ? "跳到个人信息与链接" : "Skip to profile and links"}
 			</a>
-			<header className="landing-header">
-				<Brand locale={locale} />
-				<span className="header-edition">PERSONAL SPACE — VOL. 01</span>
-				<div className="landing-header-right">
-					<a
-						className="resume-link"
-						href={`${content.origins?.resume ?? "https://lizheng.dev"}/${locale}/`}
-						data-surface-link="resume"
-					>
-						{zh ? "简历" : "Résumé"}
-						<Icon name="arrow" />
-					</a>
-					<Preferences locale={locale} />
-				</div>
-			</header>
-			<main className="landing-main">
+			<SurfaceHeader content={content} />
+			<main id="main" className="landing-main">
 				<div className="landing-intro">
 					<div className="intro-kicker" lang="en">
 						<span className="tiny-square" />
@@ -107,21 +93,7 @@ export function LandingPage({ content }: { content: PageContent }) {
 				</div>
 				<DeviceGallery content={content} />
 			</main>
-			<footer className="landing-footer" lang="en">
-				<span>
-					{meta.copyright.replace("{year}", content.year)}
-					<Version />
-				</span>
-				<span className="footer-location">
-					<span className="location-dot" aria-hidden="true" />
-					{meta.location}
-					<span className="footer-time">UTC +08:00</span>
-				</span>
-				<a href="https://lizheng.blog/">
-					The story continues
-					<Icon name="arrow" />
-				</a>
-			</footer>
+			<SurfaceFooter content={content} />
 		</>
 	);
 }

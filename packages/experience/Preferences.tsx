@@ -1,5 +1,6 @@
 import type { Locale } from "../content/model";
 import { Icon } from "./Icons";
+import { themeLabel } from "./theme";
 
 export function Preferences({ locale }: { locale: Locale }) {
 	return (
@@ -30,12 +31,12 @@ export function Preferences({ locale }: { locale: Locale }) {
 				className="theme-toggle"
 				type="button"
 				data-theme-toggle
-				aria-pressed={false}
+				data-theme-locale={locale}
 				suppressHydrationWarning
-				aria-label={
-					locale === "zh" ? "切换浅色与深色主题" : "Toggle light and dark theme"
-				}
+				aria-label={themeLabel(locale, "system")}
+				title={themeLabel(locale, "system")}
 			>
+				<Icon name="system" className="theme-system" />
 				<Icon name="sun" className="theme-sun" />
 				<Icon name="moon" className="theme-moon" />
 			</button>

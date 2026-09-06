@@ -242,6 +242,54 @@ for (const [index, model] of models.entries()) {
 				});
 }
 
+test("native controls stay under the pointer during an unfinished tilt", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto(`${origin}/en/`);
+	await page.getByRole("button", { name: "Pause autoplay" }).click();
+	for (const chapter of [1, 2]) {
+		await page.locator(`[data-chapter="${chapter}"]`).click();
+		await settle(page);
+		const device = page.locator("[data-device-active]");
+		const control = device.locator('[data-control="down"]');
+		await page.locator(".gallery-stage").hover({ position: { x: 15, y: 30 } });
+		await settle(page);
+		const scene = await page.locator(".gallery-stage").boundingBox();
+		if (!scene) throw new Error("Missing scene");
+		await page.mouse.move(
+			scene.x + scene.width - 15,
+			scene.y + scene.height - 30,
+		);
+		const box = await control.boundingBox();
+		if (!box) throw new Error("Missing control");
+		const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+		await page.mouse.move(point.x, point.y);
+		const drift = await control.evaluate(async (button) => {
+			const start = button.getBoundingClientRect();
+			await new Promise<void>((resolve) => setTimeout(resolve, 250));
+			const end = button.getBoundingClientRect();
+			return Math.hypot(end.x - start.x, end.y - start.y);
+		});
+		expect(drift).toBeLessThan(0.5);
+		const selected = Number(
+			await device
+				.locator("[data-screen-link].is-selected")
+				.getAttribute("data-screen-link"),
+		);
+		await page.mouse.click(point.x, point.y, { delay: 80 });
+		await expect(
+			device.locator(`[data-screen-link="${(selected + 1) % 4}"]`),
+		).toHaveClass("is-selected");
+		await page.mouse.move(0, 0);
+		await settle(page);
+		await expect(device.locator("[data-device-shell]")).toHaveCSS(
+			"transform",
+			"matrix(1, 0, 0, 1, 0, 0)",
+		);
+	}
+});
+
 test("automatic chapters preserve reading time, wrap and offer explicit playback", async ({
 	page,
 }) => {
@@ -324,6 +372,46 @@ test("rapid chapter changes, nonlinear motion, stronger tilt and reduced motion"
 					),
 			),
 	).toBe(true);
+	const arrival = await page.locator(".is-entering").evaluate((node) => {
+		const animation = node
+			.getAnimations()
+			.find((item) => (item as CSSAnimation).animationName === "object-enter");
+		if (!animation?.effect) throw new Error("Missing arrival animation");
+		const time = animation.currentTime;
+		const duration = Number(animation.effect.getTiming().duration);
+		const direction = Number(
+			getComputedStyle(node).getPropertyValue("--direction"),
+		);
+		animation.pause();
+		const samples = [0.5, 0.6, 0.7, 0.8, 0.9, 1].map((progress) => {
+			animation.currentTime = duration * progress;
+			const matrix = new DOMMatrixReadOnly(getComputedStyle(node).transform);
+			return {
+				x: matrix.m41 * direction,
+				y: matrix.m42,
+				z: matrix.m43,
+				scale: Math.hypot(matrix.m11, matrix.m12, matrix.m13),
+				distance: Math.hypot(matrix.m41, matrix.m42, matrix.m43),
+			};
+		});
+		animation.currentTime = time;
+		animation.play();
+		return samples;
+	});
+	let previousDistance = Infinity;
+	let previousStep = Infinity;
+	for (const sample of arrival) {
+		// Actual interpolated poses must approach the destination from one side.
+		expect(sample.x).toBeGreaterThanOrEqual(-0.001);
+		expect(sample.y).toBeGreaterThanOrEqual(-0.001);
+		expect(sample.z).toBeLessThanOrEqual(0.001);
+		expect(sample.scale).toBeLessThanOrEqual(1.00001);
+		expect(sample.distance).toBeLessThanOrEqual(previousDistance + 0.001);
+		const step = previousDistance - sample.distance;
+		expect(step).toBeLessThanOrEqual(previousStep + 0.001);
+		previousDistance = sample.distance;
+		previousStep = step;
+	}
 	await page.clock.fastForward(1100);
 	await settle(page);
 	const stage = await page.locator(".gallery-stage").boundingBox();
@@ -440,6 +528,9 @@ test("Nokia slider and iPod click wheel work with real pointer gestures", async 
 	).toHaveClass("is-selected");
 	await page.locator('[data-chapter="3"]').click();
 	await settle(page);
+	// The shared sticky header can cover the top of a partly scrolled wheel.
+	// Bring the whole device into view before performing the physical gesture.
+	await page.locator(".ipod-position").scrollIntoViewIfNeeded();
 	const wheel = await page.locator(".ipod-wheel").boundingBox();
 	if (!wheel) throw new Error("Missing wheel");
 	const center = {

@@ -27,6 +27,7 @@ export async function renderPage(
 		content.origins = {
 			resume: "https://lizheng-dev.dev.hexly.ai",
 			landing: "https://lizheng-me.dev.hexly.ai",
+			blog: "https://firefly.dev.hexly.ai",
 		};
 		content.links = content.links.map((link) => ({
 			...link,

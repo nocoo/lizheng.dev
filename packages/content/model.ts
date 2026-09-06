@@ -28,7 +28,7 @@ interface ContentMeta {
 	location?: string;
 }
 export interface PageContent {
-	origins?: Record<Surface, string>;
+	origins?: Record<Surface, string> & { blog?: string };
 	year: string;
 	surface: Surface;
 	locale: Locale;

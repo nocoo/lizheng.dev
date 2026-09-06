@@ -16,6 +16,7 @@ const sources = [
 	"packages/experience/Preferences.tsx",
 	"packages/experience/theme.ts",
 	"packages/experience/Brand.tsx",
+	"packages/experience/SurfaceChrome.tsx",
 	"docs/content/03-landing-en.md",
 	"docs/content/04-landing-zh.md",
 ];

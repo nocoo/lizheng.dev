@@ -2,6 +2,12 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Connected surfaces follow-up — v3.1.1
+
+The authorized patch release connects Journal, Play and Résumé through a common header, automatic/light/dark themes, aligned widths and six keepsake families. Play uses a single footer band, a 2:3 introduction/device grid and equal vertical padding. Device arrivals decelerate smoothly, and an unfinished pointer tilt pauses over controls to keep hit areas steady. [14](14-connected-surfaces.md) records the final local evidence and the shared Firefly implementation.
+
+The [v3.1.1 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.1) records final CI and production verification. The previous live version was v3.1.0, deployment `01b6c533-ddc6-4ff7-aa66-654459bfac84`; it is the rollback reference for this patch. Earlier release evidence follows.
+
 ## Device journey follow-up — v3.1.0
 
 The 2026-09-06 extension turns the personal page into six interactive hardware chapters, with a 12-second sequential carousel, stronger pointer tilt, nonlinear depth transitions and native screens carrying the same public information. Wired earbuds, floppy disks, cycling gloves and a helmet accompany the existing Game Boy decorations. A self-hosted CJK subset keeps the small screens consistent, and the scene's shadow now fades into transparency below the devices. Design, model assumptions and current verification are recorded in [13 — Objects along the way](13-devices-journey.md).

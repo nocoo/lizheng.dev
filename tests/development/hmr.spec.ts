@@ -166,6 +166,7 @@ test("resume template edits refresh with styles and retain reading position", as
 }) => {
 	await page.goto("http://resume.lizheng-test.localhost:27046/en/");
 	await page.locator("[data-theme-toggle]").click();
+	await page.locator("[data-theme-toggle]").click();
 	await page.evaluate(() => scrollTo(0, 600));
 	const file = join(fixture, "apps/resume/ResumePage.tsx");
 	const original = await readFile(file, "utf8");
@@ -195,6 +196,7 @@ for (const surface of ["resume", "landing"])
 		page,
 	}) => {
 		await page.goto(`http://${surface}.lizheng-test.localhost:27046/en/`);
+		await page.locator("[data-theme-toggle]").click();
 		await page.locator("[data-theme-toggle]").click();
 		await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 		await page
@@ -237,10 +239,10 @@ test("handheld component refresh retains the selected screen", async ({
 	try {
 		await writeFile(
 			file,
-			original.replace("PERSONAL SPACE — VOL. 01", "PERSONAL SPACE — VOL. 02"),
+			original.replace("PLAYER 01 / ZHENG LI", "PLAYER 02 / ZHENG LI"),
 		);
-		await expect(page.locator(".header-edition")).toHaveText(
-			"PERSONAL SPACE — VOL. 02",
+		await expect(page.locator(".intro-kicker")).toHaveText(
+			"PLAYER 02 / ZHENG LI",
 		);
 		await expect(page.locator("html")).toHaveAttribute(
 			"data-hmr-session",

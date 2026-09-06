@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { assertLocalRequest } from "../../packages/quality/isolation";
+import { chooseKeepsake } from "./keepsake-fixture";
 
 const origin = (surface: string) =>
 	`http://${surface}.lizheng-test.localhost:27046`;
@@ -26,6 +27,7 @@ for (const surface of ["resume", "landing"])
 						height: width === 390 ? 844 : 900,
 					});
 					await page.emulateMedia({ colorScheme: theme });
+					await chooseKeepsake(page, "gameboy");
 					const errors: string[] = [];
 					page.on("pageerror", (error) => errors.push(error.message));
 					page.on("console", (message) => {
@@ -49,7 +51,7 @@ for (const surface of ["resume", "landing"])
 						theme,
 					);
 					await expect(page.locator("h1")).toBeVisible();
-					await expect(page.locator(".brand-grid")).toBeVisible();
+					await expect(page.locator(".site-header .brand-grid")).toBeVisible();
 					await expect(page.locator(".site-version")).toContainText(
 						/^v\d+\.\d+\.\d+$/,
 					);
@@ -115,13 +117,22 @@ for (const surface of ["resume", "landing"])
 					expect(errors).toEqual([]);
 					await page.locator("[data-theme-toggle]").click();
 					await expect(page.locator("html")).toHaveAttribute(
+						"data-theme-preference",
+						"light",
+					);
+					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme",
-						theme === "light" ? "dark" : "light",
+						"light",
+					);
+					await page.locator("[data-theme-toggle]").click();
+					await expect(page.locator("html")).toHaveAttribute(
+						"data-theme-preference",
+						"dark",
 					);
 					await page.reload();
 					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme",
-						theme === "light" ? "dark" : "light",
+						"dark",
 					);
 					await page
 						.locator(`.languages a[href="/${locale === "en" ? "zh" : "en"}/"]`)
@@ -203,6 +214,11 @@ for (const surface of ["resume", "landing"])
 		const page = await context.newPage();
 		await page.goto(`${origin(surface)}/zh/`);
 		await expect(page.locator("h1")).toBeVisible();
+		await expect(page.locator(".site-header .surface-links a")).toHaveCount(3);
+		for (const link of await page
+			.locator(".site-header .surface-links a")
+			.all())
+			await expect(link).toBeVisible();
 		await expect(
 			page.locator(surface === "resume" ? ".resume-socials a" : ".lcd-links a"),
 		).toHaveCount(4);
