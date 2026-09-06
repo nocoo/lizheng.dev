@@ -1,6 +1,6 @@
 # Active documentation
 
-Updated: 2026-09-06. The original rebuild is documented in 11; the six-device personal journey is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14.
+Updated: 2026-09-07. The original rebuild is documented in 11; the six-device design is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14. Document 15 records the SEO, agent access and differentiated social previews, including the current direct copy, local implementation and remaining verification. Its copy supersedes the earlier narrative direction; the device design remains in use.
 
 ## Reading order
 
@@ -21,6 +21,7 @@ Updated: 2026-09-06. The original rebuild is documented in 11; the six-device pe
 | [12 — Local development](12-local-development.md) | Styles on first paint, HMR and isolated editing regression tests |
 | [13 — Objects along the way](13-devices-journey.md) | Six interactive personal devices, chapter navigation and motion |
 | [14 — Connected surfaces](14-connected-surfaces.md) | Shared navigation, automatic/light/dark themes, layout and six keepsake families |
+| [15 — SEO, agents and social previews](15-seo-agent-social.md) | Audit baseline, implemented bilingual metadata and artwork, public content parity, crawler access and verification status |
 
 ## Authority and status
 

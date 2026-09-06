@@ -1,11 +1,11 @@
-import type { PageContent } from "../../packages/content/model";
+import type { LandingContent } from "../../packages/content/model";
 import {
 	SurfaceFooter,
 	SurfaceHeader,
 } from "../../packages/experience/SurfaceChrome";
 import { DeviceGallery } from "./DeviceGallery";
 
-export function LandingPage({ content }: { content: PageContent }) {
+export function LandingPage({ content }: { content: LandingContent }) {
 	const { locale } = content;
 	const zh = locale === "zh";
 
@@ -19,19 +19,19 @@ export function LandingPage({ content }: { content: PageContent }) {
 				<div className="landing-intro">
 					<div className="intro-kicker" lang="en">
 						<span className="tiny-square" />
-						PLAYER 01 / ZHENG LI
+						ZHENG LI / PERSONAL WEBSITE
 					</div>
 					<h1>
 						{zh ? (
 							<>
-								保持好奇<span className="headline-period">.</span>
+								你好<span className="headline-period">，</span>
 								<br />
-								<span className="outline-word">继续探索</span>
+								<span className="outline-word">我是李征</span>
+								<span className="headline-period">。</span>
 							</>
 						) : (
 							<>
-								A little
-								<br />
+								A little <br />
 								<span className="outline-word">bit of me</span>
 								<span className="headline-period">.</span>
 							</>
@@ -40,26 +40,25 @@ export function LandingPage({ content }: { content: PageContent }) {
 					<p className="intro-description">
 						{zh ? (
 							<>
-								工程师的理性。
+								软件工程与团队管理。
 								<br />
-								探索者的好奇心。
+								Web、移动、数据与 AI。
 							</>
 						) : (
 							<>
-								An engineer’s mind.
-								<br />
-								An explorer’s curiosity.
+								Software engineering and team leadership. <br />
+								Web, mobile, data and AI.
 							</>
 						)}
 					</p>
-					<p className="intro-story">
-						{zh
-							? "凭着喜欢，把一些东西带在身边。久而久之，连看世界的方式也有了它们的影子。旧物收着回忆，有些习惯与好奇，却一直随身。"
-							: "I chose a few things to carry with me. In time, they left their own habits and curiosities behind. The screens may have gone quiet, but something of them is still in the way I see the world."}
-					</p>
-					<div className="intro-invitation" lang="en">
+					<p className="intro-story">{content.journey.story}</p>
+					<div className="intro-invitation">
 						<span className="invitation-line" />
-						<span>A familiar feeling. A new adventure.</span>
+						<span>
+							{zh
+								? "点击屏幕，访问我的链接。"
+								: "Open a link on the device screen."}
+						</span>
 					</div>
 					<div className="desktop-instructions" id="device-keyboard-help">
 						<dl className="keyboard-legend">
@@ -90,6 +89,21 @@ export function LandingPage({ content }: { content: PageContent }) {
 								: "Or tap any link on the screen."}
 						</p>
 					</div>
+					<details className="journey-directory">
+						<summary>
+							<h2>{content.journey.title}</h2>
+						</summary>
+						<ol>
+							{content.journey.chapters.map((chapter) => (
+								<li key={chapter.id}>
+									<h3>
+										{chapter.name} <span lang="en">· {chapter.chapter}</span>
+									</h3>
+									<p>{chapter.description}</p>
+								</li>
+							))}
+						</ol>
+					</details>
 				</div>
 				<DeviceGallery content={content} />
 			</main>

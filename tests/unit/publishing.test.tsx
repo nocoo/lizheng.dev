@@ -30,7 +30,7 @@ for (const surface of ["resume", "landing"] as const)
 					surface === "resume" ? "https://lizheng.dev" : "https://lizheng.me";
 				expect(html).toContain(`rel="canonical" href="${origin}/${locale}/"`);
 				expect(html).toContain(`href="/${locale}/content.md"`);
-				expect(html).toContain('hreflang="x-default"');
+				expect(html).toMatch(/hreflang="x-default"/i);
 				expect(html).toContain('"@type":"ProfilePage"');
 				expect(html).not.toContain("docs/archive");
 				if (preview) expect(html).toContain("dev.hexly.ai");

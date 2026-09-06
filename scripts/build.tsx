@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { build, type Manifest } from "vite";
 import { loadContent, type Surface } from "../packages/content/model";
+import { llmsDocument } from "../packages/publishing/documents";
 import { renderPage } from "../packages/publishing/render";
 import { metadataFile } from "../packages/publishing/routes";
 
@@ -53,7 +54,6 @@ for (const surface of ["resume", "landing"] as Surface[]) {
 	}
 	for (const path of [
 		"/robots.txt",
-		"/llms.txt",
 		"/sitemap-index.xml",
 		"/sitemap-pages.xml",
 	]) {
@@ -61,6 +61,13 @@ for (const surface of ["resume", "landing"] as Surface[]) {
 		if (metadata)
 			await writeFile(`${output}/_sites/${surface}${path}`, metadata.body);
 	}
+	await writeFile(
+		`${output}/_sites/${surface}/llms.txt`,
+		llmsDocument(
+			await loadContent(surface, "en"),
+			await loadContent(surface, "zh"),
+		),
+	);
 }
 await rm(`${output}/.vite`, { recursive: true });
 await rm(destination, { recursive: true, force: true });

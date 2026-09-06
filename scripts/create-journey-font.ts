@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { loadContent } from "../packages/content/model";
 
-// Only public UI strings and the two public landing documents are sent to the font subset service.
+// Only public UI, landing documents and résumé share-card labels go to the font subset service.
 const sources = [
 	"apps/landing/LandingPage.tsx",
 	"apps/landing/DeviceGallery.tsx",
@@ -20,9 +21,17 @@ const sources = [
 	"docs/content/03-landing-en.md",
 	"docs/content/04-landing-zh.md",
 ];
+const social = await Promise.all(
+	["en", "zh"].map(async (locale) => {
+		const { meta } = await loadContent("resume", locale as "en" | "zh");
+		return `${meta.socialHeading}\n${meta.socialLabel}`;
+	}),
+);
 const content = (
 	await Promise.all(sources.map((path) => readFile(path, "utf8")))
-).join("");
+)
+	.concat(social)
+	.join("");
 const characters = [...new Set(content.match(/[\u3000-\u9fff\uff00-\uffef]/gu))]
 	.sort()
 	.join("");

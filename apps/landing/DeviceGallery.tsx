@@ -7,7 +7,7 @@ import {
 	useState,
 	useSyncExternalStore,
 } from "react";
-import type { PageContent } from "../../packages/content/model";
+import type { LandingContent } from "../../packages/content/model";
 import {
 	createDeviceGallery,
 	deviceChapters,
@@ -45,7 +45,7 @@ const devices = {
 	honda: memo(Honda, sameScene),
 };
 
-export function DeviceGallery({ content }: { content: PageContent }) {
+export function DeviceGallery({ content }: { content: LandingContent }) {
 	const zh = content.locale === "zh";
 	const root = useRef<HTMLElement>(null);
 	const [gallery] = useState(createDeviceGallery);
@@ -81,9 +81,9 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 				dispatch({ type: "focus", index }),
 			);
 	}, [gallery, dispatch]);
-	const current = deviceChapters[
+	const current = content.journey.chapters[
 		snapshot.index
-	] as (typeof deviceChapters)[number];
+	] as LandingContent["journey"]["chapters"][number];
 	const layers = Array.from(
 		new Set([
 			...Array.from({ length: prepared }, (_, index) => index),
@@ -96,7 +96,7 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 		<section
 			className="device-gallery"
 			ref={root}
-			aria-label={zh ? "我的设备旅程" : "Objects along my journey"}
+			aria-label={zh ? "交互设备展示" : "Interactive devices"}
 			aria-roledescription={zh ? "轮播" : "carousel"}
 			aria-describedby="device-keyboard-help"
 			aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Enter"
@@ -107,9 +107,9 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 			<div className="journey-header" lang="en">
 				<span>
 					<i />
-					OBJECTS ALONG THE WAY
+					SIX INTERACTIVE DEVICES
 				</span>
-				<span>A PERSONAL COLLECTION</span>
+				<span>PROFILE &amp; LINKS</span>
 			</div>
 			<div
 				className="console-scene gallery-stage"
@@ -131,7 +131,7 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 						<div className="stage-ground" aria-hidden="true" />
 						<div className="orbit-label" lang="en">
 							<span />
-							SOME THINGS STAY WITH YOU
+							SELECT A DEVICE
 						</div>
 						{layers.map((index) => {
 							const chapter = deviceChapters[
@@ -168,7 +168,7 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 			>
 				<div key={current.id}>
 					<h2>{current.name}</h2>
-					<p>{current[content.locale]}</p>
+					<p>{current.description}</p>
 				</div>
 				<span className="journey-count" aria-hidden="true">
 					0{snapshot.index + 1}
@@ -178,7 +178,7 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 			<div
 				className="chapter-rail"
 				role="tablist"
-				aria-label={zh ? "选择人生章节" : "Choose a chapter"}
+				aria-label={zh ? "选择设备" : "Choose a device"}
 			>
 				{deviceChapters.map((chapter, index) => (
 					<button
@@ -229,11 +229,11 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 					<i className={snapshot.running ? "is-playing" : ""} />
 					{snapshot.running
 						? zh
-							? "顺着回忆，继续前行"
-							: "A few things that shaped me"
+							? "正在自动切换设备"
+							: "Cycling through devices"
 						: zh
-							? "停留片刻，随心探索"
-							: "Take a moment. Look around."}
+							? "自动切换已暂停"
+							: "Autoplay paused"}
 				</span>
 				<button
 					type="button"

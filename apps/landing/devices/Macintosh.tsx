@@ -79,7 +79,7 @@ export function Macintosh(props: DeviceProps) {
 									</div>
 									<div className="mac-window-status">
 										<span>{zh ? "4 个项目" : "4 items"}</span>
-										<span>{zh ? "保持好奇" : "Stay curious"}</span>
+										<span>{zh ? "个人链接" : "Profile links"}</span>
 										<i />
 									</div>
 								</div>

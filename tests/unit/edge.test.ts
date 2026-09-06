@@ -3,6 +3,9 @@ import manifest from "../../package.json" with { type: "json" };
 
 const { version } = manifest;
 
+import socialImages from "../../packages/publishing/social-images.json" with {
+	type: "json",
+};
 import worker from "../../worker/index";
 
 function fixture(host = "lizheng.dev") {
@@ -109,6 +112,7 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 				const f = fixture(host);
 				const result = await f.request(`/${locale}${suffix}?ref=a`);
 				expect(result.status).toBe(200);
+				expect(result.headers.get("x-robots-tag")).toBeNull();
 				const path = new URL(
 					(f.asset.mock.calls[0] as unknown as [Request])[0].url,
 				).pathname;
@@ -118,6 +122,12 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 				);
 				if (suffix.includes("md"))
 					expect(result.headers.get("content-type")).toContain("text/markdown");
+				expect(result.headers.get("link")).toContain(
+					`https://${host}/llms.txt`,
+				);
+				expect(result.headers.get("link")).toContain(
+					suffix.includes("md") ? 'rel="canonical"' : 'type="text/markdown"',
+				);
 				expect(result.headers.get("cache-control")).toBe(
 					suffix.includes("md")
 						? "public, max-age=0, must-revalidate"
@@ -126,7 +136,6 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 			});
 	for (const path of [
 		"/robots.txt",
-		"/llms.txt",
 		"/sitemap-index.xml",
 		"/sitemap-pages.xml",
 	])
@@ -137,6 +146,19 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 			expect(await result.text()).toContain(`https://${host}/`);
 			expect(f.asset).not.toHaveBeenCalled();
 		});
+	it(`serves ${host} llms from its public build artifact`, async () => {
+		const f = fixture(host);
+		const result = await f.request("/llms.txt");
+		expect(result.status).toBe(200);
+		expect(result.headers.get("content-type")).toBe(
+			"text/plain; charset=utf-8",
+		);
+		expect(result.headers.get("cache-control")).toBe("public, max-age=300");
+		const [request] = f.asset.mock.calls[0] as unknown as [Request];
+		expect(new URL(request.url).pathname).toBe(
+			`/_sites/${host === "lizheng.me" ? "landing" : "resume"}/llms.txt`,
+		);
+	});
 	it(`locale root ${host}`, async () => {
 		for (const [accept, locale] of [
 			["zh-CN, en;q=0.5", "zh"],
@@ -163,14 +185,34 @@ it("HEAD does not return a body", async () => {
 	expect(await result.text()).toBe("");
 });
 it("keeps missing APIs and arbitrary assets at 404", async () => {
-	for (const path of ["/api/missing", "/missing.css", "/elsewhere"])
-		expect((await fixture().request(path)).status).toBe(404);
+	for (const host of ["lizheng.dev", "lizheng.me", "www.lizheng.me"])
+		for (const path of ["/api/missing", "/missing.css", "/elsewhere"])
+			expect((await fixture(host).request(path)).status).toBe(404);
 });
 it("serves hashed assets with immutable cache", async () => {
 	const result = await fixture().request("/assets/a-abc.js");
 	expect(result.headers.get("cache-control")).toContain("immutable");
 	expect(result.headers.get("cache-control")).not.toContain("no-transform");
 	expect(result.headers.get("content-security-policy")).toContain("sha256-");
+});
+it("caches only published social image names immutably", async () => {
+	for (const path of Object.values(socialImages).flatMap((locales) =>
+		Object.values(locales),
+	)) {
+		const f = fixture();
+		expect((await f.request(path)).headers.get("cache-control")).toContain(
+			"immutable",
+		);
+		f.asset.mockImplementation(async () => new Response(null, { status: 404 }));
+		expect((await f.request(path)).headers.get("cache-control")).not.toContain(
+			"immutable",
+		);
+	}
+	expect(
+		(await fixture().request("/design-assets/social-landing.png")).headers.get(
+			"cache-control",
+		),
+	).not.toContain("immutable");
 });
 it("does not cache missing assets forever or expose asset redirects", async () => {
 	for (const status of [301, 302, 307, 308, 304, 404]) {
@@ -197,7 +239,7 @@ it("uses isolated host mapping and deployment metadata", async () => {
 		surface: "landing",
 		deployment: "test-id",
 	});
-	expect(result.headers.get("x-robots-tag")).toContain("noindex");
+	expect(result.headers.get("x-robots-tag")).toBe("noindex");
 	expect(result.headers.get("content-security-policy")).not.toContain(
 		"upgrade-insecure-requests",
 	);

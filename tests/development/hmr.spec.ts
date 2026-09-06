@@ -78,6 +78,52 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const surface of ["resume", "landing"])
+	test(`${surface}: public discovery and unknown URLs match the Worker`, async ({
+		request,
+	}) => {
+		const origin = "http://127.0.0.1:27046";
+		const canonical = `https://lizheng.${surface === "resume" ? "dev" : "me"}`;
+		const headers = { host: `${surface}.lizheng-test.localhost` };
+		assertLocalRequest(origin);
+		const llms = await request.get(`${origin}/llms.txt`, { headers });
+		expect(llms.status()).toBe(200);
+		expect(llms.headers()["content-type"]).toContain("text/plain");
+		expect(llms.headers()["x-robots-tag"]).toBe("noindex");
+		const guide = await llms.text();
+		for (const locale of ["en", "zh"]) {
+			expect(guide).toContain(`${canonical}/${locale}/content.md`);
+			const page = await request.get(`${origin}/${locale}/`, { headers });
+			expect(page.status()).toBe(200);
+			expect(page.headers().link).toContain(
+				`<${canonical}/llms.txt>; rel="service-doc"`,
+			);
+			expect(page.headers().link).toContain(
+				`<${canonical}/${locale}/content.md>; rel="alternate"`,
+			);
+			const markdown = await request.get(`${origin}/${locale}/content.md`, {
+				headers,
+			});
+			expect(markdown.status()).toBe(200);
+			expect(markdown.headers()["content-type"]).toContain("text/markdown");
+			expect(markdown.headers().link).toContain(
+				`<${canonical}/${locale}/>; rel="canonical"`,
+			);
+		}
+		const missing = await request.get(`${origin}/does-not-exist`, {
+			headers,
+			maxRedirects: 0,
+		});
+		expect(missing.status()).toBe(404);
+		const root = await request.get(origin, {
+			headers: { ...headers, "accept-language": "zh" },
+			maxRedirects: 0,
+		});
+		expect(root.status()).toBe(302);
+		expect(root.headers().location).toBe("/zh/");
+		expect(root.headers().vary).toBe("Accept-Language");
+	});
+
+for (const surface of ["resume", "landing"])
 	test(`${surface}: styles are available before JavaScript`, async ({
 		page,
 	}) => {
@@ -174,7 +220,7 @@ test("resume template edits refresh with styles and retain reading position", as
 		await writeFile(
 			file,
 			original.replace(
-				"ENGINEERING · LEADERSHIP · CURIOSITY",
+				"ENGINEERING · LEADERSHIP · AI",
 				"ENGINEERING · UPDATED PREVIEW",
 			),
 		);
@@ -239,10 +285,13 @@ test("handheld component refresh retains the selected screen", async ({
 	try {
 		await writeFile(
 			file,
-			original.replace("PLAYER 01 / ZHENG LI", "PLAYER 02 / ZHENG LI"),
+			original.replace(
+				"ZHENG LI / PERSONAL WEBSITE",
+				"ZHENG LI / UPDATED PREVIEW",
+			),
 		);
 		await expect(page.locator(".intro-kicker")).toHaveText(
-			"PLAYER 02 / ZHENG LI",
+			"ZHENG LI / UPDATED PREVIEW",
 		);
 		await expect(page.locator("html")).toHaveAttribute(
 			"data-hmr-session",

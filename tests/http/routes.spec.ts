@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import sharp from "sharp";
 import manifest from "../../package.json" with { type: "json" };
 
 const { version } = manifest;
@@ -40,7 +41,26 @@ for (const surface of ["resume", "landing"])
 				expect(page.headers()["cache-control"]).toBe(
 					"public, max-age=0, must-revalidate, no-transform",
 				);
+				expect(page.headers().link).toContain('rel="service-doc"');
+				expect(page.headers().link).toContain(
+					`/${locale}/content.md>; rel="alternate"`,
+				);
 				const html = await page.text();
+				const imageUrl = /<meta property="og:image" content="([^"]+)"/.exec(
+					html,
+				)?.[1];
+				expect(imageUrl).toBeTruthy();
+				const imagePath = new URL(imageUrl as string).pathname;
+				const image = await get(imagePath, {
+					"User-Agent": "facebookexternalhit/1.1",
+				});
+				expect(image.status()).toBe(200);
+				expect(image.headers()["content-type"]).toContain("image/jpeg");
+				expect(image.headers()["cache-control"]).toContain("immutable");
+				expect(await sharp(await image.body()).metadata()).toMatchObject({
+					width: 1200,
+					height: 630,
+				});
 				expect(html).toContain(
 					`<html lang="${locale === "zh" ? "zh-CN" : "en"}">`,
 				);
@@ -68,6 +88,7 @@ for (const surface of ["resume", "landing"])
 					"public, max-age=0, must-revalidate",
 				);
 				expect(md.headers()["content-type"]).toContain("text/markdown");
+				expect(md.headers().link).toContain(`/${locale}/>; rel="canonical"`);
 				expect(await md.text()).toContain(`surface: "${surface}"`);
 				expect(await (await get(`/${locale}.md`)).text()).toBe(await md.text());
 				const assets = new Set(
@@ -99,6 +120,16 @@ for (const surface of ["resume", "landing"])
 				"/favicon.svg",
 			])
 				expect((await get(path)).status()).toBe(200);
+			const llms = await get("/llms.txt", {
+				"User-Agent": "Python-urllib/3.14",
+			});
+			expect(llms.headers()["content-type"]).toContain("text/plain");
+			expect(await llms.text()).toContain(
+				"Public pages welcome search and AI crawlers.",
+			);
+			expect(await llms.text()).toContain(
+				surface === "resume" ? "微软首席软件工程经理" : "六个可交互的设备界面",
+			);
 			for (const path of [
 				"/_sites/landing/en/index.html",
 				"/docs/content/03-landing-en.md",
@@ -107,9 +138,7 @@ for (const surface of ["resume", "landing"])
 				"/api/unknown",
 			])
 				expect((await get(path)).status(), path).toBe(404);
-			expect((await get("/unknown")).status()).toBe(
-				surface === "landing" ? 302 : 404,
-			);
+			expect((await get("/unknown")).status()).toBe(404);
 			for (const path of [
 				"/2024/01/post",
 				"/category/tech",

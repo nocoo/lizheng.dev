@@ -138,7 +138,7 @@ export function Garmin(props: DeviceProps) {
 					>
 						<div className="garmin-status">
 							<span aria-hidden="true">⌁ GPS</span>
-							<strong>{zh ? "探索" : "EXPLORE"}</strong>
+							<strong>{zh ? "路线" : "ROUTE"}</strong>
 							<Battery />
 						</div>
 						<div className="garmin-screen-content" key={state.boot}>
@@ -150,7 +150,7 @@ export function Garmin(props: DeviceProps) {
 							<div className="garmin-map-area">
 								<CourseMap />
 								<span className="garmin-course-label">
-									{zh ? "下一站，保持好奇" : "NEXT TURN: CURIOSITY"}
+									{zh ? "骑行路线" : "CYCLING ROUTE"}
 								</span>
 							</div>
 							<p className="native-bio">{content.intro}</p>

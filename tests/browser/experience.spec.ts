@@ -222,6 +222,29 @@ for (const surface of ["resume", "landing"])
 		await expect(
 			page.locator(surface === "resume" ? ".resume-socials a" : ".lcd-links a"),
 		).toHaveCount(4);
+		for (const locale of ["en", "zh"]) {
+			await page.goto(`${origin(surface)}/${locale}/`);
+			await expect(
+				page.locator(`footer a[href="/${locale}/content.md"]`),
+			).toBeVisible();
+			await expect(page.locator('footer a[href="/llms.txt"]')).toBeVisible();
+			if (surface === "landing") {
+				await page.locator(".journey-directory summary").focus();
+				await page.keyboard.press("Enter");
+				await expect(page.locator(".journey-directory")).toHaveAttribute(
+					"open",
+					"",
+				);
+				await expect(page.locator(".journey-directory h3")).toHaveCount(6);
+				await expect(
+					page.locator(".journey-directory li").last(),
+				).toContainText(
+					locale === "en"
+						? "Speed, gears and motorcycle instruments."
+						: "车速、挡位与摩托仪表。",
+				);
+			}
+		}
 		for (const viewport of [
 			{ width: 320, height: 568 },
 			{ width: 768, height: 1024 },

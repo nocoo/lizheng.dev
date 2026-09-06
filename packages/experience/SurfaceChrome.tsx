@@ -92,17 +92,29 @@ export function SurfaceFooter({ content }: { content: PageContent }) {
 					<Brand locale={content.locale} />
 					<p lang="en">
 						{content.meta.copyright.replace("{year}", content.year)}
+						{" · "}
 						<Version />
 					</p>
 				</div>
 				{compact && <LocationSignature />}
 				<SurfaceLinks content={content} footer />
+				<nav
+					className="public-formats"
+					aria-label={content.locale === "zh" ? "阅读格式" : "Reading formats"}
+				>
+					<a href={`/${content.locale}/content.md`} lang="en">
+						Markdown
+					</a>
+					<a href="/llms.txt" lang="en">
+						llms.txt
+					</a>
+				</nav>
 			</div>
 			{!compact && (
 				<div className="site-footer-bottom">
 					<LocationSignature />
 					<span className="footer-curiosity" lang="en">
-						BUILT WITH CURIOSITY.
+						WEB · MOBILE · AI
 					</span>
 					<a href="#main">
 						{content.locale === "zh" ? "返回顶部" : "Back to top"}

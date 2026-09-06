@@ -1,5 +1,5 @@
 import { type ReactNode, useId } from "react";
-import type { PageContent } from "../../../packages/content/model";
+import type { LandingContent } from "../../../packages/content/model";
 import type { DeviceId } from "../../../packages/experience/device-gallery";
 import type {
 	HandheldAction,
@@ -7,7 +7,7 @@ import type {
 } from "../../../packages/experience/handheld";
 
 export interface DeviceProps {
-	content: PageContent;
+	content: LandingContent;
 	state: HandheldState;
 	active: boolean;
 	dispatch: (action: HandheldAction) => void;
@@ -109,7 +109,7 @@ export function DeviceLinks({
 	return (
 		<nav
 			className={`native-links links-${variant}`}
-			aria-label={content.locale === "zh" ? "探索我的链接" : "Explore my links"}
+			aria-label={content.locale === "zh" ? "个人链接" : "Profile links"}
 		>
 			{content.links.map((link, index) => (
 				<a
@@ -143,13 +143,13 @@ export function DeviceAbout({
 			<span className="about-star" aria-hidden="true">
 				✳
 			</span>
-			<strong lang="en">STAY CURIOUS.</strong>
+			<strong lang="en">ABOUT THIS PAGE</strong>
 			<p>
 				{zh
-					? "每一个系统，都值得认真迭代。"
-					: "Every system deserves thoughtful iteration."}
+					? "这里汇集了我的博客、简历和公开主页。"
+					: "Links to my blog, résumé and public profiles."}
 			</p>
-			<small>{zh ? "返回，继续探索" : "Go back. Keep exploring."}</small>
+			<small>{zh ? "返回链接列表" : "Return to the links"}</small>
 		</div>
 	);
 }

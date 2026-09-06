@@ -6,43 +6,31 @@ export const deviceChapters = [
 		id: "gameboy",
 		name: "Game Boy",
 		chapter: "PLAY",
-		en: "The first adventure.",
-		zh: "好奇心，从这里开始。",
 	},
 	{
 		id: "nokia",
 		name: "Nokia 5300",
 		chapter: "CONNECT",
-		en: "A world in my pocket.",
-		zh: "把整个世界，装进口袋。",
 	},
 	{
 		id: "macintosh",
 		name: "Macintosh Plus",
 		chapter: "CREATE",
-		en: "A blank canvas. Endless possibilities.",
-		zh: "从一块屏幕，打开无限可能。",
 	},
 	{
 		id: "ipod",
 		name: "iPod Classic",
 		chapter: "LISTEN",
-		en: "Every chapter has a soundtrack.",
-		zh: "每一段旅程，都有自己的旋律。",
 	},
 	{
 		id: "garmin",
 		name: "Garmin Edge 540",
 		chapter: "EXPLORE",
-		en: "Curiosity, with a different cadence.",
-		zh: "换一种节奏，继续探索。",
 	},
 	{
 		id: "honda",
 		name: "Honda Africa Twin",
 		chapter: "RIDE",
-		en: "There is always another road.",
-		zh: "下一段路，继续出发。",
 	},
 ] as const;
 export type DeviceId = (typeof deviceChapters)[number]["id"];

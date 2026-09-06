@@ -186,6 +186,49 @@ body::before {
 	color: var(--muted);
 	margin: 12px 0 0;
 }
+.journey-directory {
+	max-width: 390px;
+	margin-top: 22px;
+	font-size: 12px;
+	line-height: 1.7;
+	color: var(--muted);
+}
+.journey-directory summary {
+	width: fit-content;
+	cursor: pointer;
+	padding-block: 6px;
+}
+.journey-directory summary:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 4px;
+	border-radius: 3px;
+}
+.journey-directory summary h2 {
+	display: inline;
+	font-size: inherit;
+	font-weight: 500;
+}
+.journey-directory ol {
+	padding-left: 22px;
+	margin: 14px 0 0;
+}
+.journey-directory li + li {
+	margin-top: 13px;
+}
+.journey-directory h3 {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--ink);
+}
+.journey-directory h3 span {
+	font-family: var(--mono);
+	font-size: 9px;
+	color: var(--muted);
+}
+.journey-directory p {
+	margin: 2px 0 0;
+}
 .console-scene {
 	position: relative;
 	display: flex;
@@ -538,6 +581,10 @@ body::before {
 	white-space: nowrap;
 }
 .lcd-cursor {
+	display: inline-block;
+	width: 0.6em;
+	height: 0.12em;
+	background: currentColor;
 	opacity: 0.7;
 }
 .lcd-identity p {

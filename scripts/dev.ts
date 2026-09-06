@@ -5,9 +5,11 @@ import react from "@vitejs/plugin-react";
 import { createServer as createViteServer } from "vite";
 import manifest from "../package.json" with { type: "json" };
 import { loadContent } from "../packages/content/model";
+import { llmsDocument } from "../packages/publishing/documents";
 import {
 	legacyRedirect,
 	metadataFile,
+	publicOrigin,
 	selectLocale,
 	selectSurface,
 } from "../packages/publishing/routes";
@@ -99,7 +101,7 @@ server.on("request", async (request, response) => {
 			testMode ? "landing.lizheng-test.localhost" : undefined,
 		);
 		const redirect = legacyRedirect(surface, url);
-		response.setHeader("X-Robots-Tag", "noindex, nofollow");
+		response.setHeader("X-Robots-Tag", "noindex");
 		if (redirect) {
 			response.writeHead(301, { Location: redirect }).end();
 			return;
@@ -137,10 +139,25 @@ server.on("request", async (request, response) => {
 				.end(metadata.body);
 			return;
 		}
+		const origin = publicOrigin(surface);
+		const serviceLink = `<${origin}/llms.txt>; rel="service-doc"; type="text/plain"`;
+		if (url.pathname === "/llms.txt") {
+			const [english, chinese] = await Promise.all([
+				loadContent(surface, "en"),
+				loadContent(surface, "zh"),
+			]);
+			response
+				.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" })
+				.end(llmsDocument(english, chinese));
+			return;
+		}
 		if (/^\/(en|zh)(?:\.md|\/content\.md)$/.test(url.pathname)) {
 			const locale = url.pathname.startsWith("/zh") ? "zh" : "en";
 			response
-				.writeHead(200, { "Content-Type": "text/markdown; charset=utf-8" })
+				.writeHead(200, {
+					"Content-Type": "text/markdown; charset=utf-8",
+					Link: `${serviceLink}, <${origin}/${locale}/>; rel="canonical", <${origin}/${locale}/>; rel="alternate"; type="text/html"`,
+				})
 				.end((await loadContent(surface, locale)).markdown);
 			return;
 		}
@@ -154,6 +171,7 @@ server.on("request", async (request, response) => {
 			return;
 		}
 		if (["/en", "/zh", "/en/", "/zh/"].includes(url.pathname)) {
+			const locale = url.pathname.startsWith("/zh") ? "zh" : "en";
 			const { renderPage } = await vite.ssrLoadModule(
 				"/packages/publishing/render.tsx",
 			);
@@ -161,7 +179,7 @@ server.on("request", async (request, response) => {
 				url.pathname,
 				await renderPage(
 					surface,
-					url.pathname.startsWith("/zh") ? "zh" : "en",
+					locale,
 					{
 						script: `/apps/${surface}/client.${surface === "resume" ? "ts" : "tsx"}`,
 						css: [
@@ -177,18 +195,13 @@ server.on("request", async (request, response) => {
 				.writeHead(200, {
 					"Content-Type": "text/html; charset=utf-8",
 					"Cache-Control": "no-store",
+					Link: `${serviceLink}, <${origin}/${locale}/content.md>; rel="alternate"; type="text/markdown"`,
 				})
 				.end(html);
 			return;
 		}
 		vite.middlewares(request, response, () => {
-			if (surface === "landing" && !url.pathname.includes("."))
-				response
-					.writeHead(302, {
-						Location: `/${selectLocale(request.headers["accept-language"])}/`,
-					})
-					.end();
-			else response.writeHead(404).end("Not Found");
+			response.writeHead(404).end("Not Found");
 		});
 	} catch (error) {
 		if (error instanceof Error) vite.ssrFixStacktrace(error);

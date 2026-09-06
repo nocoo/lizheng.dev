@@ -1,0 +1,144 @@
+html,
+body {
+	width: 1200px;
+	height: 630px;
+	overflow: hidden;
+}
+#social-preview *,
+#social-preview *::before,
+#social-preview *::after {
+	animation: none;
+	transition: none;
+}
+.social-card {
+	position: relative;
+	width: 1200px;
+	height: 630px;
+	background: #f3f1e9;
+	color: #30372e;
+	font-family: "Space Grotesk Variable", "Journey CJK", sans-serif;
+}
+.social-card header {
+	position: absolute;
+	inset: 54px 68px auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.social-card header > span {
+	font:
+		13px "Geist Mono Variable",
+		monospace;
+	letter-spacing: 0.13em;
+	color: #68705f;
+}
+.social-card .brand-wordmark {
+	font-size: 26px;
+}
+.social-copy {
+	position: absolute;
+	left: 68px;
+	top: 175px;
+	width: 655px;
+}
+.social-copy h1 {
+	font-size: 110px;
+	font-weight: 500;
+	line-height: 1.06;
+	letter-spacing: -0.075em;
+	margin: 0;
+	white-space: pre-line;
+}
+.social-zh .social-copy h1 {
+	font-size: 98px;
+	letter-spacing: -0.045em;
+}
+.social-role {
+	margin: 28px 0 0;
+	font-size: 32px;
+	line-height: 1.3;
+	letter-spacing: -0.025em;
+	white-space: pre-line;
+	color: #59664f;
+}
+.social-portrait {
+	position: absolute;
+	top: 128px;
+	right: 192px;
+	margin: 0;
+	width: 322px;
+	height: 383px;
+	padding: 10px;
+	background: #fffdf6;
+	border: 1px solid #d8dacd;
+	box-shadow: 12px 18px 42px #30372e16;
+}
+.social-portrait img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: saturate(0.94);
+}
+.social-card footer {
+	position: absolute;
+	inset: auto 68px 44px;
+	border-top: 1px solid #cfd4c7;
+	padding-top: 23px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font:
+		14px "Geist Mono Variable",
+		monospace;
+	letter-spacing: 0.04em;
+	color: #59664f;
+}
+.social-card footer strong {
+	font-size: 22px;
+	font-weight: 450;
+	color: #30372e;
+}
+.social-landing {
+	background: radial-gradient(ellipse at 83% 35%, #405044, #202d25 64%);
+	color: #ebeddc;
+}
+.social-landing .brand-wordmark {
+	--brand-accent: #e79670;
+}
+.social-landing header > span {
+	color: #aab79e;
+}
+.social-landing .social-copy {
+	top: 158px;
+}
+.social-person {
+	font-size: 24px;
+	margin: 0 0 24px;
+	color: #b6c3a8;
+}
+.social-landing h1 {
+	font-size: 96px;
+	line-height: 1.08;
+	letter-spacing: -0.065em;
+}
+.social-landing.social-zh h1 {
+	font-size: 77px;
+	line-height: 1.28;
+}
+.social-object {
+	position: absolute;
+	top: 115px;
+	right: 285px;
+}
+.social-object .console-position {
+	width: 236px;
+	max-width: none;
+	transform: rotate(-10deg);
+}
+.social-landing footer {
+	border-color: #52624e;
+	color: #adba9f;
+}
+.social-landing footer strong {
+	color: #ebeddc;
+}

@@ -1,5 +1,9 @@
 import type { Locale, Surface } from "../content/model";
 
+export function publicOrigin(surface: Surface) {
+	return surface === "landing" ? "https://lizheng.me" : "https://lizheng.dev";
+}
+
 // These legacy patterns intentionally retain the production contract exactly.
 const legacyBlogPaths = [
 	/^\/\d{4}\/\d{2}\//,
@@ -41,17 +45,11 @@ export function metadataFile(
 	surface: Surface,
 	path: string,
 ): { type: string; body: string } | undefined {
-	const origin =
-		surface === "landing" ? "https://lizheng.me" : "https://lizheng.dev";
+	const origin = publicOrigin(surface);
 	if (path === "/robots.txt")
 		return {
 			type: "text/plain",
 			body: `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap-index.xml\n`,
-		};
-	if (path === "/llms.txt")
-		return {
-			type: "text/plain",
-			body: `# Zheng Li\n\n${surface === "resume" ? "Professional résumé" : "Personal portfolio"}. Engineering leader at Microsoft.\n\n- [English](${origin}/en/content.md)\n- [中文](${origin}/zh/content.md)\n`,
 		};
 	if (path === "/sitemap-index.xml")
 		return {

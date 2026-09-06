@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { marked, type Token } from "marked";
 import { parse } from "yaml";
+import { deviceChapters } from "../experience/device-gallery";
 
 export type Locale = "en" | "zh";
 export type Surface = "resume" | "landing";
@@ -19,6 +20,9 @@ interface ContentMeta {
 	locale: string;
 	title: string;
 	description: string;
+	socialHeading: string;
+	socialLabel: string;
+	socialImageAlt: string;
 	name: string;
 	role: string;
 	canonical: string;
@@ -27,10 +31,9 @@ interface ContentMeta {
 	eyebrow?: string;
 	location?: string;
 }
-export interface PageContent {
+interface ContentData {
 	origins?: Record<Surface, string> & { blog?: string };
 	year: string;
-	surface: Surface;
 	locale: Locale;
 	meta: ContentMeta;
 	intro: string;
@@ -38,6 +41,17 @@ export interface PageContent {
 	links: PublicLink[];
 	markdown: string;
 }
+interface LandingJourney {
+	story: string;
+	title: string;
+	chapters: ((typeof deviceChapters)[number] & { description: string })[];
+}
+export type LandingContent = ContentData & {
+	surface: "landing";
+	journey: LandingJourney;
+};
+type ResumeContent = ContentData & { surface: "resume"; journey: null };
+export type PageContent = LandingContent | ResumeContent;
 
 const sources: Record<Surface, Record<Locale, string>> = {
 	resume: { en: "01-resume-en.md", zh: "02-resume-zh.md" },
@@ -52,6 +66,18 @@ const sectionIds = [
 	"beyond",
 ];
 
+export function loadContent(
+	surface: "landing",
+	locale: Locale,
+): Promise<LandingContent>;
+export function loadContent(
+	surface: "resume",
+	locale: Locale,
+): Promise<ResumeContent>;
+export function loadContent(
+	surface: Surface,
+	locale: Locale,
+): Promise<PageContent>;
 export async function loadContent(
 	surface: Surface,
 	locale: Locale,
@@ -83,6 +109,9 @@ export async function loadContent(
 		"locale",
 		"title",
 		"description",
+		"socialHeading",
+		"socialLabel",
+		"socialImageAlt",
 		"name",
 		"role",
 		"canonical",
@@ -100,6 +129,8 @@ export async function loadContent(
 		surface === "resume" ? "https://lizheng.dev" : "https://lizheng.me";
 	if (meta.canonical !== `${origin}/${locale}/`)
 		throw new Error("Invalid canonical URL");
+	if (!/^.+ @ .+$/.test(meta.role as string))
+		throw new Error("Expected role with job title and employer");
 	for (const key of surface === "resume"
 		? ["tagline"]
 		: ["eyebrow", "location"])
@@ -139,7 +170,10 @@ export async function loadContent(
 	for (const token of tokens) {
 		if (token.type === "heading" && token.depth === 2) {
 			section = {
-				id: sectionIds[sections.length] ?? "links",
+				id:
+					(surface === "resume" ? sectionIds : ["story", "journey"])[
+						sections.length
+					] ?? "links",
 				title: token.text,
 				tokens: [],
 			};
@@ -161,7 +195,9 @@ export async function loadContent(
 	}
 	const expectedTitles =
 		surface === "landing"
-			? []
+			? locale === "en"
+				? ["About", "Devices"]
+				: ["关于我", "设备与界面"]
 			: locale === "en"
 				? [
 						"Professional Summary",
@@ -208,9 +244,8 @@ export async function loadContent(
 		)
 			throw new Error("Incomplete achievements or patent");
 	}
-	return {
+	const result = {
 		year: String(new Date().getUTCFullYear()),
-		surface,
 		locale,
 		meta: meta as unknown as ContentMeta,
 		intro: intro.join("\n"),
@@ -218,4 +253,44 @@ export async function loadContent(
 		links,
 		markdown,
 	};
+	if (surface === "landing") {
+		const story = sections[0] as ContentSection;
+		const journey = sections[1] as ContentSection;
+		const prose = story.tokens.filter((token) => token.type !== "space");
+		const chapters = journey.tokens.filter((token) => token.type !== "space");
+		if (prose.length !== 1 || chapters.length !== deviceChapters.length * 2)
+			throw new Error("Incomplete journey story or chapters");
+		const paragraph = (token: Token | undefined) => {
+			if (
+				token?.type !== "paragraph" ||
+				!token.text.trim() ||
+				token.tokens?.some((item) => item.type !== "text")
+			)
+				throw new Error("Expected plain journey paragraph");
+			return token.text;
+		};
+		return {
+			...result,
+			surface,
+			sections: [],
+			journey: {
+				story: paragraph(prose[0]),
+				title: journey.title,
+				chapters: deviceChapters.map((chapter, index) => {
+					const heading = chapters[index * 2];
+					if (
+						heading?.type !== "heading" ||
+						heading.depth !== 3 ||
+						heading.text !== `${chapter.name} · ${chapter.chapter}`
+					)
+						throw new Error("Missing or reordered journey chapter");
+					return {
+						...chapter,
+						description: paragraph(chapters[index * 2 + 1]),
+					};
+				}),
+			},
+		};
+	}
+	return { ...result, surface, journey: null };
 }

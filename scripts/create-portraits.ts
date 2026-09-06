@@ -59,15 +59,3 @@ await sharp(pixels, { raw: { width, height, channels: 3 } })
 console.info(
 	"Created new portrait and four-tone LCD portrait from the original photograph.",
 );
-for (const surface of ["resume", "landing"]) {
-	const paper = surface === "resume" ? "#f4f1e9" : "#181b18";
-	const ink = surface === "resume" ? "#272b25" : "#e9ebdb";
-	const label =
-		surface === "resume"
-			? "ENGINEERING / LEADERSHIP / CURIOSITY"
-			: "A LITTLE BIT OF ME. / PERSONAL SYSTEM 01";
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="${paper}"/><g fill="#ed763d" transform="translate(84 80) rotate(-8 28 28)"><rect width="24" height="24" rx="3"/><rect x="30" width="24" height="24" rx="3"/><rect y="30" width="24" height="24" rx="3"/><rect x="30" y="30" width="24" height="24" rx="3"/></g><text x="80" y="324" font-family="sans-serif" font-size="132" font-weight="700" letter-spacing="-8" fill="${ink}">zheng li<tspan fill="#ed763d">.</tspan></text><text x="88" y="408" font-family="sans-serif" font-size="30" fill="${ink}">Principal Software Engineering Manager @ Microsoft</text><path d="M88 472H1112" stroke="${ink}" opacity=".25"/><text x="88" y="530" font-family="monospace" font-size="19" letter-spacing="3" fill="${ink}">${label}</text><text x="1112" y="118" text-anchor="end" font-family="monospace" font-size="24" fill="${ink}">lizheng.${surface === "resume" ? "dev" : "me"}</text></svg>`;
-	await sharp(Buffer.from(svg))
-		.png()
-		.toFile(`design-public/design-assets/social-${surface}.png`);
-}

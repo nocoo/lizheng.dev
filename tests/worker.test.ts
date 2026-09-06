@@ -71,18 +71,18 @@ describe("cover host — 301 legacy blog redirects", () => {
 	});
 });
 
-describe("cover host — 302 fallback for unknown paths", () => {
-	test("unknown path defaults to /en/", async () => {
+describe("cover host — real 404 for unknown paths", () => {
+	test("unknown path is not another homepage", async () => {
 		const { res } = await call("https://lizheng.me/random-thing");
-		expect(res.status).toBe(302);
-		expect(res.headers.get("location")).toBe("https://lizheng.me/en/");
+		expect(res.status).toBe(404);
+		expect(res.headers.get("location")).toBeNull();
 	});
 
-	test("unknown path with zh Accept-Language → /zh/", async () => {
+	test("language preference does not change a missing path", async () => {
 		const { res } = await call("https://lizheng.me/random-thing", {
 			headers: { "accept-language": "zh-CN,zh;q=0.9" },
 		});
-		expect(res.status).toBe(302);
-		expect(res.headers.get("location")).toBe("https://lizheng.me/zh/");
+		expect(res.status).toBe(404);
+		expect(res.headers.get("location")).toBeNull();
 	});
 });

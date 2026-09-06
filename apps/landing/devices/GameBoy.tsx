@@ -79,9 +79,7 @@ export function GameBoy({
 									<span className="lcd-eyebrow">{meta.eyebrow}</span>
 									<h2>
 										{zh ? "李征" : "Zheng Li"}
-										<span className="lcd-cursor" aria-hidden="true">
-											_
-										</span>
+										<span className="lcd-cursor" aria-hidden="true" />
 									</h2>
 									<p>{meta.role}</p>
 								</div>
@@ -89,7 +87,7 @@ export function GameBoy({
 							<p className="lcd-bio">{intro}</p>
 							<nav
 								className="lcd-links"
-								aria-label={zh ? "探索我的链接" : "Explore my links"}
+								aria-label={zh ? "个人链接" : "Profile links"}
 							>
 								{links.map((link, index) => (
 									<a
@@ -112,19 +110,17 @@ export function GameBoy({
 							</nav>
 							<div className="lcd-about" aria-hidden={panel !== "about"}>
 								<PixelStar />
-								<p lang="en">STAY CURIOUS.</p>
+								<p lang="en">ABOUT THIS PAGE</p>
 								<span>
 									{zh
-										? "每一个系统，都值得认真迭代。"
-										: "Every system deserves thoughtful iteration."}
+										? "这里汇集了我的博客、简历和公开主页。"
+										: "Links to my blog, résumé and public profiles."}
 								</span>
 								<small>{zh ? "按 B 返回" : "PRESS B TO RETURN"}</small>
 							</div>
 							<div className="lcd-footer" lang="en">
-								<span>
-									{panel === "home" ? "01 / EXPLORE" : "02 / PHILOSOPHY"}
-								</span>
-								<span>SELECT · EXPLORE</span>
+								<span>{panel === "home" ? "01 / LINKS" : "02 / ABOUT"}</span>
+								<span>SELECT · SWITCH</span>
 							</div>
 						</div>
 						<div className="lcd-glass" aria-hidden="true" />

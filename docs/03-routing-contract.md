@@ -45,7 +45,7 @@ www 和非 www 均可访问；页面 canonical 使用非 www。新实现按 URL.
 5. .me 未知路径目前 302 到 /en/ 或 /zh/；首选 Accept-Language 为中文则 zh，否则 en。
 6. .dev 当前全部交给资产服务，未知资源由真实资产服务返回 404。现有 mock 返回 200 仅表示“转发成功”，不是生产状态契约。
 
-新实现保留 301、语言页面和未知 .me 路径的回落语义；静态文件启发式改为明确的公开资产/内容路由，避免新 sitemap、robots 和 Markdown 端点被吞掉。
+新实现保留 301 和语言页面；静态文件启发式改为明确的公开资产/内容路由，避免新 sitemap、robots 和 Markdown 端点被吞掉。2026-09-07 的 SEO 优化将真正未知的 .me 路径改为 404，根路径语言 302 不变，见 [15](15-seo-agent-social.md)。上面的兼容层清单记录重建前的基线。
 
 ## 重构后的处理顺序
 
@@ -57,7 +57,7 @@ www 和非 www 均可访问；页面 canonical 使用非 www。新实现按 URL.
 | 4 | / | 302 到对应语言首页；客户端无需先执行语言跳转脚本 |
 | 5 | /en、/zh 及带斜杠形式 | 对应访问面的语言 HTML，200；canonical 为带斜杠 URL |
 | 6 | /assets/*、favicon、touch icon、OG 图片 | 只读取新构建的公开资产 |
-| 7 | 未知路径 | .me 保留语言 302 回落；.dev 真实 404 |
+| 7 | 未知路径 | 两个访问面均返回真实 404，不把不存在的内容指向首页 |
 
 根路径语言响应必须包含 Vary: Accept-Language，并避免把一个用户的语言 302 长期缓存给其他用户。显式语言 URL 不按浏览器偏好再跳转。
 
@@ -74,7 +74,7 @@ www 和非 www 均可访问；页面 canonical 使用非 www。新实现按 URL.
 | /llms.txt | 本站说明及两种简历 Markdown 链接 | 本站说明及两种入口 Markdown 链接 |
 | /en/content.md、/zh/content.md | 完整对应简历 | 完整对应入口内容 |
 
-HTML 公开链接到对应 Markdown，并使用 rel=alternate / type=text/markdown。Markdown 与页面内容一致，Content-Type 为 text/markdown; charset=utf-8。不做 User-Agent 专属内容，不向 bot 隐藏或增加用户看不到的职业事实。
+HTML 公开链接到对应 Markdown，并使用 rel=alternate / type=text/markdown。Markdown 与页面内容一致，Content-Type 为 text/markdown; charset=utf-8。HTML 与 Markdown 的 HTTP Link 指向 llms.txt；Markdown 的 canonical 指向同语言 HTML。llms.txt 由两种语言的公开内容在构建时生成，再通过对应访问面的资产提供。不做 User-Agent 专属内容，不向 bot 隐藏或增加用户看不到的职业事实。
 
 ## 必须先写的回归用例
 
@@ -84,7 +84,7 @@ HTML 公开链接到对应 Markdown，并使用 rel=alternate / type=text/markdo
 - 四个语言页面、两个根路由、两个 www 别名、无斜杠路径。
 - .me /sitemap.xml 与新 sitemap 路径同时正确。
 - robots、llms、Markdown、静态资源的内容、MIME 和域名边界。
-- 内部路径不可访问；.dev 真 404 与 .me 未知路径回落。
+- 内部路径不可访问；两个访问面未知路径均为真 404。
 - 用真实 Worker + 实际构建资产走 HTTP，捕获内部路径重定向泄漏、canonical 串域和缺失文件。
 
 现有 tests/worker.test.ts 中 301 相关断言可以继承。它们属于 L1，不能代替走真实 HTTP 的 L2。

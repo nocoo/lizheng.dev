@@ -69,7 +69,7 @@ export function Honda(props: DeviceProps) {
 					>
 						<div className="honda-tft-header">
 							<strong lang="en">TOUR</strong>
-							<span>{zh ? "个人旅程" : "PERSONAL JOURNEY"}</span>
+							<span>{zh ? "仪表与链接" : "INSTRUMENTS & LINKS"}</span>
 							<span aria-hidden="true">☼</span>
 						</div>
 						<div
@@ -109,7 +109,7 @@ export function Honda(props: DeviceProps) {
 								<div className="honda-compass">
 									<span>N</span>
 									<i />
-									<small>ONWARD</small>
+									<small>HEADING</small>
 								</div>
 							</div>
 							<div className="honda-profile">
@@ -125,7 +125,7 @@ export function Honda(props: DeviceProps) {
 						</div>
 						<div className="honda-tft-footer">
 							<span aria-hidden="true">E ▰▰▰▰▰ F</span>
-							<span lang="en">THE ROAD CONTINUES</span>
+							<span lang="en">SPEED · GEAR · RPM</span>
 							<span aria-hidden="true">H ▰▰ C</span>
 						</div>
 					</section>

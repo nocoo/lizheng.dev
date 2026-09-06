@@ -70,6 +70,16 @@ const mutations = [
 	],
 	["missing title", (s: string) => s.replace(/^title:.*\n/m, ""), /metadata/],
 	[
+		"missing social alt",
+		(s: string) => s.replace(/^socialImageAlt:.*\n/m, ""),
+		/metadata/,
+	],
+	[
+		"unstructured role",
+		(s: string) => s.replace(/^role:.*$/m, 'role: "Manager"'),
+		/role/,
+	],
+	[
 		"missing tagline",
 		(s: string) => s.replace(/^tagline:.*\n/m, ""),
 		/metadata/,
@@ -161,9 +171,63 @@ it("requires landing introduction", async () => {
 	const source = await actual.readFile("docs/content/03-landing-en.md", "utf8");
 	vi.mocked(readFile).mockResolvedValue(
 		source.replace(
-			/15 years building web & mobile software\.\nNow rebuilding myself for the AI era\.\n(?=\n##)/,
+			/15 years building web & mobile software\.\nNow focused on AI applications\.\n(?=\n##)/,
 			"",
 		),
 	);
 	await expect(loadContent("landing", "en")).rejects.toThrow(/introduction/);
 });
+
+for (const [label, mutate, error] of [
+	[
+		"missing story",
+		(s: string) => s.replace(/Here you can find[^\n]+\n/, ""),
+		/journey/,
+	],
+	[
+		"missing chapter",
+		(s: string) => s.replace(/### Game Boy[^#]+/, ""),
+		/chapters/,
+	],
+	[
+		"wrong chapter",
+		(s: string) => s.replace("### Game Boy · PLAY", "### Nokia 5300 · CONNECT"),
+		/chapter/,
+	],
+	[
+		"wrong heading depth",
+		(s: string) => s.replace("### Game Boy", "#### Game Boy"),
+		/chapter/,
+	],
+	[
+		"non-heading chapter",
+		(s: string) => s.replace("### Game Boy", "Game Boy"),
+		/chapter/,
+	],
+	[
+		"formatted caption",
+		(s: string) =>
+			s.replace(
+				"Handheld games and pixel graphics.",
+				"Handheld **games** and pixel graphics.",
+			),
+		/paragraph/,
+	],
+	[
+		"non-paragraph caption",
+		(s: string) =>
+			s.replace(
+				"Handheld games and pixel graphics.",
+				"### Handheld games and pixel graphics.",
+			),
+		/paragraph/,
+	],
+] as const)
+	it(`rejects ${label} in the public journey`, async () => {
+		const source = await actual.readFile(
+			"docs/content/03-landing-en.md",
+			"utf8",
+		);
+		vi.mocked(readFile).mockResolvedValue(mutate(source));
+		await expect(loadContent("landing", "en")).rejects.toThrow(error);
+	});

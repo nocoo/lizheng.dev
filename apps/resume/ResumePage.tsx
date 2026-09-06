@@ -25,7 +25,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 						<nav aria-label={zh ? "章节导航" : "On this page"}>
 							{sections.map((section, index) => (
 								<a key={section.id} href={`#${section.id}`}>
-									<span>{String(index + 1).padStart(2, "0")}</span>
+									<span>{String(index + 1).padStart(2, "0")}</span>{" "}
 									{section.title}
 								</a>
 							))}
@@ -38,7 +38,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 							<span className="location-signature" lang="en">
 								<span className="location-dot" aria-hidden="true" />
 								MADE IN BEIJING
-							</span>
+							</span>{" "}
 							<br />
 							39.90° N · 116.40° E
 						</p>
@@ -48,7 +48,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 					<div className="resume-hero">
 						<p className="resume-eyebrow" lang="en">
 							<span />
-							ENGINEERING · LEADERSHIP · CURIOSITY
+							ENGINEERING · LEADERSHIP · AI
 						</p>
 						<div className="identity-row">
 							<div>
@@ -58,8 +58,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 								</h1>
 								<p className="resume-role">
 									Principal Software
-									<br className="role-break" /> Engineering Manager
-									<br />
+									<br className="role-break" /> Engineering Manager <br />
 									<span>@ Microsoft</span>
 								</p>
 							</div>
@@ -105,7 +104,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 							<div className="section-heading">
 								<span className="section-number">
 									{String(index + 1).padStart(2, "0")}
-								</span>
+								</span>{" "}
 								<h2>{section.title}</h2>
 								<span className="section-rule" />
 							</div>

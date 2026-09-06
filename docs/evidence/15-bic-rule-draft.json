@@ -1,0 +1,12 @@
+{
+	"description": "Public site reads: skip Browser Integrity Check only",
+	"expression": "(http.host in {\"lizheng.me\" \"www.lizheng.me\" \"lizheng.dev\" \"www.lizheng.dev\"} and http.request.method in {\"GET\" \"HEAD\"} and (http.request.uri.path in {\"/\" \"/en\" \"/en/\" \"/zh\" \"/zh/\" \"/robots.txt\" \"/llms.txt\" \"/en.md\" \"/zh.md\" \"/en/content.md\" \"/zh/content.md\" \"/sitemap-index.xml\" \"/sitemap-pages.xml\" \"/sitemap.xml\" \"/favicon.svg\"} or starts_with(http.request.uri.path, \"/assets/\") or starts_with(http.request.uri.path, \"/design-assets/\")))",
+	"action": "skip",
+	"action_parameters": {
+		"products": ["bic"]
+	},
+	"logging": {
+		"enabled": true
+	},
+	"enabled": true
+}

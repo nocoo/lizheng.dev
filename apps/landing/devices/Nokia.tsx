@@ -53,7 +53,7 @@ export function Nokia(props: DeviceProps) {
 								aria-label={
 									index < 4
 										? `${number}: ${content.links[index]?.label}`
-										: `${number}: ${zh ? "探索个人信息" : "Explore profile"}`
+										: `${number}: ${zh ? "查看个人信息" : "View profile"}`
 								}
 								onClick={() =>
 									index < 4

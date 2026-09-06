@@ -346,6 +346,7 @@ button {
 }
 .site-footer-body {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
 	gap: 24px;
@@ -366,6 +367,21 @@ button {
 .site-footer .site-version {
 	color: var(--site-muted);
 	font-size: 9px;
+}
+.public-formats {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	font-size: 9px;
+}
+.public-formats a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 32px;
+	text-decoration: none;
+}
+.public-formats a:hover {
+	color: var(--site-orange);
 }
 .site-footer-bottom {
 	display: flex;

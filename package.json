@@ -8,6 +8,7 @@
 		"dev": "bun scripts/dev.ts",
 		"build:design": "bun scripts/build.tsx .design-dist",
 		"assets:design": "bun scripts/create-portraits.ts",
+		"assets:social": "bun scripts/create-social.tsx",
 		"review:design": "bun scripts/review-design.ts",
 		"deploy": "wrangler deploy",
 		"preview": "wrangler dev",
