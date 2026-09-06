@@ -92,6 +92,26 @@ it("cycles system → light → dark → system and resumes following the OS", (
 	expect(remove).toHaveBeenCalledWith("change", change);
 });
 
+it("preserves the resolved palette when hydration or a preference change keeps the same theme", () => {
+	runBootstrap();
+	const observer = new MutationObserver(() => {});
+	observer.observe(root, { attributes: true });
+	const cleanup = setupPreferences();
+	expect(observer.takeRecords()).toEqual([]);
+	button().click();
+	expect(root.dataset.themePreference).toBe("light");
+	expect(button().getAttribute("aria-label")).toMatch(/Light.*dark/);
+	expect(localStorage.getItem("zl-theme")).toBe("light");
+	expect(observer.takeRecords().map((record) => record.attributeName)).toEqual([
+		"data-theme-preference",
+	]);
+	button().click();
+	expect(root.dataset.theme).toBe("dark");
+	expect(root.style.colorScheme).toBe("dark");
+	observer.disconnect();
+	cleanup();
+});
+
 it("announces the current preference and next action in both locales", () => {
 	document.body.insertAdjacentHTML(
 		"beforeend",

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2] - 2026-09-06
+
+- Defer rendering of cached, invisible devices while retaining their prepared content and state; restore full rendering during entrance and exit animations.
+- Avoid invalidating the page palette when restoring an already applied theme or moving between automatic and explicit preferences with the same resolved color scheme.
+- Restore Play's immediate page scrolling when shared styles load later, keeping native buttons steady between pointer press and release.
+- Deliver the approved connected-surface improvements from v3.1.1 after its production deployment was blocked by the interaction-performance gate.
+
 ## [3.1.1] - 2026-09-06
 
 - Unify the Journal / Play / Résumé header and cross-surface navigation with Firefly, preserving the current language between me and dev.

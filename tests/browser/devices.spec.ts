@@ -242,6 +242,32 @@ for (const [index, model] of models.entries()) {
 				});
 }
 
+test("native button presses complete when the page brings the control into view", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto(`${origin}/en/`);
+	await page.locator('[data-chapter="1"]').click();
+	await settle(page);
+	await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+	await page.mouse.move(0, 0);
+	const device = page.locator('[data-device-active="nokia"]');
+	const control = device.locator('[data-control="down"]');
+	await control.evaluate((button) => button.scrollIntoView({ block: "start" }));
+	const box = await control.boundingBox();
+	if (!box) throw new Error("Missing native button");
+	// Hold a real press long enough to expose any page pan between down and up.
+	await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, {
+		delay: 160,
+	});
+	const after = await control.boundingBox();
+	if (!after) throw new Error("Missing pressed button");
+	expect(Math.hypot(after.x - box.x, after.y - box.y)).toBeLessThan(0.5);
+	await expect(device.locator('[data-screen-link="1"]')).toHaveClass(
+		"is-selected",
+	);
+});
+
 test("native controls stay under the pointer during an unfinished tilt", async ({
 	page,
 }) => {

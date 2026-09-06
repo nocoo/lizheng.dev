@@ -45,9 +45,13 @@ export function setupPreferences() {
 					? "dark"
 					: "light"
 				: preference;
-		document.documentElement.dataset.theme = theme;
-		document.documentElement.dataset.themePreference = preference;
-		document.documentElement.style.colorScheme = theme;
+		const root = document.documentElement;
+		// A preference can change without changing the palette (system → light).
+		// Preserve the existing root styles instead of invalidating every scene.
+		if (root.dataset.theme !== theme) root.dataset.theme = theme;
+		if (root.dataset.themePreference !== preference)
+			root.dataset.themePreference = preference;
+		if (root.style.colorScheme !== theme) root.style.colorScheme = theme;
 		for (const button of buttons) {
 			const label = themeLabel(
 				button.dataset.themeLocale === "zh" ? "zh" : "en",

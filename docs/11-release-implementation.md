@@ -2,11 +2,13 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
-## Connected surfaces follow-up — v3.1.1
+## Connected surfaces follow-up — v3.1.1 / v3.1.2
 
 The authorized patch release connects Journal, Play and Résumé through a common header, automatic/light/dark themes, aligned widths and six keepsake families. Play uses a single footer band, a 2:3 introduction/device grid and equal vertical padding. Device arrivals decelerate smoothly, and an unfinished pointer tilt pauses over controls to keep hit areas steady. [14](14-connected-surfaces.md) records the final local evidence and the shared Firefly implementation.
 
-The [v3.1.1 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.1) records final CI and production verification. The previous live version was v3.1.0, deployment `01b6c533-ddc6-4ff7-aa66-654459bfac84`; it is the rollback reference for this patch. Earlier release evidence follows.
+The [v3.1.1 CI](https://github.com/nocoo/lizheng.dev/actions/runs/34014479578) passed all 246 browser cases, development checks and quality gates except the desktop English Play interaction case: its median was 208ms against the unchanged 200ms limit. Artifact packaging and deployment were correctly blocked. The published tag remains unchanged.
+
+The authorized v3.1.2 follow-up defers rendering of cached, invisible scenes and avoids redundant root palette writes when the resolved theme is unchanged. It also restores Play's immediate-scroll rule when shared styles load later, keeping native controls steady during pointer presses. Visible devices retain their full entrance/exit motion and unclipped effects. All 249 local browser cases passed, including the new scrolling regression. The [v3.1.2 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.2) tracks final main CI, validated-artifact deployment and the mandatory five-minute follow-up. The pre-release production version was v3.1.0, deployment `01b6c533-ddc6-4ff7-aa66-654459bfac84`; this is the rollback reference. Earlier release evidence follows.
 
 ## Device journey follow-up — v3.1.0
 

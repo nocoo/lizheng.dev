@@ -104,6 +104,8 @@
 .device-layer.is-cached {
 	visibility: hidden;
 	pointer-events: none;
+	/* Keep the prepared DOM, but defer its rendering until the next entrance. */
+	content-visibility: hidden;
 }
 .device-layer.is-cached,
 .device-layer.is-cached * {
