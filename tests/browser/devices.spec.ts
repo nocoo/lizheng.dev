@@ -35,6 +35,67 @@ async function freezeClock(page: Page) {
 	await page.clock.pauseAt(60_000);
 }
 
+for (const fallback of [false, true])
+	test(`prepared scenes stay inert and reuse native controls (${fallback ? "timer fallback" : "idle callback"})`, async ({
+		page,
+	}) => {
+		if (fallback)
+			await page.addInitScript(() => {
+				Object.defineProperty(window, "requestIdleCallback", {
+					value: undefined,
+					configurable: true,
+				});
+			});
+		await page.goto(`${origin}/en/`);
+		await page.getByRole("button", { name: "Pause autoplay" }).click();
+		await expect(page.locator(".device-layer")).toHaveCount(6);
+		await expect(page.locator(".is-cached")).toHaveCount(5);
+		expect(
+			await page.locator(".is-cached").evaluateAll((layers) =>
+				layers.every((layer) => {
+					layer.querySelector<HTMLButtonElement>("button")?.focus();
+					return (
+						layer.hasAttribute("inert") &&
+						layer.getAttribute("aria-hidden") === "true" &&
+						getComputedStyle(layer).visibility === "hidden" &&
+						!layer.contains(document.activeElement) &&
+						!layer
+							.getAnimations({ subtree: true })
+							.some(
+								(animation) =>
+									animation.playState === "running" || animation.pending,
+							)
+					);
+				}),
+			),
+		).toBe(true);
+		await expect(page.locator("[data-gallery]").getByRole("link")).toHaveCount(
+			4,
+		);
+		const prepared = await page.locator(".layer-nokia").elementHandle();
+		if (!prepared) throw new Error("Missing prepared Nokia");
+		await page.locator('[data-chapter="1"]').click();
+		await settle(page);
+		const active = page.locator("[data-device-active]");
+		expect(
+			await active.evaluate((node, cached) => node === cached, prepared),
+		).toBe(true);
+		await active.locator('[data-control="down"]').click();
+		await expect(active.locator('[data-screen-link="1"]')).toHaveClass(
+			"is-selected",
+		);
+		await page.locator('[data-chapter="5"]').click();
+		await settle(page);
+		await expect(active.locator('[data-screen-link="1"]')).toHaveClass(
+			"is-selected",
+		);
+		await expect(page.locator(".device-layer")).toHaveCount(6);
+		await expect(page.locator(".is-cached")).toHaveCount(5);
+		await expect(page.locator("[data-gallery]").getByRole("link")).toHaveCount(
+			4,
+		);
+	});
+
 for (const [index, model] of models.entries()) {
 	if (index === 0) continue; // The existing experience matrix covers the Game Boy.
 	for (const locale of ["en", "zh"])
@@ -269,7 +330,7 @@ test("rapid chapter changes, nonlinear motion, stronger tilt and reduced motion"
 	if (!stage) throw new Error("Missing stage");
 	await page.mouse.move(stage.x + stage.width - 5, stage.y + 30);
 	const tilt = await page
-		.locator("[data-device-shell]")
+		.locator("[data-device-active] [data-device-shell]")
 		.evaluate((node) =>
 			parseFloat((node as HTMLElement).style.getPropertyValue("--tilt-y")),
 		);
@@ -288,7 +349,7 @@ test("rapid chapter changes, nonlinear motion, stronger tilt and reduced motion"
 	);
 	expect(
 		await page
-			.locator("[data-device-shell]")
+			.locator("[data-device-active] [data-device-shell]")
 			.evaluate((node) => getComputedStyle(node).transform),
 	).toBe("none");
 	await page.keyboard.press("Home");

@@ -18,7 +18,7 @@ The order expresses chapters, not dated biographical claims. Use Play, Connect, 
 - Up/down select links inside the current device; left/right switch devices without changing the selected link or toggling the profile panel. Enter opens the focused link. A three-row legend explains the shortcuts on the left. Focus follows the incoming screen, or its Back control when the profile panel is open; chapter tabs retain their native Home/End and left/right navigation. Editing controls, modified keys and unrelated page controls keep their native behavior.
 - Keyboard focus uses compact, material-colored outlines around hardware and inset screen-colored indicators on menu rows, with pixel-style outlines for Game Boy and Macintosh. Chapter focus follows the rail's accent and rounded shape. These indicators remain visible for keyboard use without adding a large floating outline on pointer clicks.
 - Suspend autoplay while the scene is hovered, keyboard focus is within the gallery, the scene is outside the viewport or the document is hidden. Preserve the remaining interval. Pointer selection does not leave a persistent focus pause. Autoplay defaults to on, including reduced motion; reduced motion eliminates spatial transitions and never overrides an explicit pause.
-- Device changes combine outgoing and incoming depth, rotation, light and shadow with asymmetric easing. The incoming device is immediately interactive; the outgoing device is inert, hidden from assistive technology and removed after the finite transition. Rapid choices replace the pending transition.
+- Device changes combine outgoing and incoming depth, rotation, light and shadow with asymmetric easing. The incoming device is immediately interactive; the outgoing device is inert, hidden from assistive technology and returns to the hidden scene cache after the finite transition. Rapid choices replace the pending transition.
 - Increase pointer tilt from ±1.5° to ±6°, with eased settling and a moving highlight. Update only on pointer input; disable spatial motion for coarse pointers and reduced motion. Keep the pose steady over buttons/links and during pressed-pointer gestures so small controls and the click wheel remain under the pointer.
 - Inset Hold and the headphone jack into the iPod's top metal edge. The Garmin quarter-turn mount sits behind the case and is concealed in this frontal view. Reflections follow the visible case surfaces, including composite machines, rather than painting a rectangular layer across their empty surroundings.
 - Keep both stage layers free of rectangular clipping and masks, so animated accessories can travel beyond the stage in either direction. Existing soft shadows decay to transparency behind the caption and chapter rail, which sit above the scene. Only the outer page constrains horizontal overflow.
@@ -36,7 +36,9 @@ The order expresses chapters, not dated biographical claims. Use Play, Connect, 
 - `apps/landing/devices/`: six hardware shells and their native screen presentations.
 - `apps/landing/devices.css`: hardware materials, responsive geometry and nonlinear transitions.
 
-No new runtime dependency, external image/font request or storage binding is required. SSR presents the complete first device. Subsequent scenes are rendered on demand.
+No new runtime dependency, external image/font request or storage binding is required. SSR and the initial client render present only the complete first device. The browser prepares the remaining scenes one at a time during idle callbacks, with a cancellable 100 ms timer fallback. A chapter selected before preparation completes still renders immediately.
+
+Prepared scenes retain their DOM and layout in a cache bounded to six layers. Hidden layers use `visibility: hidden`, `inert` and `aria-hidden`, accept no pointer input and run no CSS animations or transitions. Inactive devices skip React updates until activation, when they receive the current shared selection and profile state; decorative SVGs are memoized. This avoids constructing and laying out a complete machine during the click while preserving the original entrances, geometry and native controls.
 
 The stage and device layers use layout/style containment to limit the work of a scene change without clipping its paint. Unbordered devices share the existing hardware-position container for relative sizing; only the bordered iPod and Garmin shells retain a second inner container. Accessories, light and shadows remain free to extend beyond these containers.
 
@@ -82,17 +84,23 @@ The [first release CI run](https://github.com/nocoo/lizheng.dev/actions/runs/340
 
 The control-stability unit regression failed before the pointer guard and now passes. Browser timing assertions use an explicitly paused clock, advancing it only for the behavior under test. Static axe inspection uses the normal scene-hover reading pause, then resets the pointer before screenshots. CI gives WebKit one worker; Chromium and Firefox retain three. No assertion, timeout, snapshot mask or performance threshold was relaxed, and automatic retries remain disabled.
 
-The optimized full browser run passed 201 of 207 cases, including all 69 Firefox and all 69 WebKit cases. Its remaining differences were six narrow Chromium Nokia/Macintosh snapshots. Review of expected, actual and difference images confirmed the intended proportions, content, accessories and layout; those six baselines were updated in both platform sets. A subsequent normal comparison run passed all six, including their control assertions. These combined runs cover all 207 cases; they are not a claim of one final 207-case local run.
+The optimized full browser run passed 201 of 207 cases, including all 69 Firefox and all 69 WebKit cases. Its remaining differences were six narrow Chromium Nokia/Macintosh snapshots. Review of expected, actual and difference images confirmed the intended proportions, content, accessories and layout; those six baselines were updated in both platform sets. A subsequent normal comparison run passed all six, including their control assertions. Together, those two runs covered all 207 cases at that stage.
+
+The [second CI run](https://github.com/nocoo/lizheng.dev/actions/runs/34002453349) passed all 207 browser cases, all eight development checks and both desktop performance cases. Mobile interaction medians of 248 ms in English and 224 ms in Chinese still blocked publication. Further CDP comparisons identified first-time scene construction/layout as the remaining dominant cost; small sizing changes alone did not provide enough margin. Idle preparation and a bounded scene cache remove that work from ordinary chapter changes. In a 12× CPU diagnostic, Nokia/Honda switch durations changed from 224/288 ms to 88/88 ms; this diagnostic is separate from the unchanged 4× CPU release gate.
+
+Two new browser regressions verify both preparation paths, hidden-scene focus exclusion, stopped animations, exactly four accessible destination links, reuse of the prepared Nokia and current selection on the incoming Honda. Both first failed against the prior implementation (one layer instead of six) and then passed in all three engines. Existing control/tilt assertions now explicitly target the active device, while retaining their expected values and timing thresholds.
+
+The final full browser run passed all 213 cases: 71 each in Chromium, Firefox and WebKit. All existing screenshots passed normal comparison without further baseline changes. All eight development/first-paint/HMR checks also passed with the scene cache enabled.
 
 ## Final local verification
 
-All checks below have passing local evidence on 2026-09-06. No test was skipped or made less strict, and automatic retries remain disabled. The browser comparison follow-up is recorded above.
+All checks below have passing local evidence on 2026-09-06. No test was skipped or made less strict, and automatic retries remain disabled. Earlier CI and comparison findings are recorded above.
 
 | Check | Observed result |
 | --- | --- |
 | L1 | 220 tests; statements, functions and lines 100%; branches 99.77%; every logic metric exceeds the unchanged 95% threshold |
 | L2 | Four complete host matrices against isolated workerd and real assets, including both languages, live versions and legacy 301s |
-| L3 | 201 passes in the full run plus six passes after reviewed snapshot updates; all 207 cases covered across Chromium, Firefox and WebKit, with zero axe violations in the tested matrix |
+| L3 | All 213 cases passed in one final run: 71 each across Chromium, Firefox and WebKit, with zero axe violations in the tested matrix and no further snapshot changes |
 | Development | All eight first-paint and HMR regressions passed |
 | G1 | Biome zero warnings/errors, strict TypeScript, generated Worker types, Knip and active documentation checks passed |
 | G2 | Gitleaks clean; OSV scanned all 341 locked packages with no issues; resource budgets passed |
@@ -105,18 +113,18 @@ Performance uses Chromium with normal motion, 4× CPU throttling, 1.6 Mbps downl
 
 | Surface / language / width | Median LCP | Median CLS | Median longest interaction |
 | --- | --- | --- | --- |
-| Résumé / en / 390 | 488 ms | 0.043717 | 32 ms |
-| Résumé / en / 1440 | 496 ms | 0.001450 | 32 ms |
-| Personal / en / 390 | 1,020 ms | 0.002292 | 80 ms |
-| Personal / en / 1440 | 1,032 ms | 0.000503 | 72 ms |
-| Personal / zh / 390 | 1,020 ms | 0.000563 | 80 ms |
-| Personal / zh / 1440 | 1,032 ms | 0.001045 | 80 ms |
+| Résumé / en / 390 | 488 ms | 0.043717 | 24 ms |
+| Résumé / en / 1440 | 492 ms | 0.001450 | 32 ms |
+| Personal / en / 390 | 1,028 ms | 0.000858 | 48 ms |
+| Personal / en / 1440 | 1,060 ms | 0.001142 | 72 ms |
+| Personal / zh / 390 | 1,028 ms | 0.000563 | 48 ms |
+| Personal / zh / 1440 | 1,044 ms | 0.001052 | 64 ms |
 
-The maximum observed interaction was 88 ms and the largest observed long task was 73 ms. All scenarios meet the unchanged median budgets of 2,500 ms LCP, 0.05 CLS and 200 ms interaction duration. These are laboratory observations, not real-user INP or physical-device measurements.
+The maximum observed interaction was 80 ms and the largest observed long task was 165 ms. The cache moves scene preparation into idle work; the recorded long tasks remain part of the performance evidence. All scenarios meet the unchanged median budgets of 2,500 ms LCP, 0.05 CLS and 200 ms interaction duration. These are laboratory observations, not real-user INP or physical-device measurements.
 
 | Surface | JS gzip | CSS gzip | Fonts | Images | Total en / zh |
 | --- | --- | --- | --- | --- | --- |
-| Personal | 78,251 B | 17,488 B | 118,612 B | 984 B | 220,655 / 221,024 B |
+| Personal | 78,478 B | 17,516 B | 118,612 B | 984 B | 220,910 / 221,280 B |
 | Résumé | 763 B | 3,881 B | 132,240 B | 27,250 B | 168,695 / 169,163 B |
 
 The release uses the existing mandatory CI → validated Worker artifact → production deployment flow. The [v3.1.0 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.0) records the remote CI, deployment and production verification when published; local results alone do not establish those outcomes.

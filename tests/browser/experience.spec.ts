@@ -239,9 +239,9 @@ test("handheld responds to touch on a narrow screen", async ({ browser }) => {
 	// The introduction can put only the bottom-edge sliver of a key above the fold.
 	await page.locator(".console-scene").scrollIntoViewIfNeeded();
 	await page.locator(".dpad-down").tap();
-	await expect(page.locator('[data-screen-link="1"]')).toHaveClass(
-		"is-selected",
-	);
+	await expect(
+		page.locator('[data-device-active] [data-screen-link="1"]'),
+	).toHaveClass("is-selected");
 	await page.locator('[aria-label="Select：切换屏幕"]').tap();
 	await expect(page.locator("#screen")).toHaveClass("lcd-screen panel-about");
 	await page.locator(".button-b").tap();

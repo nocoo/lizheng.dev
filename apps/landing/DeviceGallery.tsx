@@ -1,5 +1,6 @@
 import {
 	type CSSProperties,
+	memo,
 	useCallback,
 	useEffect,
 	useRef,
@@ -24,16 +25,24 @@ import { Honda } from "./devices/Honda";
 import { IPod } from "./devices/IPod";
 import { Macintosh } from "./devices/Macintosh";
 import { Nokia } from "./devices/Nokia";
-import { DeviceIcon } from "./devices/shared";
+import { DeviceIcon, type DeviceProps } from "./devices/shared";
 import { SceneAccessories } from "./SceneAccessories";
 
+const sameScene = (previous: DeviceProps, next: DeviceProps) =>
+	(!previous.active && !next.active) ||
+	(previous.active === next.active &&
+		previous.content === next.content &&
+		previous.state === next.state &&
+		previous.dispatch === next.dispatch &&
+		previous.openSelected === next.openSelected);
+const Accessories = memo(SceneAccessories);
 const devices = {
-	gameboy: GameBoy,
-	nokia: Nokia,
-	macintosh: Macintosh,
-	ipod: IPod,
-	garmin: Garmin,
-	honda: Honda,
+	gameboy: memo(GameBoy, sameScene),
+	nokia: memo(Nokia, sameScene),
+	macintosh: memo(Macintosh, sameScene),
+	ipod: memo(IPod, sameScene),
+	garmin: memo(Garmin, sameScene),
+	honda: memo(Honda, sameScene),
 };
 
 export function DeviceGallery({ content }: { content: PageContent }) {
@@ -46,12 +55,26 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 		gallery.getServerSnapshot,
 	);
 	const [state, setState] = useState(initialHandheld);
+	const [prepared, setPrepared] = useState(1);
+	useEffect(() => {
+		if (prepared === deviceChapters.length) return;
+		const prepare = () => setPrepared((count) => count + 1);
+		if (typeof window.requestIdleCallback === "function") {
+			const id = window.requestIdleCallback(prepare);
+			return () => window.cancelIdleCallback(id);
+		}
+		const id = window.setTimeout(prepare, 100);
+		return () => window.clearTimeout(id);
+	}, [prepared]);
 	const dispatch = useCallback(
 		(action: HandheldAction) =>
 			setState((current) => transition(current, action, content.links.length)),
 		[content.links.length],
 	);
-	const openSelected = () => activate(state, () => dispatch({ type: "back" }));
+	const openSelected = useCallback(
+		() => activate(state, () => dispatch({ type: "back" })),
+		[state, dispatch],
+	);
 	useEffect(() => {
 		if (root.current)
 			return setupDeviceGallery(root.current, gallery, (index) =>
@@ -61,10 +84,13 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 	const current = deviceChapters[
 		snapshot.index
 	] as (typeof deviceChapters)[number];
-	const layers =
-		snapshot.previous === null
-			? [snapshot.index]
-			: [snapshot.previous, snapshot.index];
+	const layers = Array.from(
+		new Set([
+			...Array.from({ length: prepared }, (_, index) => index),
+			...(snapshot.previous === null ? [] : [snapshot.previous]),
+			snapshot.index,
+		]),
+	);
 	const ready = snapshot.clockRevision > 0;
 	return (
 		<section
@@ -116,12 +142,12 @@ export function DeviceGallery({ content }: { content: PageContent }) {
 							return (
 								<div
 									key={chapter.id}
-									className={`device-layer layer-${chapter.id} ${active ? (snapshot.previous === null ? "is-current" : "is-entering") : "is-exiting"}`}
+									className={`device-layer layer-${chapter.id} ${active ? (snapshot.previous === null ? "is-current" : "is-entering") : index === snapshot.previous ? "is-exiting" : "is-cached"}`}
 									data-device-active={active ? chapter.id : undefined}
 									inert={!active}
 									aria-hidden={!active}
 								>
-									<SceneAccessories device={chapter.id} />
+									<Accessories device={chapter.id} />
 									<Device
 										content={content}
 										state={state}

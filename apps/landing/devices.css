@@ -101,6 +101,15 @@
 	pointer-events: none;
 	animation: object-exit 660ms cubic-bezier(0.5, 0.02, 0.76, 0.32) both;
 }
+.device-layer.is-cached {
+	visibility: hidden;
+	pointer-events: none;
+}
+.device-layer.is-cached,
+.device-layer.is-cached * {
+	animation: none;
+	transition: none;
+}
 .device-change-light {
 	position: absolute;
 	inset: -160px -240px -180px;

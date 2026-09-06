@@ -120,9 +120,9 @@ for (const surface of ["resume", "landing"])
 					);
 					if (surface === "landing") {
 						await page.locator(".dpad-down").click();
-						await expect(page.locator('[data-screen-link="1"]')).toHaveClass(
-							"is-selected",
-						);
+						await expect(
+							page.locator('[data-device-active] [data-screen-link="1"]'),
+						).toHaveClass("is-selected");
 						await page.locator(".system-buttons button").first().click();
 						await expect(page.locator("#screen")).toHaveClass(
 							"lcd-screen panel-about",
