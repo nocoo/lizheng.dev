@@ -162,6 +162,48 @@ it("pointer tilt stays bounded, resets with motion settings and cleanup", () => 
 	move();
 	expect(shell?.style.getPropertyValue("--tilt-y")).toBe("0deg");
 });
+it("keeps controls and drag gestures steady instead of moving their hit targets", () => {
+	const scene = document.querySelector<HTMLElement>(".console-scene");
+	const shell = document.querySelector<HTMLElement>(".console-shell");
+	if (!scene || !shell) throw new Error("Missing fixture");
+	vi.spyOn(scene, "getBoundingClientRect").mockReturnValue({
+		left: 0,
+		top: 0,
+		width: 100,
+		height: 100,
+	} as DOMRect);
+	const cleanup = setupHandheld();
+	try {
+		scene.dispatchEvent(
+			new MouseEvent("pointermove", { clientX: 80, clientY: 10 }),
+		);
+		const resting = shell.style.cssText;
+		for (const target of shell.querySelectorAll("button, a")) {
+			target.dispatchEvent(
+				new MouseEvent("pointermove", {
+					bubbles: true,
+					clientX: 20,
+					clientY: 80,
+				}),
+			);
+			expect(shell.style.cssText).toBe(resting);
+		}
+		scene.dispatchEvent(
+			new MouseEvent("pointermove", {
+				clientX: 20,
+				clientY: 80,
+				buttons: 1,
+			}),
+		);
+		expect(shell.style.cssText).toBe(resting);
+		scene.dispatchEvent(
+			new MouseEvent("pointermove", { clientX: 20, clientY: 80 }),
+		);
+		expect(shell.style.cssText).not.toBe(resting);
+	} finally {
+		cleanup();
+	}
+});
 it("tolerates missing optional DOM without leaking listeners", () => {
 	document.body.innerHTML = "";
 	const cleanup = setupHandheld();

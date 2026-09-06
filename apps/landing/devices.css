@@ -41,6 +41,7 @@
 	width: 100%;
 	overflow: visible;
 	isolation: isolate;
+	contain: layout style;
 }
 /* Objects and props can cross the stage; their shadows already fade to alpha. */
 .stage-viewport {
@@ -86,6 +87,7 @@
 	transform-style: preserve-3d;
 	transform-origin: 50% 60%;
 	pointer-events: auto;
+	contain: layout style;
 }
 .device-layer.is-current,
 .device-layer.is-entering {
@@ -191,10 +193,14 @@
 }
 .device-object {
 	position: relative;
-	container-type: inline-size;
 	width: 100%;
 	transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
 	transition: transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Only bordered shells need a second, smaller coordinate space. */
+.ipod-device,
+.garmin-device {
+	container-type: inline-size;
 }
 .ipod-device::after,
 .garmin-device::after,

@@ -19,7 +19,7 @@ The order expresses chapters, not dated biographical claims. Use Play, Connect, 
 - Keyboard focus uses compact, material-colored outlines around hardware and inset screen-colored indicators on menu rows, with pixel-style outlines for Game Boy and Macintosh. Chapter focus follows the rail's accent and rounded shape. These indicators remain visible for keyboard use without adding a large floating outline on pointer clicks.
 - Suspend autoplay while the scene is hovered, keyboard focus is within the gallery, the scene is outside the viewport or the document is hidden. Preserve the remaining interval. Pointer selection does not leave a persistent focus pause. Autoplay defaults to on, including reduced motion; reduced motion eliminates spatial transitions and never overrides an explicit pause.
 - Device changes combine outgoing and incoming depth, rotation, light and shadow with asymmetric easing. The incoming device is immediately interactive; the outgoing device is inert, hidden from assistive technology and removed after the finite transition. Rapid choices replace the pending transition.
-- Increase pointer tilt from ±1.5° to ±6°, with eased settling and a moving highlight. Update only on pointer input; disable spatial motion for coarse pointers and reduced motion.
+- Increase pointer tilt from ±1.5° to ±6°, with eased settling and a moving highlight. Update only on pointer input; disable spatial motion for coarse pointers and reduced motion. Keep the pose steady over buttons/links and during pressed-pointer gestures so small controls and the click wheel remain under the pointer.
 - Inset Hold and the headphone jack into the iPod's top metal edge. The Garmin quarter-turn mount sits behind the case and is concealed in this frontal view. Reflections follow the visible case surfaces, including composite machines, rather than painting a rectangular layer across their empty surroundings.
 - Keep both stage layers free of rectangular clipping and masks, so animated accessories can travel beyond the stage in either direction. Existing soft shadows decay to transparency behind the caption and chapter rail, which sit above the scene. Only the outer page constrains horizontal overflow.
 - Use a smooth, steadily darkening iPod face gradient so its lower-right corner does not read as a fold. Place transition light in an independent expanded layer and use a closest-side radial gradient that reaches zero alpha before all four canvas edges. Lower its dark-theme intensity; extending the canvas alone would only move the visible cutoff.
@@ -37,6 +37,8 @@ The order expresses chapters, not dated biographical claims. Use Play, Connect, 
 - `apps/landing/devices.css`: hardware materials, responsive geometry and nonlinear transitions.
 
 No new runtime dependency, external image/font request or storage binding is required. SSR presents the complete first device. Subsequent scenes are rendered on demand.
+
+The stage and device layers use layout/style containment to limit the work of a scene change without clipping its paint. Unbordered devices share the existing hardware-position container for relative sizing; only the bordered iPod and Garmin shells retain a second inner container. Accessories, light and shadows remain free to extend beyond these containers.
 
 The selected destination and profile panel are shared across devices. The Nokia grip opens/closes the slider; its directional pad, soft keys and numeric keypad are usable. The Macintosh has desktop links, keyboard controls and a mouse. The iPod wheel accepts both button presses and circular pointer gestures, ignoring the center and unrelated pointers; document-level release/cancel handling also ends short presses released outside the wheel. Garmin uses its physical buttons around the portrait screen.
 
@@ -76,15 +78,21 @@ The final shortcut Red showed left/right still invoking the profile toggle, no c
 
 There are 48 personal-page Chromium baselines: eight full-page Game Boy views plus forty gallery views for the five additional devices, covering both languages, themes and viewport sizes. The eight local résumé views remain unchanged by the device journey. Personal-page baselines use the pinned CJK subset in both `darwin` and `darwin-ci`; the résumé retains its platform-specific system-font variants. Release review also transfers the previously committed résumé keepsake into its eight CI baselines: only the 705–1,258 decoration pixels change in each image, with no overlap with platform-font differences. All other CI pixels and image dimensions are preserved. The comparison threshold remains 0.001. Gallery snapshots mask only the moving chapter progress; existing full-page snapshots retain only their version mask. Remote CI remains mandatory before artifact publication.
 
+The [first release CI run](https://github.com/nocoo/lizheng.dev/actions/runs/34000836162) correctly blocked artifact publication. Quality, HTTP and all Chromium/Firefox browser cases passed, but the English personal-page interaction medians were 216 ms at 390px and 232 ms at 1440px, above the unchanged 200 ms limit. Chromium CDP profiling traced the cost to scene layout; removing redundant sizing containers and adding layout/style containment reduced that work. WebKit also exposed small controls moving under pointer tilt, autoplay advancing during a long axe inspection, clock assertions depending on command latency and contention between three video/axe workers.
+
+The control-stability unit regression failed before the pointer guard and now passes. Browser timing assertions use an explicitly paused clock, advancing it only for the behavior under test. Static axe inspection uses the normal scene-hover reading pause, then resets the pointer before screenshots. CI gives WebKit one worker; Chromium and Firefox retain three. No assertion, timeout, snapshot mask or performance threshold was relaxed, and automatic retries remain disabled.
+
+The optimized full browser run passed 201 of 207 cases, including all 69 Firefox and all 69 WebKit cases. Its remaining differences were six narrow Chromium Nokia/Macintosh snapshots. Review of expected, actual and difference images confirmed the intended proportions, content, accessories and layout; those six baselines were updated in both platform sets. A subsequent normal comparison run passed all six, including their control assertions. These combined runs cover all 207 cases; they are not a claim of one final 207-case local run.
+
 ## Final local verification
 
-All checks below passed on 2026-09-06. No test was skipped, retried or made less strict to obtain these results.
+All checks below have passing local evidence on 2026-09-06. No test was skipped or made less strict, and automatic retries remain disabled. The browser comparison follow-up is recorded above.
 
 | Check | Observed result |
 | --- | --- |
-| L1 | 219 tests; statements, functions and lines 100%; branches 99.77%; every logic metric exceeds the unchanged 95% threshold |
+| L1 | 220 tests; statements, functions and lines 100%; branches 99.77%; every logic metric exceeds the unchanged 95% threshold |
 | L2 | Four complete host matrices against isolated workerd and real assets, including both languages, live versions and legacy 301s |
-| L3 | 207 passing browser regressions: 69 each in Chromium, Firefox and WebKit; zero axe violations in the tested matrix |
+| L3 | 201 passes in the full run plus six passes after reviewed snapshot updates; all 207 cases covered across Chromium, Firefox and WebKit, with zero axe violations in the tested matrix |
 | Development | All eight first-paint and HMR regressions passed |
 | G1 | Biome zero warnings/errors, strict TypeScript, generated Worker types, Knip and active documentation checks passed |
 | G2 | Gitleaks clean; OSV scanned all 341 locked packages with no issues; resource budgets passed |
@@ -97,18 +105,18 @@ Performance uses Chromium with normal motion, 4× CPU throttling, 1.6 Mbps downl
 
 | Surface / language / width | Median LCP | Median CLS | Median longest interaction |
 | --- | --- | --- | --- |
-| Résumé / en / 390 | 484 ms | 0.043717 | 24 ms |
-| Résumé / en / 1440 | 488 ms | 0.001450 | 32 ms |
-| Personal / en / 390 | 1,028 ms | 0.000848 | 80 ms |
-| Personal / en / 1440 | 1,044 ms | 0.000503 | 80 ms |
-| Personal / zh / 390 | 1,016 ms | 0.000548 | 72 ms |
-| Personal / zh / 1440 | 1,076 ms | 0.001048 | 88 ms |
+| Résumé / en / 390 | 488 ms | 0.043717 | 32 ms |
+| Résumé / en / 1440 | 496 ms | 0.001450 | 32 ms |
+| Personal / en / 390 | 1,020 ms | 0.002292 | 80 ms |
+| Personal / en / 1440 | 1,032 ms | 0.000503 | 72 ms |
+| Personal / zh / 390 | 1,020 ms | 0.000563 | 80 ms |
+| Personal / zh / 1440 | 1,032 ms | 0.001045 | 80 ms |
 
-The maximum observed interaction was 88 ms and the largest observed long task was 70 ms. All scenarios meet the unchanged median budgets of 2,500 ms LCP, 0.05 CLS and 200 ms interaction duration. These are laboratory observations, not real-user INP or physical-device measurements.
+The maximum observed interaction was 88 ms and the largest observed long task was 73 ms. All scenarios meet the unchanged median budgets of 2,500 ms LCP, 0.05 CLS and 200 ms interaction duration. These are laboratory observations, not real-user INP or physical-device measurements.
 
 | Surface | JS gzip | CSS gzip | Fonts | Images | Total en / zh |
 | --- | --- | --- | --- | --- | --- |
-| Personal | 78,218 B | 17,459 B | 118,612 B | 984 B | 220,595 / 220,964 B |
+| Personal | 78,251 B | 17,488 B | 118,612 B | 984 B | 220,655 / 221,024 B |
 | Résumé | 763 B | 3,881 B | 132,240 B | 27,250 B | 168,695 / 169,163 B |
 
 The release uses the existing mandatory CI → validated Worker artifact → production deployment flow. The [v3.1.0 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.0) records the remote CI, deployment and production verification when published; local results alone do not establish those outcomes.

@@ -47,7 +47,8 @@ jobs:
         run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
       # Each engine owns its runner and workerd process. Reusing a single
       # macOS VM across all engines ended in runtime exits during WebKit.
-      - run: bun run test:browser --project=${{ matrix.browser }}
+      # Keep WebKit's video and axe pages from competing for rendering resources.
+      - run: bun run test:browser --project=${{ matrix.browser }} --workers=${{ matrix.browser == 'webkit' && '1' || '3' }}
       - if: matrix.browser == 'chromium'
         run: bun run test:development
       - if: matrix.browser == 'chromium'

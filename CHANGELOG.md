@@ -5,6 +5,7 @@
 - Turn the personal page into six interactive chapters: Game Boy, Nokia 5300, Macintosh Plus, iPod Classic, Garmin Edge 540 and Honda Africa Twin instruments, with device-specific screens and physical controls.
 - Add a clickable chapter rail, sequential 12-second autoplay on by default, explicit playback and pauses for reading, keyboard focus, hidden pages and offscreen scenes; pointer selection resumes naturally.
 - Strengthen pointer tilt to ±6° and add nonlinear depth transitions, responsive lighting and immediate reduced-motion switching.
+- Keep small device controls steady under the pointer and during click-wheel drags; reduce scene layout work when switching devices.
 - Separate keyboard navigation into up/down for screen menus and left/right for devices, with a left-side legend and restrained native focus indicators.
 - Make the Nokia slider and iPod click wheel functional; preserve the same public profile and four real destinations on every screen.
 - Add wired earbuds with aligned cable joins, floppy disks, matching half-finger cycling gloves and a side-profile riding helmet; straighten the Macintosh, inset the iPod Hold switch, conceal the Garmin rear mount and let stage shadows fade naturally above the chapter rail.

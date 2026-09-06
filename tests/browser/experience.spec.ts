@@ -76,6 +76,10 @@ for (const surface of ["resume", "landing"])
 						await expect(page.locator(".console-shell")).toBeVisible();
 					}
 					await expect(page.locator("footer")).toContainText("Zheng Li");
+					if (surface === "landing")
+						await page
+							.locator(".gallery-stage")
+							.hover({ position: { x: 1, y: 1 } });
 					const results = await new AxeBuilder({ page })
 						.withTags(["wcag2a", "wcag2aa", "wcag21aa"])
 						.analyze();
@@ -92,6 +96,7 @@ for (const surface of ["resume", "landing"])
 							})),
 						})),
 					).toEqual([]);
+					await page.mouse.move(0, 0);
 					await page.screenshot({
 						path: info.outputPath("approved-layout.png"),
 						fullPage: true,

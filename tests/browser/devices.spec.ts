@@ -30,6 +30,11 @@ async function settle(page: Page) {
 	});
 }
 
+async function freezeClock(page: Page) {
+	await page.clock.install({ time: 0 });
+	await page.clock.pauseAt(60_000);
+}
+
 for (const [index, model] of models.entries()) {
 	if (index === 0) continue; // The existing experience matrix covers the Game Boy.
 	for (const locale of ["en", "zh"])
@@ -108,6 +113,10 @@ for (const [index, model] of models.entries()) {
 						return clipped;
 					});
 					expect(clipped).toEqual([]);
+					// Read one chapter while axe inspects it, using the normal hover pause.
+					await page
+						.locator(".gallery-stage")
+						.hover({ position: { x: 1, y: 1 } });
 					const violations = (
 						await new AxeBuilder({ page })
 							.withTags(["wcag2a", "wcag2aa", "wcag21aa"])
@@ -126,6 +135,7 @@ for (const [index, model] of models.entries()) {
 							})),
 						})),
 					).toEqual([]);
+					await page.mouse.move(0, 0);
 					if (info.project.name === "chromium")
 						await expect(page.locator(".device-gallery")).toHaveScreenshot(
 							`${model}-${locale}-${theme}-${width}.png`,
@@ -174,7 +184,7 @@ for (const [index, model] of models.entries()) {
 test("automatic chapters preserve reading time, wrap and offer explicit playback", async ({
 	page,
 }) => {
-	await page.clock.install();
+	await freezeClock(page);
 	await page.goto(`${origin}/en/`);
 	await expect(page.locator("[data-gallery]")).toHaveAttribute(
 		"data-running",
@@ -225,6 +235,7 @@ test("automatic chapters preserve reading time, wrap and offer explicit playback
 test("rapid chapter changes, nonlinear motion, stronger tilt and reduced motion", async ({
 	page,
 }) => {
+	await freezeClock(page);
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto(`${origin}/en/`);
 	await page.locator('[data-chapter="1"]').click();
@@ -252,6 +263,7 @@ test("rapid chapter changes, nonlinear motion, stronger tilt and reduced motion"
 					),
 			),
 	).toBe(true);
+	await page.clock.fastForward(1100);
 	await settle(page);
 	const stage = await page.locator(".gallery-stage").boundingBox();
 	if (!stage) throw new Error("Missing stage");
@@ -411,7 +423,7 @@ test("scrolling under a stationary pointer preserves selection until the pointer
 test("mouse chapter selection keeps autoplay on and reduced motion preserves the playback choice", async ({
 	page,
 }) => {
-	await page.clock.install();
+	await freezeClock(page);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto(`${origin}/en/`);
 	await expect(page.locator("[data-gallery]")).toHaveAttribute(
@@ -444,7 +456,7 @@ test("mouse chapter selection keeps autoplay on and reduced motion preserves the
 test("Honda navigation drives synchronized instruments, coasts to zero, then returns to neutral", async ({
 	page,
 }) => {
-	await page.clock.install();
+	await freezeClock(page);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto(`${origin}/en/`);
 	await page.locator('[data-chapter="5"]').click();

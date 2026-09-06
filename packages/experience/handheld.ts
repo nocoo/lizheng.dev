@@ -77,6 +77,12 @@ export function setupHandheld() {
 		shell?.style.setProperty("--light-y", "20%");
 	};
 	const move = (event: PointerEvent) => {
+		// Keep small controls under the pointer and wheel geometry steady while dragging.
+		if (
+			event.buttons ||
+			(event.target instanceof Element && event.target.closest("button, a"))
+		)
+			return;
 		const shell = activeShell();
 		if (motion.matches || !pointer.matches || !scene || !shell) return;
 		const rect = scene.getBoundingClientRect();
