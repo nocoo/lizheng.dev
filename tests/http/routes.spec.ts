@@ -37,6 +37,9 @@ for (const surface of ["resume", "landing"])
 			for (const locale of ["en", "zh"]) {
 				const page = await get(`/${locale}/`);
 				expect(page.status()).toBe(200);
+				expect(page.headers()["cache-control"]).toBe(
+					"public, max-age=0, must-revalidate, no-transform",
+				);
 				const html = await page.text();
 				expect(html).toContain(
 					`<html lang="${locale === "zh" ? "zh-CN" : "en"}">`,
@@ -55,9 +58,15 @@ for (const surface of ["resume", "landing"])
 					maxRedirects: 0,
 				});
 				expect(head.status()).toBe(200);
+				expect(head.headers()["cache-control"]).toBe(
+					page.headers()["cache-control"],
+				);
 				expect(await head.body()).toHaveLength(0);
 				const md = await get(`/${locale}/content.md`);
 				expect(md.status()).toBe(200);
+				expect(md.headers()["cache-control"]).toBe(
+					"public, max-age=0, must-revalidate",
+				);
 				expect(md.headers()["content-type"]).toContain("text/markdown");
 				expect(await md.text()).toContain(`surface: "${surface}"`);
 				expect(await (await get(`/${locale}.md`)).text()).toBe(await md.text());
@@ -72,6 +81,9 @@ for (const surface of ["resume", "landing"])
 				for (const path of assets) {
 					const asset = await get(path);
 					expect(asset.status(), path).toBe(200);
+					expect(asset.headers()["cache-control"], path).not.toContain(
+						"no-transform",
+					);
 					if (path.endsWith(".css"))
 						for (const font of (await asset.text()).matchAll(
 							/url\((?:"|')?(\/assets\/[^)"']+)/g,

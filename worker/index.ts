@@ -98,6 +98,8 @@ export default {
 					? "public, max-age=31536000, immutable"
 					: "public, max-age=0, must-revalidate",
 			);
+			// Keep edge-injected scripts from conflicting with the self-only CSP.
+			if (page) result.headers.append("Cache-Control", "no-transform");
 			if (markdown && asset.ok)
 				result.headers.set("Content-Type", "text/markdown; charset=utf-8");
 			return result;

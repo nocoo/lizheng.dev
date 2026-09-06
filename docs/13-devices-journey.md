@@ -92,6 +92,8 @@ Two new browser regressions verify both preparation paths, hidden-scene focus ex
 
 The final full browser run passed all 213 cases: 71 each in Chromium, Firefox and WebKit. All existing screenshots passed normal comparison without further baseline changes. All eight development/first-paint/HMR checks also passed with the scene cache enabled.
 
+Production smoke testing found that Cloudflare automatically injected its analytics beacon, which the existing self-hosted CSP correctly blocked. Following the [official Web Analytics documentation](https://developers.cloudflare.com/web-analytics/get-started/), HTML responses now add `no-transform` while retaining their revalidation policy and the unchanged CSP. Eight existing page-rewrite regressions first failed on the missing directive, then all 116 edge tests passed after the header fix. The HTTP matrix also checks GET/HEAD consistency and preserves Markdown/asset policies, and the production verifier rejects a missing directive or injected beacon. Cloudflare's [cache documentation](https://developers.cloudflare.com/cache/concepts/cache-control/) notes that this directive also disables additional edge transformations, including compression of an uncompressed origin response; it is deliberately limited to HTML. Final production browser and transfer checks are recorded with the release.
+
 ## Final local verification
 
 All checks below have passing local evidence on 2026-09-06. No test was skipped or made less strict, and automatic retries remain disabled. Earlier CI and comparison findings are recorded above.

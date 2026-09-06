@@ -118,6 +118,11 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 				);
 				if (suffix.includes("md"))
 					expect(result.headers.get("content-type")).toContain("text/markdown");
+				expect(result.headers.get("cache-control")).toBe(
+					suffix.includes("md")
+						? "public, max-age=0, must-revalidate"
+						: "public, max-age=0, must-revalidate, no-transform",
+				);
 			});
 	for (const path of [
 		"/robots.txt",
@@ -164,6 +169,7 @@ it("keeps missing APIs and arbitrary assets at 404", async () => {
 it("serves hashed assets with immutable cache", async () => {
 	const result = await fixture().request("/assets/a-abc.js");
 	expect(result.headers.get("cache-control")).toContain("immutable");
+	expect(result.headers.get("cache-control")).not.toContain("no-transform");
 	expect(result.headers.get("content-security-policy")).toContain("sha256-");
 });
 it("does not cache missing assets forever or expose asset redirects", async () => {

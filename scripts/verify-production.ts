@@ -38,6 +38,11 @@ for (const host of [
 		const html = (await page.text()).replace(/<!--.*?-->/g, "");
 		if (!page.ok || !html.includes(`v${manifest.version}`))
 			throw new Error(`Missing versioned page: ${host}/${locale}`);
+		if (
+			!page.headers.get("Cache-Control")?.includes("no-transform") ||
+			html.includes("https://static.cloudflareinsights.com/beacon.min.js")
+		)
+			throw new Error(`HTML transformation regression: ${host}/${locale}`);
 	}
 	if (host.endsWith(".me")) {
 		for (const path of [

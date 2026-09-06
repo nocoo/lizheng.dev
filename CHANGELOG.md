@@ -13,6 +13,7 @@
 - Animate the Honda's synchronized speed, gear and RPM displays in response to navigation, with gradual deceleration and delayed neutral; enrich the bilingual introduction about the objects that stay with us.
 - Stabilize Chinese screen typography with a self-hosted Noto Sans SC subset; load the gallery styles before JavaScript in local development.
 - Add the shared collectible decoration beside the résumé portrait, with matching light/dark and mobile treatments and a clean print view.
+- Preserve HTML through the Cloudflare edge so its automatically injected analytics script no longer conflicts with the site's self-hosted content security policy.
 
 ## [3.0.3] - 2026-09-05
 
