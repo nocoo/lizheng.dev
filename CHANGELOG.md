@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.1] - 2026-09-06
+
+- Unify the Journal / Play / Résumé header and cross-surface navigation with Firefly, preserving the current language between me and dev.
+- Add system / light / dark theme preferences, defaulting to the live system setting, with localized controls and first-paint theme initialization.
+- Align the shared frame, content widths, typography and footer details with the blog while retaining the résumé's readable text measure and print layout.
+- Add six original keepsake families around the résumé portrait, with matching writing-themed blog artwork; each document keeps its chosen scene through navigation, theme changes and resizing.
+- Merge Play's footer into one compact band, remove Back to top and the closing caption, use a 2:3 introduction/device grid, and balance the top and bottom content padding.
+- Make device arrivals decelerate to a smooth stop without rebound; hold unfinished pointer tilt over native controls so their hit areas stay steady during interaction.
+- Extend the public CJK font subset and refresh reviewed visual baselines, retaining the existing accessibility, screenshot and performance gates.
+
 ## [3.1.0] - 2026-09-06
 
 - Turn the personal page into six interactive chapters: Game Boy, Nokia 5300, Macintosh Plus, iPod Classic, Garmin Edge 540 and Honda Africa Twin instruments, with device-specific screens and physical controls.
