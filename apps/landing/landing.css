@@ -6,6 +6,14 @@
 	src: url("@fontsource/silkscreen/files/silkscreen-latin-400-normal.woff2")
 		format("woff2");
 }
+@font-face {
+	font-family: "Journey CJK";
+	font-style: normal;
+	font-weight: 400 700;
+	font-display: swap;
+	src: url("../../assets/fonts/journey-cjk.woff2") format("woff2");
+	unicode-range: U+3000-9FFF, U+FF00-FFEF;
+}
 :root {
 	--page: #f0f0e9;
 	--ink: #30372e;
@@ -19,9 +27,9 @@
 	--shell-label: #485461;
 	--screen-light: #bbc68b;
 	--screen-dark: #303d25;
-	--sans: "Space Grotesk Variable", "PingFang SC", sans-serif;
-	--mono: "Geist Mono Variable", "PingFang SC", monospace;
-	--pixel: "Silkscreen", "PingFang SC", monospace;
+	--sans: "Space Grotesk Variable", "Journey CJK", "PingFang SC", sans-serif;
+	--mono: "Geist Mono Variable", "Journey CJK", "PingFang SC", monospace;
+	--pixel: "Silkscreen", "Journey CJK", "PingFang SC", monospace;
 }
 [data-theme="dark"] {
 	--page: #1e2824;
@@ -37,7 +45,13 @@
 	--screen-light: #acbd7e;
 	--screen-dark: #253520;
 }
+/* Native device focus should settle in place without a delayed page pan. */
+html {
+	scroll-behavior: auto;
+	overflow-x: clip;
+}
 body {
+	overflow-x: clip;
 	background: var(--page);
 	color: var(--ink);
 	font-family: var(--sans);
@@ -142,6 +156,14 @@ body::before {
 	letter-spacing: -0.035em;
 	margin: 0;
 }
+.intro-story {
+	max-width: 355px;
+	margin: 23px 0 0;
+	font-size: 13px;
+	line-height: 1.95;
+	color: var(--muted);
+	text-wrap: pretty;
+}
 .intro-invitation {
 	display: flex;
 	align-items: center;
@@ -156,35 +178,54 @@ body::before {
 	background: var(--muted);
 }
 .desktop-instructions {
-	margin-top: 70px;
+	margin-top: 42px;
+}
+.keyboard-legend {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+}
+.keyboard-legend > div {
 	display: flex;
 	align-items: center;
 	gap: 13px;
 }
+.keyboard-legend dd {
+	margin: 0;
+	font-size: 10px;
+	color: var(--muted);
+}
 .keyboard-keys {
 	display: flex;
 	gap: 4px;
+	min-width: 52px;
 }
 .keyboard-keys kbd {
 	display: grid;
 	place-items: center;
 	width: 24px;
-	height: 26px;
+	height: 24px;
 	border: 1px solid var(--line);
 	border-bottom-width: 3px;
 	border-radius: 4px;
 	color: var(--muted);
-	font-size: 13px;
+	font-size: 12px;
 	font-family: var(--mono);
+}
+.keyboard-keys .key-enter {
+	width: 52px;
+	font-size: 8px;
 }
 .desktop-instructions p {
 	font-size: 9px;
 	line-height: 1.85;
 	color: var(--muted);
-	margin: 0;
+	margin: 12px 0 0;
 }
-.desktop-instructions p span {
-	font-size: 0.96em;
+.landing-header :is(button, a):focus-visible,
+.landing-footer a:focus-visible {
+	outline-color: var(--muted);
+	outline-offset: 3px;
 }
 .console-scene {
 	position: relative;
@@ -523,8 +564,10 @@ body::before {
 	min-width: 0;
 }
 .lcd-eyebrow {
+	display: block;
 	font-family: var(--mono);
 	font-size: 1.8cqw;
+	line-height: 1.3;
 }
 .lcd-identity h2 {
 	font-family: var(--pixel);
@@ -894,29 +937,6 @@ body::before {
 	font-size: 3.5cqw;
 	letter-spacing: 0.5cqw;
 }
-.console-caption {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	align-self: stretch;
-	margin: 48px 3px 0 44px;
-	font-family: var(--mono);
-	font-size: 7px;
-	letter-spacing: 0.045em;
-	color: var(--muted);
-}
-.caption-dot {
-	width: 4px;
-	height: 4px;
-	background: var(--accent);
-}
-.console-caption p {
-	margin: 0;
-}
-.caption-edition {
-	margin-left: auto;
-	font-size: 8px;
-}
 .landing-footer {
 	max-width: 1320px;
 	margin: 0 auto;
@@ -1071,10 +1091,6 @@ html[lang="zh-CN"] .intro-description {
 		height: 440px;
 		top: 70px;
 	}
-	.console-caption {
-		margin-left: 14px;
-		font-size: 6px;
-	}
 	.orbit-label {
 		display: none;
 	}
@@ -1125,6 +1141,12 @@ html[lang="zh-CN"] .intro-description {
 	.intro-description br::after {
 		content: " ";
 	}
+	.intro-story {
+		max-width: 340px;
+		margin: 18px auto 0;
+		font-size: 12px;
+		line-height: 1.9;
+	}
 	.intro-invitation {
 		justify-content: center;
 		font-size: 10px;
@@ -1141,10 +1163,6 @@ html[lang="zh-CN"] .intro-description {
 		max-width: 470px;
 		width: 100%;
 		margin: auto;
-	}
-	.console-caption {
-		margin-left: 18px;
-		margin-top: 48px;
 	}
 	.scene-halo {
 		width: min(440px, 95vw);
@@ -1242,15 +1260,6 @@ html[lang="zh-CN"] .intro-description {
 	}
 	.console-position {
 		width: 302px;
-	}
-	.console-caption {
-		margin: 42px -7px 0 0;
-		gap: 6px;
-		font-size: 5.8px;
-		letter-spacing: 0;
-	}
-	.caption-edition {
-		font-size: 6px;
 	}
 	.landing-footer {
 		margin: 0 22px;

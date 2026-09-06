@@ -29,6 +29,7 @@ test.beforeAll(async () => {
 		"packages",
 		"scripts",
 		"design-public",
+		"assets/fonts",
 		"docs/content",
 		"package.json",
 	])
@@ -99,6 +100,12 @@ for (const surface of ["resume", "landing"])
 				surface === "resume" ? ".resume-document" : ".console-shell",
 			),
 		).toBeVisible();
+		if (surface === "landing")
+			expect(
+				await page
+					.locator(".chapter-rail")
+					.evaluate((node) => getComputedStyle(node).display),
+			).toBe("grid");
 		await page.evaluate(() => document.fonts.ready);
 		expect(failedResources).toEqual([]);
 	});

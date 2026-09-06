@@ -1,6 +1,6 @@
 # Active documentation
 
-Baseline date: 2026-09-05. Status: both designs approved; full 6DQ hardening and major release authorized. See 11 for current evidence.
+Updated: 2026-09-06. The original rebuild is documented in 11; the six-device personal journey and its current verification are in 13.
 
 ## Reading order
 
@@ -19,6 +19,7 @@ Baseline date: 2026-09-05. Status: both designs approved; full 6DQ hardening and
 | [10 — Design preview](10-design-preview.md) | Approved design, local HTTPS entry points and review evidence |
 | [11 — Release implementation](11-release-implementation.md) | Current quality evidence, release plan and rollback |
 | [12 — Local development](12-local-development.md) | Styles on first paint, HMR and isolated editing regression tests |
+| [13 — Objects along the way](13-devices-journey.md) | Six interactive personal devices, chapter navigation and motion |
 
 ## Authority and status
 

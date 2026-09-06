@@ -1,6 +1,6 @@
 # 06 — 技术架构与版本决策
 
-状态：两套新视图、Markdown 预渲染、生产 Worker、本机预览和 CI/CD 已实现；v3.0.0 已部署。当前质量证据以 11 为准。2026-09-05 核对 npm registry latest 与 peerDependencies，并安装以下版本。
+状态：两套新视图、Markdown 预渲染、生产 Worker、本机预览和 CI/CD 已实现；原始发布与质量证据见 11。2026-09-06 的六设备旅程扩展见 13。2026-09-05 核对 npm registry latest 与 peerDependencies，并安装以下版本。
 
 ## 技术选择
 
@@ -36,9 +36,9 @@ Astro 7.3.1 和 @astrojs/cloudflare 14.3.0 均已查询。后者 peer 要求 Ast
 ## 当前代码结构
 
     apps/resume/               静态简历、Markdown renderer、DOM client、CSS
-    apps/landing/              React 掌机视图、hydration client、CSS
+    apps/landing/              React 设备旅程、六种硬件外壳、hydration client、CSS
     packages/content/          四份 Markdown allowlist 与强校验模型
-    packages/experience/       品牌、主题、掌机状态、DOM 适配器和样式
+    packages/experience/       品牌、主题、共享屏幕状态、轮播时钟、滚轮和 DOM 适配器
     packages/publishing/       HTML/JSON-LD、host/locale/301 路由、CSP
     packages/quality/          gate runner 与测试资源/请求隔离 guard
     worker/index.ts            生产 Worker、live、资产和公开端点
@@ -50,6 +50,7 @@ Astro 7.3.1 和 @astrojs/cloudflare 14.3.0 均已查询。后者 peer 要求 Ast
     scripts/verify-production.ts 只读生产发布验证，不跟随 301
     design-public/             新照片、点阵、favicon 和社交图
     assets/source/             原始人像，不发布
+    assets/fonts/              设备屏幕的自托管中文字体子集与许可证
     tests/                     L1、真实 HTTP、浏览器快照和性能实验
     docs/content/              四份公开 Markdown 内容源
     dist/                      生产构建输出
@@ -81,6 +82,8 @@ ViewModel：纯 TypeScript 状态转换；输入按钮/键盘意图，输出 scr
 View：两个独立 React 视图及必要的 DOM 适配器。动画响应已经确定的状态，不决定内容是否存在。定时器、媒体监听器、指针订阅有明确清理逻辑。
 
 主题初始化脚本很小，在绘制前执行，容忍存储被禁用。其余 JS 以 module 延后执行。两种语言使用独立 URL，不依赖整站客户端翻译请求。
+
+设备旅程只同时渲染当前设备和短暂退场的上一设备。独立轮播控制器通过稳定快照连接 React，共享公开内容和选中链接；每个外壳负责符合自身硬件的屏幕与按键布局。默认 12 秒顺序轮播，鼠标停留、键盘焦点、页面隐藏或场景离屏时暂停，保留剩余阅读时间；鼠标或触摸选择不会留下永久焦点暂停。减少动态效果时仍默认轮播，切换不使用空间动画，手动暂停始终保留。指针倾斜只在输入时更新。Honda 的速度、档位与转速来自同一个短时控制器，导航后加速、滑行减速，再延时回到空档；静止时没有定时任务。详细交互和验证见 [13](13-devices-journey.md)。
 
 ## Cloudflare 与缓存
 

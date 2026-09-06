@@ -167,6 +167,7 @@ server.on("request", async (request, response) => {
 						css: [
 							"/packages/experience/base.css",
 							`/apps/${surface}/${surface}.css`,
+							...(surface === "landing" ? ["/apps/landing/devices.css"] : []),
 						],
 					},
 					true,

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
 	testDir: "tests/browser",
-	// macOS CI and local macOS ship different CJK font revisions.
+	// Résumé keeps system-CJK platform variants; landing uses its self-hosted subset.
 	snapshotPathTemplate: `{testDir}/snapshots/{platform}${process.env.CI ? "-ci" : ""}/{arg}{ext}`,
 	fullyParallel: true,
 	workers: 3,

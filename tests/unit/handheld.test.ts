@@ -67,8 +67,20 @@ it("keyboard respects focus and browser modifiers; teardown cancels frames", () 
 		button.addEventListener("click", clicks);
 	const press = (key: string, options: KeyboardEventInit = {}) =>
 		document.dispatchEvent(new KeyboardEvent("keydown", { key, ...options }));
-	for (const modifier of ["altKey", "ctrlKey", "metaKey"])
+	for (const modifier of [
+		"altKey",
+		"ctrlKey",
+		"metaKey",
+		"shiftKey",
+		"isComposing",
+	])
 		press("ArrowDown", { [modifier]: true });
+	const edited = document.createElement("input");
+	document.querySelector("[data-console]")?.appendChild(edited);
+	edited.focus();
+	press("ArrowDown");
+	expect(clicks).not.toHaveBeenCalled();
+	edited.remove();
 	document.getElementById("outside")?.focus();
 	press("a");
 	expect(clicks).not.toHaveBeenCalled();
@@ -83,15 +95,33 @@ it("keyboard respects focus and browser modifiers; teardown cancels frames", () 
 		"Enter",
 	])
 		press(key);
-	expect(clicks).toHaveBeenCalledTimes(7);
+	expect(clicks).toHaveBeenCalledTimes(5);
 	raf?.(0);
 	expect(document.activeElement?.tagName).toBe("A");
 	press("Enter");
 	press("Escape");
-	expect(clicks).toHaveBeenCalledTimes(7);
+	expect(clicks).toHaveBeenCalledTimes(5);
 	cleanup();
 	press("a");
-	expect(clicks).toHaveBeenCalledTimes(7);
+	expect(clicks).toHaveBeenCalledTimes(5);
+});
+
+it("lets vertical arrows enter the menu from the chapter rail without changing devices", () => {
+	document.getElementById("app")?.setAttribute("data-gallery", "");
+	const tab = document.createElement("button");
+	tab.setAttribute("data-chapter", "0");
+	document.getElementById("app")?.appendChild(tab);
+	const down = vi.fn();
+	document.querySelector(".dpad-down")?.addEventListener("click", down);
+	const cleanup = setupHandheld();
+	tab.focus();
+	tab.dispatchEvent(
+		new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
+	);
+	expect(down).toHaveBeenCalledOnce();
+	raf?.(0);
+	expect(document.activeElement?.getAttribute("data-screen-link")).toBe("0");
+	cleanup();
 });
 it("pointer tilt stays bounded, resets with motion settings and cleanup", () => {
 	const scene = document.querySelector<HTMLElement>(".console-scene");
@@ -111,8 +141,8 @@ it("pointer tilt stays bounded, resets with motion settings and cleanup", () => 
 			height: 100,
 		} as DOMRect);
 	move();
-	expect(shell?.style.getPropertyValue("--tilt-y")).toBe("1.5deg");
-	expect(shell?.style.getPropertyValue("--tilt-x")).toBe("1.5deg");
+	expect(shell?.style.getPropertyValue("--tilt-y")).toBe("6deg");
+	expect(shell?.style.getPropertyValue("--tilt-x")).toBe("6deg");
 	reduced = true;
 	motionChange?.();
 	move();
@@ -142,4 +172,30 @@ it("tolerates missing optional DOM without leaking listeners", () => {
 	const cleanup2 = setupHandheld();
 	document.querySelector("div")?.dispatchEvent(new MouseEvent("pointermove"));
 	cleanup2();
+});
+
+it("targets only the incoming device for keys, activation and pointer tilt", () => {
+	document.body.innerHTML =
+		'<div class="console-scene"><div inert aria-hidden="true"><a data-screen-link="0" href="#old">Old</a><button data-control="down"></button></div><div data-device-active="ipod"><div data-device-shell data-console><button data-control="down"></button><a class="is-selected" data-screen-link="0" href="#new">New</a></div></div></div>';
+	const clicks: string[] = [];
+	for (const anchor of document.querySelectorAll("a"))
+		anchor.addEventListener("click", (event) => {
+			event.preventDefault();
+			clicks.push(anchor.textContent ?? "");
+		});
+	activate(initialHandheld, vi.fn());
+	expect(clicks).toEqual(["New"]);
+	const old = vi.fn();
+	const current = vi.fn();
+	document.querySelector("[inert] button")?.addEventListener("click", old);
+	document
+		.querySelector("[data-device-active] button")
+		?.addEventListener("click", current);
+	const cleanup = setupHandheld();
+	document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+	raf?.(0);
+	expect(old).not.toHaveBeenCalled();
+	expect(current).toHaveBeenCalledOnce();
+	expect(document.activeElement?.textContent).toBe("New");
+	cleanup();
 });

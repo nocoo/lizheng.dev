@@ -2,6 +2,16 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Device journey follow-up — v3.1.0
+
+The 2026-09-06 extension turns the personal page into six interactive hardware chapters, with a 12-second sequential carousel, stronger pointer tilt, nonlinear depth transitions and native screens carrying the same public information. Wired earbuds, floppy disks, cycling gloves and a helmet accompany the existing Game Boy decorations. A self-hosted CJK subset keeps the small screens consistent, and the scene's shadow now fades into transparency below the devices. Design, model assumptions and current verification are recorded in [13 — Objects along the way](13-devices-journey.md).
+
+Both local HTTPS previews and their live endpoints report v3.1.0. Final local verification passed: 219 unit tests with 100% statements/functions/lines and 99.77% branches, 207 browser regressions across three engines, eight development checks, six cold-performance scenarios and all static, HTTP, security and resource gates. The complete results and public performance samples are recorded in [13](13-devices-journey.md).
+
+The user authorized `/su-release Y+1`: v3.0.3 → v3.1.0. The working-tree version already represents that increment; frozen installation confirmed that the existing lockfile needs no change. The release also includes the previously committed résumé keepsake. Its eight CI baselines now contain only the reviewed decoration delta, retaining all platform-specific typography and dimensions.
+
+Publication uses the unchanged mandatory CI and validated-artifact deployment workflow. The [v3.1.0 GitHub Release](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.0) records the validated commit, CI/deployment runs, live deployment ID and delayed production recheck once published. The pre-release live version was v3.0.3, deployment `b23dbe9f-79f1-49b3-88d3-9a75231dfc55`; that is the rollback reference for this release. The records below describe earlier deployments and retain their original evidence.
+
 ## Production and versioning
 
 - Major release 2.1.0 → 3.0.0 followed the requested /su-release procedure: package/lock, changelog, green commits, push, tag, GitHub Release and Cloudflare deployment.

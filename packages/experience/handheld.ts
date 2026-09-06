@@ -46,61 +46,98 @@ export function activate(
 ) {
 	if (state.panel === "about") back();
 	else
-		root
+		(root.querySelector("[data-device-active]") ?? root)
 			.querySelector<HTMLAnchorElement>(
 				`[data-screen-link="${state.selected}"]`,
 			)
 			?.click();
 }
 const shortcuts: Record<string, string> = {
-	ArrowDown: ".dpad-down",
-	ArrowUp: ".dpad-up",
-	ArrowLeft: ".dpad-left",
-	ArrowRight: ".dpad-right",
-	Enter: ".button-a",
-	a: ".button-a",
-	b: ".button-b",
+	ArrowDown: '[data-control="down"], .dpad-down',
+	ArrowUp: '[data-control="up"], .dpad-up',
+	Enter: '[data-control="open"], .button-a',
+	a: '[data-control="open"], .button-a',
+	b: '[data-control="back"], .button-b',
 };
 export function setupHandheld() {
 	const scene = document.querySelector<HTMLElement>(".console-scene");
-	const shell = document.querySelector<HTMLElement>(".console-shell");
+	const activeRoot = () =>
+		document.querySelector<HTMLElement>("[data-device-active]") ?? document;
+	const activeShell = () =>
+		activeRoot().querySelector<HTMLElement>(
+			"[data-device-shell], .console-shell",
+		);
 	const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	const pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
 	const reset = () => {
+		const shell = activeShell();
 		shell?.style.setProperty("--tilt-y", "0deg");
 		shell?.style.setProperty("--tilt-x", "0deg");
+		shell?.style.setProperty("--light-x", "35%");
+		shell?.style.setProperty("--light-y", "20%");
 	};
 	const move = (event: PointerEvent) => {
+		const shell = activeShell();
 		if (motion.matches || !pointer.matches || !scene || !shell) return;
 		const rect = scene.getBoundingClientRect();
 		if (!rect.width || !rect.height) return;
-		const clamp = (value: number) => Math.max(-1.5, Math.min(1.5, value));
+		const clamp = (value: number) => Math.max(-6, Math.min(6, value));
 		shell.style.setProperty(
 			"--tilt-y",
-			`${clamp(((event.clientX - rect.left) / rect.width - 0.5) * 3)}deg`,
+			`${clamp(((event.clientX - rect.left) / rect.width - 0.5) * 12)}deg`,
 		);
 		shell.style.setProperty(
 			"--tilt-x",
-			`${clamp(-((event.clientY - rect.top) / rect.height - 0.5) * 3)}deg`,
+			`${clamp(-((event.clientY - rect.top) / rect.height - 0.5) * 12)}deg`,
+		);
+		shell.style.setProperty(
+			"--light-x",
+			`${Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100))}%`,
+		);
+		shell.style.setProperty(
+			"--light-y",
+			`${Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100))}%`,
 		);
 	};
 	let frame = 0;
 	const keydown = (event: KeyboardEvent) => {
-		if (event.altKey || event.ctrlKey || event.metaKey) return;
+		if (
+			event.defaultPrevented ||
+			event.altKey ||
+			event.ctrlKey ||
+			event.metaKey ||
+			event.shiftKey ||
+			event.isComposing
+		)
+			return;
 		const active = document.activeElement;
+		if (
+			active?.closest(
+				'input, textarea, select, [contenteditable]:not([contenteditable="false"])',
+			)
+		)
+			return;
 		const inside = active?.closest("[data-console]");
-		if (active && active !== document.body && active.id !== "app" && !inside)
+		const vertical = event.key === "ArrowDown" || event.key === "ArrowUp";
+		const galleryMenu = vertical && active?.closest("[data-gallery]");
+		if (
+			active &&
+			active !== document.body &&
+			active.id !== "app" &&
+			!inside &&
+			!galleryMenu
+		)
 			return;
 		if (event.key === "Enter" && inside) return;
 		const selector = shortcuts[event.key];
 		if (!selector) return;
 		event.preventDefault();
-		document.querySelector<HTMLButtonElement>(selector)?.click();
-		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+		activeRoot().querySelector<HTMLButtonElement>(selector)?.click();
+		if (vertical) {
 			cancelAnimationFrame(frame);
 			frame = requestAnimationFrame(() =>
-				document
-					.querySelector<HTMLAnchorElement>(".lcd-links .is-selected")
+				activeRoot()
+					.querySelector<HTMLAnchorElement>("[data-screen-link].is-selected")
 					?.focus({ preventScroll: true }),
 			);
 		}

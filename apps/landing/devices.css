@@ -1,0 +1,2794 @@
+/* One quiet stage; six objects with their own materials and proportions. */
+.device-gallery {
+	position: relative;
+	min-width: 0;
+	width: 100%;
+	max-width: 620px;
+	margin: auto;
+	--object-shadow: #24362230;
+	--deep-shadow: #19251d40;
+	--muted: #606b59;
+	--chapter-active: #a34e31;
+}
+.journey-header {
+	position: absolute;
+	z-index: 4;
+	top: 0;
+	left: 12px;
+	right: 12px;
+	display: flex;
+	justify-content: space-between;
+	gap: 15px;
+	font: 7px var(--mono);
+	letter-spacing: 0.1em;
+	color: var(--muted);
+	pointer-events: none;
+}
+.journey-header > span:first-child {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+.journey-header i {
+	width: 4px;
+	height: 4px;
+	background: var(--accent);
+}
+.gallery-stage {
+	height: 584px;
+	padding: 0;
+	max-width: none;
+	width: 100%;
+	overflow: visible;
+	isolation: isolate;
+}
+/* Objects and props can cross the stage; their shadows already fade to alpha. */
+.stage-viewport {
+	position: absolute;
+	z-index: 1;
+	inset: 0;
+	overflow: visible;
+	pointer-events: none;
+}
+.stage-space {
+	position: absolute;
+	inset: 0;
+	perspective: 1400px;
+	isolation: isolate;
+}
+.gallery-stage .scene-halo {
+	width: 540px;
+	height: 540px;
+	top: 25px;
+}
+.gallery-stage .orbit-label {
+	right: 6px;
+	top: 100px;
+	font-size: 6px;
+}
+.stage-ground {
+	position: absolute;
+	left: 16%;
+	right: 7%;
+	bottom: 32px;
+	height: 50px;
+	border-radius: 50%;
+	background: radial-gradient(ellipse, var(--object-shadow), transparent 68%);
+	filter: blur(14px);
+	transform: rotate(-7deg);
+}
+.device-layer {
+	position: absolute;
+	inset: 22px 0 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform-style: preserve-3d;
+	transform-origin: 50% 60%;
+	pointer-events: auto;
+}
+.device-layer.is-current,
+.device-layer.is-entering {
+	z-index: 2;
+}
+.device-layer.is-entering {
+	animation: object-enter 950ms both;
+}
+.device-layer.is-exiting {
+	z-index: 1;
+	pointer-events: none;
+	animation: object-exit 660ms cubic-bezier(0.5, 0.02, 0.76, 0.32) both;
+}
+.device-change-light {
+	position: absolute;
+	inset: -160px -240px -180px;
+	z-index: 0;
+	/* The light reaches zero alpha before every edge of its expanded canvas. */
+	background: radial-gradient(
+		ellipse closest-side at 44% 48%,
+		#ffeed340,
+		#ffeed318 32%,
+		#ffeed306 68%,
+		#ffeed300 94%
+	);
+	mix-blend-mode: screen;
+	pointer-events: none;
+	animation: object-light 950ms cubic-bezier(0.17, 0.65, 0.22, 1) both;
+}
+.gallery-stage .console-position {
+	width: 328px;
+	max-width: 78%;
+}
+.gallery-stage .adventure-ball {
+	width: 88px;
+	left: 3%;
+	bottom: 24px;
+}
+.gallery-stage .adventure-sparkles {
+	left: 9%;
+	top: 70px;
+	width: 30px;
+}
+.gallery-stage .adventure-grass {
+	right: 7%;
+	top: auto;
+	bottom: 135px;
+}
+.scene-accessories {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	pointer-events: none;
+	user-select: none;
+}
+.journey-prop {
+	position: absolute;
+	display: block;
+	height: auto;
+	max-width: 32%;
+	transform: rotate(var(--prop-angle, 0deg));
+	filter: drop-shadow(3px 6px 4px #25392c1a);
+	animation: accessory-arrive 850ms 130ms cubic-bezier(0.18, 0.8, 0.24, 1) both;
+}
+.prop-earbuds-nokia {
+	width: 136px;
+	right: 0;
+	bottom: 27px;
+	--prop-angle: 8deg;
+}
+.prop-earbuds-ipod {
+	width: 145px;
+	left: 0;
+	bottom: 9px;
+	--prop-angle: -9deg;
+}
+.prop-floppies {
+	width: 119px;
+	left: 10px;
+	bottom: 61px;
+	--prop-angle: -8deg;
+}
+.prop-gloves {
+	width: 129px;
+	left: 1%;
+	bottom: 22px;
+	--prop-angle: -12deg;
+}
+.prop-helmet {
+	width: 129px;
+	right: 0;
+	bottom: -4px;
+	--prop-angle: 0deg;
+}
+[data-theme="dark"] .journey-prop {
+	filter: brightness(0.83) saturate(0.83) drop-shadow(3px 7px 6px #07120d55);
+}
+.hardware-position {
+	position: relative;
+	container-type: inline-size;
+	flex: 0 0 auto;
+	perspective: 1200px;
+}
+.device-object {
+	position: relative;
+	container-type: inline-size;
+	width: 100%;
+	transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+	transition: transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ipod-device::after,
+.garmin-device::after,
+.nokia-front::after,
+.mac-case::after,
+.honda-cluster::after,
+.gallery-stage .console-shell::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 10;
+	border-radius: inherit;
+	pointer-events: none;
+	background: radial-gradient(
+		ellipse at var(--light-x, 35%) var(--light-y, 20%),
+		#fff9e715,
+		transparent 65%
+	);
+	mix-blend-mode: screen;
+}
+.gallery-stage .console-shell {
+	transition:
+		transform 650ms cubic-bezier(0.16, 1, 0.3, 1),
+		background 400ms;
+}
+.journey-caption {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	min-height: 57px;
+	margin: 2px 13px 0;
+}
+.journey-caption > div {
+	animation: caption-reveal 600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.journey-caption h2 {
+	font-size: 19px;
+	font-weight: 500;
+	letter-spacing: -0.05em;
+	margin: 0 0 6px;
+}
+.journey-caption p {
+	font-size: 10px;
+	color: var(--muted);
+	margin: 0;
+	line-height: 1.5;
+}
+.journey-count {
+	font: 26px var(--mono);
+	color: var(--accent);
+	letter-spacing: -0.08em;
+}
+.journey-count small {
+	font-size: 9px;
+	letter-spacing: 0;
+	color: var(--muted);
+}
+.chapter-rail {
+	position: relative;
+	z-index: 2;
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	margin: 17px 5px 0;
+}
+.chapter-rail button {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	align-items: stretch;
+	min-width: 0;
+	padding: 8px 7px;
+	color: var(--muted);
+	background: none;
+	border: 0;
+	border-radius: 5px;
+	text-align: left;
+	transition:
+		color 200ms,
+		background 200ms;
+}
+.chapter-rail button:hover {
+	color: var(--ink);
+	background: #82906e0c;
+}
+.chapter-rail button[aria-selected="true"] {
+	color: var(--chapter-active);
+}
+.chapter-object {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 3px;
+	padding-right: 10px;
+}
+.chapter-object svg {
+	width: 21px;
+	height: 23px;
+	transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chapter-rail button:hover svg,
+.chapter-rail button[aria-selected="true"] svg {
+	transform: translateY(-2px) rotate(-5deg);
+}
+.chapter-object > span {
+	font: 7px var(--mono);
+	color: var(--muted);
+}
+.chapter-track {
+	position: relative;
+	display: block;
+	height: 1px;
+	margin-right: -14px;
+	background: var(--line);
+}
+.chapter-rail button:last-child .chapter-track {
+	margin-right: 0;
+}
+.chapter-track > i {
+	position: absolute;
+	z-index: 1;
+	top: -2px;
+	left: 0;
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--page);
+	border: 1px solid var(--muted);
+	transition: box-shadow 400ms;
+}
+[aria-selected="true"] .chapter-track > i {
+	background: var(--accent);
+	border-color: var(--accent);
+	box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.chapter-progress {
+	position: absolute;
+	inset: 0;
+	background: var(--accent);
+	transform: scaleX(var(--progress));
+	transform-origin: left center;
+	animation: chapter-clock linear infinite;
+}
+.chapter-label {
+	font: 7px var(--mono);
+	letter-spacing: 0.075em;
+}
+.journey-playback {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin: 8px 12px 0;
+	font: 8px var(--mono);
+	color: var(--muted);
+}
+.journey-playback > span {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+.journey-playback i {
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: var(--muted);
+}
+.journey-playback i.is-playing {
+	background: var(--accent);
+}
+.gallery-playback {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 0 8px 8px;
+	font: inherit;
+	color: var(--ink);
+	border: 0;
+	background: none;
+}
+.gallery-playback svg {
+	width: 9px;
+	height: 9px;
+	fill: currentColor;
+}
+
+/* Keyboard focus follows each material and sits close to its actual hit area. */
+.device-gallery :where(a, button):focus-visible {
+	outline: 2px solid var(--muted);
+	outline-offset: 3px;
+}
+.chapter-rail button:focus-visible {
+	outline-color: var(--chapter-active);
+	outline-offset: 1px;
+	background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.gallery-playback:focus-visible {
+	border-radius: 4px;
+	outline-offset: 2px;
+}
+.device-layer button:focus-visible {
+	outline-color: var(--control-focus, var(--shell-label));
+	outline-offset: 2px;
+}
+.layer-nokia,
+.layer-garmin,
+.layer-honda {
+	--control-focus: #e4edda;
+}
+.layer-macintosh,
+.layer-ipod {
+	--control-focus: #465443;
+}
+.native-links a:focus-visible,
+.lcd-links a:focus-visible {
+	outline: 1px solid currentColor;
+	outline-offset: -2px;
+}
+.lcd-links a:focus-visible {
+	outline-style: dashed;
+}
+.mac-screen .native-links a:focus-visible {
+	outline-style: dotted;
+	outline-offset: 2px;
+}
+.nokia-keypad button:focus-visible {
+	outline-color: #34473d;
+}
+
+/* Shared content, laid out anew by each screen below. */
+.native-screen {
+	position: relative;
+	overflow: hidden;
+	font-family: Arial, "Journey CJK", "PingFang SC", sans-serif;
+	color: #26352c;
+}
+.native-screen h2,
+.native-screen p {
+	margin: 0;
+}
+.native-links {
+	display: grid;
+}
+.native-links a {
+	display: flex;
+	align-items: center;
+	gap: 1.5cqw;
+	text-decoration: none;
+	outline-offset: -1px;
+}
+.native-link-icon {
+	flex: 0 0 auto;
+	display: grid;
+	place-items: center;
+}
+.native-link-icon svg {
+	display: block;
+	width: 5cqw;
+	height: 5cqw;
+}
+.native-link-arrow {
+	margin-left: auto;
+}
+.native-role {
+	line-height: 1.35;
+}
+.native-bio {
+	white-space: pre-line;
+	line-height: 1.45;
+}
+.native-battery {
+	position: relative;
+	display: flex;
+	gap: 0.45cqw;
+	width: 6.7cqw;
+	height: 3.4cqw;
+	border: 0.5cqw solid currentColor;
+	padding: 0.4cqw;
+	border-radius: 0.6cqw;
+	color: inherit;
+}
+.native-battery::after {
+	content: "";
+	position: absolute;
+	right: -1.3cqw;
+	top: 0.5cqw;
+	width: 0.8cqw;
+	height: 1.4cqw;
+	background: currentColor;
+}
+.native-battery i {
+	flex: 1;
+	background: currentColor;
+}
+.device-about {
+	position: absolute;
+	inset: 0;
+	display: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 5cqw;
+	gap: 3cqw;
+	background: #f2f1df;
+	color: #26352c;
+}
+.panel-about .device-about {
+	display: flex;
+}
+.panel-about .native-links {
+	visibility: hidden;
+}
+.about-star {
+	font-size: 11cqw;
+}
+.device-about strong {
+	font-size: 4.5cqw;
+	letter-spacing: -0.02em;
+}
+.device-about p {
+	font-size: 3.7cqw;
+	line-height: 1.5;
+}
+.device-about small {
+	font-size: 2.7cqw;
+}
+
+/* Nokia 5300 — red rubber, ivory plastic, a sliding S40 handset. */
+.nokia-position {
+	width: 214px;
+	max-width: 61%;
+	transform: rotate(-8deg);
+}
+.nokia-device {
+	height: 250cqw;
+	color: #4a4b45;
+}
+.nokia-back {
+	position: absolute;
+	top: 56cqw;
+	left: 1cqw;
+	width: 98cqw;
+	height: 190cqw;
+	border: 1px solid #f7f3e7;
+	border-radius: 15cqw 15cqw 18cqw 18cqw;
+	background: linear-gradient(
+		100deg,
+		#aea99b,
+		#eee9dc 7%,
+		#dbd7cb 85%,
+		#a6a799
+	);
+	box-shadow:
+		inset 0 1px 3px #fff7e2,
+		inset -2px -2px 4px #6a6b5970,
+		2px 4px 0 #98978d,
+		4px 7px 0 #7d8178,
+		9px 18px 20px var(--deep-shadow),
+		22px 35px 40px var(--object-shadow);
+	transform: translateY(-63cqw);
+	transition: transform 720ms cubic-bezier(0.22, 1.1, 0.32, 1);
+}
+.slider-open .nokia-back {
+	transform: translateY(0);
+}
+.nokia-front {
+	position: absolute;
+	inset: 0 0 auto;
+	height: 185cqw;
+	border-radius: 17cqw 17cqw 14cqw 14cqw;
+	border: 1px solid #f2c2b6;
+	background: linear-gradient(
+		96deg,
+		#a5453c 0%,
+		#cd594b 5%,
+		#e87762 9%,
+		#ae443d 91%,
+		#793830 100%
+	);
+	box-shadow:
+		inset 0 2px 3px #ffc7a566,
+		inset -1px -2px 3px #60312c,
+		2px 4px 0 #9b4038,
+		4px 7px 1px #773c35,
+		7px 9px 8px #24271d66,
+		15px 21px 24px var(--deep-shadow);
+	transition: transform 720ms cubic-bezier(0.22, 1.1, 0.32, 1);
+}
+.nokia-front::before {
+	content: "";
+	position: absolute;
+	inset: 2cqw 8cqw 3cqw;
+	border: 0.5cqw solid #e7e0d1;
+	border-radius: 12cqw 12cqw 8cqw 8cqw;
+	background: linear-gradient(105deg, #f6f0e5, #e0dbcf 78%, #c3c2b6);
+	box-shadow:
+		inset 1px 1px 3px #fffef1,
+		0 1px 4px #602a2660;
+}
+.nokia-position:not(.slider-open) .nokia-front {
+	transform: translateY(29cqw);
+}
+.nokia-position:not(.slider-open) .nokia-back {
+	transform: translateY(-31cqw);
+}
+.nokia-earpiece {
+	position: absolute;
+	top: 8cqw;
+	left: 37cqw;
+	width: 27cqw;
+	height: 3.2cqw;
+	border-radius: 5cqw;
+	background: repeating-linear-gradient(90deg, #777b75 0 1px, #252c2a 1px 3px);
+	box-shadow:
+		0 1px 0 #fffff1,
+		inset 0 1px 3px #161e1b;
+}
+.nokia-wordmark {
+	position: absolute;
+	top: 16cqw;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font:
+		700 6cqw Arial,
+		sans-serif;
+	letter-spacing: -0.1cqw;
+	color: #303e49;
+}
+.nokia-screen {
+	position: absolute;
+	top: 30cqw;
+	left: 13cqw;
+	width: 74cqw;
+	height: 100cqw;
+	border: 2cqw solid #343d3d;
+	border-radius: 1cqw;
+	background: linear-gradient(145deg, #dcebea, #edf1df 50%, #d5e3d4);
+	box-shadow:
+		0 0 0 1px #111919,
+		0 1px 3px 2px #fff9e980,
+		inset 0 0 7px #29423f50;
+	color: #253e48;
+}
+.nokia-status {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 7cqw;
+	padding: 0 2.4cqw;
+	background: linear-gradient(#a6c1c3, #d3e2df);
+	border-bottom: 0.4cqw solid #92aeb2;
+	font-size: 3cqw;
+	line-height: 1.2;
+}
+.nokia-status > span:first-child {
+	font-size: 2.9cqw;
+	letter-spacing: -0.4cqw;
+}
+.nokia-screen-content {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 1.8cqw;
+	height: calc(100% - 14cqw);
+	padding: 3cqw 3cqw 1.5cqw;
+	animation: screen-wake 450ms ease-out both;
+}
+.nokia-profile {
+	display: flex;
+	align-items: center;
+	gap: 3cqw;
+}
+.nokia-avatar {
+	display: grid;
+	place-items: center;
+	width: 14cqw;
+	height: 14cqw;
+	border: 0.5cqw solid #809ba2;
+	border-radius: 3cqw;
+	color: #f4f8e7;
+	background: linear-gradient(145deg, #598596, #2d4c69);
+	font: 600 5.5cqw var(--sans);
+	box-shadow:
+		inset 0 1px #edf7e470,
+		1px 1px 3px #35596730;
+}
+.nokia-profile > div > span {
+	display: block;
+	font-size: 3.2cqw;
+	line-height: 1.3;
+}
+.nokia-profile h2 {
+	font-size: 6.3cqw;
+	letter-spacing: -0.2cqw;
+	margin-top: 0.5cqw;
+	line-height: 1.1;
+}
+.nokia-screen .native-role {
+	font-size: 3.4cqw;
+}
+.nokia-screen .native-bio {
+	font-size: 3.45cqw;
+}
+.nokia-screen .native-links {
+	margin-top: auto;
+	gap: 0.6cqw;
+}
+.nokia-screen .native-links a {
+	font-size: 4.5cqw;
+	padding: 1.05cqw 2cqw;
+	border: 0.4cqw solid transparent;
+	border-radius: 1cqw;
+	line-height: 1.1;
+}
+.nokia-screen .native-links a.is-selected {
+	background: linear-gradient(#66899f, #386078);
+	color: #fff;
+	border-color: #2e4e6c;
+	box-shadow: inset 0 1px #d7f0eb66;
+}
+.nokia-screen .native-link-icon {
+	color: #b44c36;
+}
+.nokia-screen .is-selected .native-link-icon {
+	color: #fff;
+}
+.nokia-soft-labels {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 7cqw;
+	padding: 0 2cqw;
+	font-size: 3.4cqw;
+	line-height: 1.1;
+	background: linear-gradient(#dce9e2, #aabdb7);
+	border-top: 0.4cqw solid #819d9c;
+}
+.nokia-navigation {
+	position: absolute;
+	left: 13cqw;
+	right: 13cqw;
+	top: 140cqw;
+	height: 29cqw;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.nokia-soft-keys {
+	display: grid;
+	gap: 3cqw;
+	width: 18cqw;
+}
+.nokia-soft-keys button {
+	height: 11cqw;
+	border-radius: 3cqw;
+	border: 0.5cqw solid #999e96;
+	font:
+		5cqw Arial,
+		sans-serif;
+	color: #364747;
+	background: linear-gradient(#f5f1e6, #c9cabf);
+	box-shadow:
+		inset 1px 1px 1px #fffff5,
+		0 1px 1px #495b5560;
+}
+.nokia-soft-keys .nokia-call {
+	color: #2f684a;
+}
+.nokia-soft-keys .nokia-end {
+	color: #a54037;
+}
+.nokia-soft-keys button > svg {
+	display: block;
+	width: 6cqw;
+	height: 6cqw;
+	margin: auto;
+}
+.nokia-end > svg {
+	transform: rotate(135deg);
+}
+.nokia-dpad {
+	position: relative;
+	width: 30cqw;
+	height: 29cqw;
+	border-radius: 5cqw;
+	border: 0.7cqw solid #3d4946;
+	background: linear-gradient(
+		135deg,
+		#eef1e9,
+		#9faaa5 50%,
+		#7b8683 55%,
+		#d7ded5
+	);
+	box-shadow:
+		inset 1px 1px 2px #fff,
+		1px 2px 2px #48544b88;
+}
+.nokia-dpad button {
+	position: absolute;
+	border: 0;
+	background: transparent;
+}
+.nokia-up,
+.nokia-down {
+	left: 0;
+	right: 0;
+	height: 6cqw;
+}
+.nokia-up {
+	top: 0;
+}
+.nokia-down {
+	bottom: 0;
+}
+.nokia-dpad .nokia-center {
+	inset: 5.5cqw;
+	border-radius: 2.4cqw;
+	background: linear-gradient(140deg, #f0f0e3, #c9cdc0);
+	border: 0.5cqw solid #818f85;
+	box-shadow:
+		inset 0 1px 2px #fff,
+		0 1px 2px #28382c55;
+}
+.nokia-center > span {
+	display: block;
+	width: 6cqw;
+	height: 6cqw;
+	border: 0.5cqw solid #879486;
+	margin: auto;
+	border-radius: 1cqw;
+}
+.nokia-slide-grip {
+	position: absolute;
+	bottom: 1.5cqw;
+	left: 26cqw;
+	width: 48cqw;
+	height: 11cqw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1.8cqw;
+	border: 0;
+	background: transparent;
+}
+.nokia-slide-grip i {
+	width: 9cqw;
+	height: 1cqw;
+	border-radius: 2cqw;
+	background: #828e8244;
+	box-shadow: 0 1px #ffffee;
+}
+.nokia-keypad {
+	position: absolute;
+	bottom: 9cqw;
+	left: 10cqw;
+	right: 10cqw;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 2cqw 1.5cqw;
+}
+.nokia-keypad button {
+	height: 11cqw;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1.5cqw;
+	border: 0.4cqw solid #a5a89b;
+	border-radius: 1cqw 1cqw 3cqw 3cqw;
+	background: linear-gradient(#f6f1e4, #d6d7cb);
+	box-shadow:
+		inset 0 1px 1px #ffffef,
+		0 1px 1px #808777;
+	color: #424e44;
+}
+.nokia-keypad button > span {
+	font:
+		4.5cqw Arial,
+		sans-serif;
+}
+.nokia-keypad small {
+	font-size: 2.6cqw;
+}
+.nokia-base-label {
+	position: absolute;
+	bottom: 2.5cqw;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font:
+		italic 3cqw Arial,
+		sans-serif;
+	color: #5b6156;
+}
+.nokia-side-media {
+	position: absolute;
+	left: -1.6cqw;
+	top: 36cqw;
+	display: grid;
+	gap: 3cqw;
+	transform: rotate(-1deg);
+}
+.nokia-side-media button {
+	width: 8cqw;
+	height: 21cqw;
+	border-radius: 2cqw;
+	border: 0.5cqw solid #953b35;
+	background: linear-gradient(90deg, #db7361, #c05249);
+	color: #fff1d3;
+	font-size: 3cqw;
+	padding: 0;
+	box-shadow: inset 1px 0 #f0c6a86b;
+	writing-mode: vertical-rl;
+}
+.nokia-device button:active {
+	filter: brightness(0.9);
+}
+
+/* Macintosh Plus — warm ABS, deep CRT, compact keyboard and single-button mouse. */
+.macintosh-position {
+	width: 394px;
+	max-width: 84%;
+}
+.macintosh-device {
+	height: 130cqw;
+}
+.mac-case {
+	position: absolute;
+	top: 0;
+	left: 6cqw;
+	width: 83cqw;
+	height: 109cqw;
+	border-radius: 4cqw 4cqw 2cqw 2cqw;
+	background: linear-gradient(115deg, #eee5cd, #d6cdb5 65%, #b5ac94);
+	border: 0.5cqw solid #f0e7cd;
+	box-shadow:
+		inset 2px 2px 3px #fff4d9,
+		inset -2px -2px 3px #968c7455,
+		1px 3px 0 #b6ad96,
+		3px 6px 0 #ada58e,
+		5px 9px 0 #a29b86,
+		8px 13px 0 #8b8674,
+		13px 18px 18px var(--deep-shadow),
+		28px 37px 37px var(--object-shadow);
+}
+.mac-top-vent {
+	position: absolute;
+	top: -1.5cqw;
+	left: 22cqw;
+	width: 39cqw;
+	height: 1.8cqw;
+	border-radius: 2cqw;
+	background: repeating-linear-gradient(90deg, #817c69 0 2px, #bdb49d 2px 4px);
+	transform: skewX(30deg);
+}
+.mac-crt-recess {
+	position: absolute;
+	top: 10cqw;
+	left: 6cqw;
+	right: 6cqw;
+	height: 58cqw;
+	padding: 4cqw;
+	border-radius: 5cqw;
+	background: linear-gradient(
+		135deg,
+		#8c8675,
+		#b5ad96 13%,
+		#d5ccb2 88%,
+		#eee4c9
+	);
+	box-shadow:
+		inset 1px 2px 4px #645f4c70,
+		1px 2px 1px #fff4d760;
+}
+.mac-screen {
+	width: 100%;
+	height: 100%;
+	border: 1cqw solid #353932;
+	border-radius: 4cqw / 3.5cqw;
+	background: #ced3b5;
+	box-shadow:
+		0 0 0 0.5cqw #222b254d,
+		inset 0 0 4cqw #202b225c;
+	color: #253329;
+	font-family: var(--mono);
+	filter: saturate(0.65);
+}
+.mac-menubar {
+	display: flex;
+	align-items: center;
+	gap: 3cqw;
+	height: 5.2cqw;
+	padding: 0 2cqw;
+	border-bottom: 0.35cqw solid #253329;
+	background: #e5e7cd;
+	font-size: 2cqw;
+}
+.mac-menubar button {
+	padding: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	border: 0;
+}
+.mac-menu-clock {
+	margin-left: auto;
+}
+.mac-desktop {
+	position: absolute;
+	inset: 5.2cqw 0 0;
+	padding: 2.2cqw 2.6cqw 3cqw;
+	background-image: radial-gradient(#59674966 0.45px, transparent 0.5px);
+	background-size: 2px 2px;
+	animation: screen-wake 600ms ease-out both;
+}
+.mac-window {
+	position: relative;
+	height: 100%;
+	background: #e5e7cd;
+	border: 0.35cqw solid #253329;
+	box-shadow: 0.7cqw 0.7cqw #253329;
+}
+.mac-titlebar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2cqw;
+	height: 4.5cqw;
+	padding: 0 2cqw;
+	border-bottom: 0.35cqw solid #253329;
+	background: repeating-linear-gradient(
+		0deg,
+		transparent 0 0.6cqw,
+		#253329 0.6cqw 0.85cqw
+	);
+	background-clip: content-box;
+}
+.mac-titlebar button {
+	position: absolute;
+	left: 2cqw;
+	width: 2.7cqw;
+	height: 2.7cqw;
+	border: 0.35cqw solid #253329;
+	background: #e5e7cd;
+	box-shadow: 0 0 0 1cqw #e5e7cd;
+	padding: 0;
+}
+.mac-titlebar strong {
+	background: #e5e7cd;
+	font-size: 2.1cqw;
+	padding: 0 1.5cqw;
+	font-weight: 500;
+}
+.mac-window-body {
+	position: absolute;
+	inset: 4.5cqw 0 3.5cqw;
+	padding: 1cqw 2.2cqw;
+	display: flex;
+	flex-direction: column;
+	gap: 1cqw;
+}
+.mac-profile {
+	display: flex;
+	align-items: center;
+	gap: 2.2cqw;
+}
+.mac-profile > img {
+	width: 8cqw;
+	height: 9cqw;
+	object-fit: cover;
+	image-rendering: pixelated;
+	mix-blend-mode: multiply;
+	border: 0.3cqw solid currentColor;
+}
+.mac-profile > div > span {
+	display: block;
+	font-size: 1.7cqw;
+	line-height: 1.3;
+}
+.mac-profile h2 {
+	font-size: 3.8cqw;
+	line-height: 1.15;
+	margin: 0.3cqw 0 0.6cqw;
+}
+.mac-screen .native-role {
+	font-size: 1.65cqw;
+}
+.mac-screen .native-bio {
+	font-size: 1.85cqw;
+	line-height: 1.3;
+}
+.mac-screen .native-links {
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1cqw;
+	margin-top: auto;
+}
+.mac-screen .native-links a {
+	flex-direction: column;
+	gap: 0.8cqw;
+	font-size: 2cqw;
+	line-height: 1.2;
+	white-space: nowrap;
+}
+.mac-screen .native-link-icon {
+	width: 8cqw;
+	height: 5.5cqw;
+	background: #f0f0da;
+	border: 0.35cqw solid #253329;
+	box-shadow: 0.5cqw 0.5cqw #253329;
+}
+.mac-screen .native-link-icon svg {
+	width: 4.5cqw;
+	height: 4.5cqw;
+}
+.mac-screen .native-link-arrow {
+	display: none;
+}
+.mac-screen .is-selected .native-link-icon,
+.mac-screen .is-selected > span:nth-child(2) {
+	background: #253329;
+	color: #e5e7cd;
+}
+.mac-screen .native-links a > span:nth-child(2) {
+	padding: 0.1cqw 0.5cqw;
+}
+.mac-window-status {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 3.5cqw;
+	border-top: 0.3cqw solid #253329;
+	display: flex;
+	align-items: center;
+	gap: 3cqw;
+	padding: 0 1.5cqw;
+	font-size: 1.6cqw;
+}
+.mac-window-status i {
+	margin-left: auto;
+	width: 2cqw;
+	height: 2cqw;
+	background: repeating-linear-gradient(
+		-45deg,
+		transparent 0 0.5cqw,
+		#253329 0.5cqw 0.75cqw
+	);
+}
+.mac-crt-glass {
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: inset 1px 2px 7px #22332260;
+	background:
+		linear-gradient(130deg, #ffffff1a, transparent 45%),
+		repeating-linear-gradient(0deg, transparent 0 2px, #172c1508 2px 3px);
+	pointer-events: none;
+}
+.mac-screen .device-about {
+	background: #e5e7cd;
+	gap: 1cqw;
+}
+.mac-screen .device-about strong {
+	font-size: 3.5cqw;
+}
+.mac-screen .device-about p {
+	font-size: 2.8cqw;
+}
+.mac-screen .device-about small {
+	font-size: 2cqw;
+}
+.mac-badge {
+	position: absolute;
+	left: 7cqw;
+	top: 82cqw;
+	display: flex;
+	align-items: center;
+	gap: 3cqw;
+	color: #626655;
+	font:
+		3cqw Georgia,
+		serif;
+	letter-spacing: -0.12cqw;
+}
+.rainbow-apple {
+	width: 4cqw;
+	height: 5cqw;
+}
+.mac-floppy {
+	position: absolute;
+	top: 81cqw;
+	right: 6cqw;
+	width: 24cqw;
+	height: 3cqw;
+	border-radius: 1cqw;
+	background: #4c4f42;
+	border-top: 0.6cqw solid #767566;
+	box-shadow: 0 1px 0 #f5ebcc;
+}
+.mac-floppy span {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0.3cqw;
+	height: 0.7cqw;
+	background: #262e26;
+}
+.mac-floppy i {
+	position: absolute;
+	bottom: -1.7cqw;
+	right: 1cqw;
+	width: 1cqw;
+	height: 1cqw;
+	border-radius: 50%;
+	background: #7a7d67;
+}
+.mac-bottom-seam {
+	position: absolute;
+	bottom: 5cqw;
+	left: 0;
+	right: 0;
+	height: 0.5cqw;
+	background: #928d7533;
+	box-shadow: 0 1px #f5e6c266;
+}
+.mac-case-foot {
+	position: absolute;
+	bottom: -2.4cqw;
+	left: 3cqw;
+	right: 3cqw;
+	height: 2cqw;
+	background: #8b8877;
+	border-radius: 0 0 1cqw 1cqw;
+}
+.mac-keyboard {
+	position: absolute;
+	bottom: 0;
+	left: -2cqw;
+	width: 84cqw;
+	height: 24cqw;
+	border-radius: 2.2cqw;
+	background: linear-gradient(130deg, #dcd4bd, #c8c1a9);
+	border: 0.5cqw solid #e8dfc6;
+	padding: 2cqw 2.5cqw;
+	box-shadow:
+		inset 0 -1px 2px #928f7f,
+		1px 3px 0 #a59e89,
+		3px 5px 0 #918c7a,
+		6px 12px 12px var(--deep-shadow);
+	transform: perspective(600px) rotateX(22deg);
+}
+.mac-keyboard-grid {
+	display: grid;
+	gap: 0.9cqw;
+}
+.mac-keyboard-grid > div {
+	display: flex;
+	gap: 0.7cqw;
+}
+.mac-keyboard-grid span,
+.mac-keyboard-controls button {
+	display: grid;
+	place-items: center;
+	flex: 1;
+	height: 2.9cqw;
+	background: linear-gradient(#e9e1cc, #d9d0b9);
+	border-radius: 0.55cqw;
+	border: 0.2cqw solid #b0aa96;
+	box-shadow:
+		0 0.6cqw 0 #aaa48e,
+		inset 0 1px #fff5d9;
+	color: #626252;
+	font:
+		1.2cqw Arial,
+		sans-serif;
+}
+.mac-keyboard-controls {
+	display: flex;
+	gap: 1.2cqw;
+	margin: 1.2cqw 3cqw 0;
+}
+.mac-keyboard-controls button {
+	height: 4cqw;
+	font-size: 2.5cqw;
+}
+.mac-keyboard-controls .mac-space {
+	flex: 7;
+}
+.mac-keyboard-controls button:active {
+	transform: translateY(0.5cqw);
+	box-shadow: none;
+}
+.mac-cable {
+	position: absolute;
+	right: 0;
+	bottom: 9cqw;
+	width: 16cqw;
+	height: 28cqw;
+	border: 1.3cqw solid #b1ab95;
+	border-left-color: transparent;
+	border-bottom-color: transparent;
+	border-radius: 40%;
+	transform: rotate(-6deg);
+}
+.mac-mouse {
+	position: absolute;
+	bottom: 1cqw;
+	right: 0;
+	width: 14cqw;
+	height: 21cqw;
+	border-radius: 3.5cqw 3.5cqw 6cqw 6cqw;
+	border: 0.5cqw solid #e8dfc6;
+	background: linear-gradient(125deg, #e7deca, #c5bca5);
+	box-shadow:
+		inset 1px 1px 2px #fff0d4,
+		1px 3px 0 #a09984,
+		4px 8px 9px var(--deep-shadow);
+	transform: rotate(8deg);
+}
+.mac-mouse > span {
+	position: absolute;
+	top: 1cqw;
+	left: 1cqw;
+	right: 1cqw;
+	height: 7cqw;
+	border: 0.3cqw solid #b8af98;
+	border-radius: 2.5cqw 2.5cqw 0.8cqw 0.8cqw;
+	background: #dcd3be;
+	box-shadow: inset 0 1px #fff5da;
+}
+.mac-mouse:active > span {
+	background: #cfc5b0;
+}
+
+/* iPod Classic — anodized aluminium, polished edge and a working click wheel. */
+.ipod-position {
+	width: 298px;
+	max-width: 73%;
+	transform: rotate(7deg);
+}
+.ipod-device {
+	height: 164cqw;
+	border-radius: 11cqw;
+	border: 0.8cqw solid #e9ece6;
+	background: linear-gradient(115deg, #f1f1eb, #dce0da 48%, #c5cdc5);
+	box-shadow:
+		inset 0 0 1px 1px #7e8783,
+		inset 2px 2px 5px #ffffff,
+		inset -2px -2px 6px #8b969070,
+		1px 2px 0 #65746e,
+		3px 4px 0 #bdc5bf,
+		4px 6px 0 #6f7d77,
+		6px 8px 0 #d3d9d1,
+		8px 10px 2px #637167,
+		12px 19px 20px var(--deep-shadow),
+		30px 40px 45px var(--object-shadow);
+}
+.ipod-device::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	opacity: 0.25;
+	background: repeating-linear-gradient(
+		0deg,
+		transparent 0 1px,
+		#56605215 1px 2px
+	);
+	pointer-events: none;
+}
+.ipod-top-edge {
+	position: absolute;
+	top: 0.45cqw;
+	left: 12cqw;
+	right: 12cqw;
+	height: 2.9cqw;
+	border-radius: 50% / 75%;
+	background: linear-gradient(#a2ada5, #e5e9df 48%, #f6f6ec);
+	box-shadow: inset 0 0.35cqw 0.45cqw #73837466;
+	overflow: hidden;
+}
+.ipod-hold {
+	position: absolute;
+	top: 0.55cqw;
+	left: 8cqw;
+	font: 1.45cqw var(--mono);
+	line-height: 1.6cqw;
+	letter-spacing: 0.1cqw;
+	color: #657767;
+	display: flex;
+	align-items: center;
+	gap: 2cqw;
+	transform: skewX(-12deg);
+}
+.ipod-hold > span {
+	position: relative;
+	width: 11cqw;
+	height: 1.6cqw;
+	border-radius: 0.7cqw;
+	background: linear-gradient(#755241, #d58a5b);
+	box-shadow: inset 0 0.4cqw 0.5cqw #263b2b99;
+}
+.ipod-hold > span::after {
+	content: "";
+	position: absolute;
+	inset: 0.2cqw 0.35cqw 0.1cqw 4cqw;
+	border-radius: 0.5cqw;
+	background: linear-gradient(#f4f5e9, #acb7a5);
+	box-shadow: -0.4cqw 0 0.4cqw #3b4d3880;
+}
+.ipod-headphone-jack {
+	position: absolute;
+	top: 0.6cqw;
+	right: 9cqw;
+	width: 3.3cqw;
+	height: 1.6cqw;
+	border-radius: 50%;
+	border: 0.4cqw solid #9eae9b;
+	background: #394d3c;
+	box-shadow: 0 0.2cqw 0 #faffed;
+}
+.ipod-screen {
+	position: absolute;
+	top: 11cqw;
+	left: 8.5cqw;
+	width: 82cqw;
+	height: 61.5cqw;
+	border: 1.5cqw solid #313d38;
+	border-radius: 1.5cqw;
+	background: #f5f4e9;
+	box-shadow:
+		0 0 0 0.5cqw #67726b,
+		0 0 0 1cqw #e9eee3,
+		inset 0 0 1.6cqw #192f2266;
+	color: #26392e;
+}
+.ipod-status {
+	height: 7cqw;
+	display: flex;
+	align-items: center;
+	gap: 2cqw;
+	padding: 0 2.5cqw;
+	background: linear-gradient(#fafbf4, #c5cfc4);
+	border-bottom: 0.5cqw solid #819485;
+	font-size: 3.4cqw;
+}
+.ipod-status strong {
+	margin-right: auto;
+	font-weight: 600;
+}
+.ipod-status > span:not(.native-battery) {
+	font-size: 2.6cqw;
+	color: #467692;
+}
+.ipod-status .native-battery {
+	color: #487d43;
+}
+.ipod-screen-content {
+	position: absolute;
+	inset: 7cqw 0 0;
+	display: flex;
+	flex-direction: column;
+	animation: screen-wake 500ms ease-out both;
+}
+.ipod-split {
+	display: grid;
+	grid-template-columns: 50% 50%;
+	flex: 1;
+	min-height: 0;
+}
+.ipod-library {
+	padding: 2cqw 0;
+	border-right: 0.4cqw solid #b4c0b7;
+}
+.ipod-library-label {
+	display: block;
+	padding: 0 2cqw 2cqw;
+	font-size: 2.7cqw;
+	color: #526858;
+}
+.ipod-screen .native-links {
+	gap: 0.5cqw;
+}
+.ipod-screen .native-links a {
+	padding: 1.7cqw 2cqw;
+	font-size: 3.7cqw;
+	gap: 1cqw;
+	line-height: 1.15;
+}
+.ipod-screen .native-link-icon {
+	display: none;
+}
+.ipod-screen .native-links a.is-selected {
+	color: #fff;
+	background: linear-gradient(#65a2c9, #296795);
+	box-shadow: inset 0 0.3cqw #a7cce0;
+}
+.ipod-artwork {
+	padding: 3cqw 2.5cqw 2cqw;
+	text-align: center;
+	background: linear-gradient(105deg, #c0cdbf, #e4e9dc 28%, #f6f6e9);
+}
+.ipod-cover {
+	position: relative;
+	width: 20cqw;
+	height: 21cqw;
+	margin: 0 auto 2cqw;
+	background: #b0bf8f;
+	border: 0.6cqw solid #f1f0df;
+	box-shadow: 2cqw 1cqw 2cqw #263b3350;
+	transform: perspective(200px) rotateY(-16deg) rotate(-3deg);
+}
+.ipod-cover img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	image-rendering: pixelated;
+	mix-blend-mode: multiply;
+}
+.ipod-cover span {
+	position: absolute;
+	left: 1cqw;
+	right: 1cqw;
+	bottom: 1cqw;
+	background: #253b28;
+	color: #f4f1dc;
+	font: 1.8cqw var(--mono);
+}
+.ipod-artwork h2 {
+	font-size: 3.6cqw;
+	margin-bottom: 1cqw;
+}
+.ipod-screen .native-role {
+	font-size: 2.5cqw;
+}
+.ipod-screen .native-bio {
+	font-size: 2.45cqw;
+	padding: 2cqw 2.5cqw;
+	border-top: 0.4cqw solid #b9c5b8;
+	background: #f0f2e6;
+}
+.ipod-screen .device-about {
+	gap: 2cqw;
+}
+.ipod-screen .about-star {
+	font-size: 9cqw;
+}
+.ipod-screen .device-about p {
+	font-size: 3.3cqw;
+}
+.ipod-wheel {
+	position: absolute;
+	top: 87cqw;
+	left: 16cqw;
+	width: 66cqw;
+	height: 66cqw;
+	border-radius: 50%;
+	background: linear-gradient(145deg, #fafaf3, #e3e6df);
+	border: 0.5cqw solid #8d9a92;
+	box-shadow:
+		inset 0 1px 2px #fff,
+		0 1px 2px #ffffff80,
+		inset 0 -1px 3px #a8b1a666;
+	touch-action: none;
+	user-select: none;
+}
+.ipod-wheel button {
+	position: absolute;
+	background: transparent;
+	color: #687b7c;
+	border: 0;
+	padding: 0;
+	font:
+		3.1cqw Arial,
+		sans-serif;
+}
+.ipod-wheel .ipod-menu {
+	top: 0;
+	left: 18cqw;
+	width: 30cqw;
+	height: 19cqw;
+	font-size: 3.5cqw;
+	font-weight: 600;
+}
+.ipod-previous {
+	left: 0;
+	top: 22cqw;
+	width: 21cqw;
+	height: 23cqw;
+}
+.ipod-next {
+	right: 0;
+	top: 22cqw;
+	width: 21cqw;
+	height: 23cqw;
+}
+.ipod-play {
+	bottom: 0;
+	left: 20cqw;
+	width: 26cqw;
+	height: 19cqw;
+}
+.ipod-wheel .ipod-center {
+	inset: 22cqw;
+	border: 0.5cqw solid #bbc3ba;
+	border-radius: 50%;
+	background: linear-gradient(140deg, #e9ebe3, #c2ccc0);
+	box-shadow:
+		inset 0 1px 2px #fbfff5,
+		inset 0 -1px 2px #92a18e55;
+}
+.ipod-center:active {
+	filter: brightness(0.9);
+}
+.ipod-wheel button:focus-visible {
+	outline-offset: -3px;
+	border-radius: 12cqw;
+}
+.ipod-bottom {
+	position: absolute;
+	bottom: 2cqw;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font: 3cqw var(--sans);
+	color: #718073;
+}
+.ipod-bottom > span {
+	font: 1.5cqw var(--mono);
+	letter-spacing: 0.2cqw;
+	margin-left: 2cqw;
+}
+
+/* Edge 540 — sealed rubber body, seven physical controls, a portrait course screen. */
+.garmin-position {
+	width: 282px;
+	max-width: 70%;
+	transform: rotate(-8deg);
+}
+.garmin-device {
+	height: 150cqw;
+	border-radius: 20cqw 20cqw 24cqw 24cqw;
+	background: linear-gradient(
+		110deg,
+		#4b5350,
+		#1c2423 13%,
+		#101817 80%,
+		#3b4640
+	);
+	border: 0.8cqw solid #606a62;
+	box-shadow:
+		inset 1px 1px 3px #a9b1a380,
+		inset -2px -2px 4px #080f0c,
+		1px 3px 0 #0b1411,
+		3px 6px 0 #414d44,
+		5px 10px 0 #15231c,
+		9px 15px 18px var(--deep-shadow),
+		24px 34px 40px var(--object-shadow);
+}
+.garmin-face {
+	position: absolute;
+	inset: 2cqw 3cqw 3cqw;
+	border-radius: 17cqw 17cqw 20cqw 20cqw;
+	border: 0.7cqw solid #667066;
+	background: linear-gradient(120deg, #333d36, #101913 65%, #2b362c);
+	box-shadow:
+		inset 0 1px 1px #8c958177,
+		0 0 1px #080e0a;
+}
+.garmin-wordmark {
+	position: absolute;
+	top: 5.5cqw;
+	left: 0;
+	right: 0;
+	text-align: center;
+	color: #e6e9db;
+	font:
+		600 5cqw Arial,
+		sans-serif;
+	letter-spacing: 0.7cqw;
+}
+.garmin-wordmark > span {
+	position: absolute;
+	font-size: 2cqw;
+	transform: translate(-2.5cqw, -1.5cqw);
+	color: #9ba788;
+}
+.garmin-screen {
+	position: absolute;
+	top: 17cqw;
+	left: 7cqw;
+	width: 76cqw;
+	height: 101cqw;
+	border: 1cqw solid #060f0a;
+	border-radius: 2cqw;
+	background: #e6ebda;
+	box-shadow:
+		0 0 0 0.5cqw #5e6c5b,
+		inset 0 0 2cqw #0d241f66;
+	color: #1a3525;
+}
+.garmin-status {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 7cqw;
+	padding: 0 3cqw;
+	background: #1e382a;
+	color: #ecf4db;
+	font-size: 2.7cqw;
+}
+.garmin-status strong {
+	font-size: 3cqw;
+	letter-spacing: 0.3cqw;
+}
+.garmin-status .native-battery {
+	width: 5cqw;
+	height: 2.7cqw;
+}
+.garmin-screen-content {
+	position: relative;
+	height: calc(100% - 7cqw);
+	display: flex;
+	flex-direction: column;
+	animation: screen-wake 400ms ease-out both;
+}
+.garmin-profile {
+	padding: 2cqw 3cqw;
+	border-bottom: 0.5cqw solid #8a9f81;
+	background: #eaf0dc;
+}
+.garmin-profile > span {
+	font-size: 2.1cqw;
+	font-weight: 700;
+	letter-spacing: 0.2cqw;
+}
+.garmin-profile h2 {
+	font: 600 6.7cqw var(--sans);
+	letter-spacing: -0.25cqw;
+	margin: 0.3cqw 0;
+}
+.garmin-profile .native-role {
+	font-size: 2.7cqw;
+}
+.garmin-map-area {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+.garmin-map {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+.garmin-course-label {
+	position: absolute;
+	bottom: 1.5cqw;
+	left: 1.5cqw;
+	background: #f2f4e5ed;
+	border: 0.4cqw solid #8c9b7f;
+	border-radius: 1cqw;
+	padding: 1cqw 1.5cqw;
+	font-size: 2.3cqw;
+	font-weight: 600;
+}
+.garmin-screen .native-bio {
+	font-size: 2.8cqw;
+	padding: 2cqw 3cqw;
+	border-top: 0.4cqw solid #9baa8d;
+}
+.garmin-screen .native-links {
+	grid-template-columns: 1fr 1fr;
+	border-top: 0.4cqw solid #9baa8d;
+	background: #e9eedc;
+}
+.garmin-screen .native-links a {
+	padding: 2.2cqw 2.5cqw;
+	font-size: 3.5cqw;
+	border-right: 0.4cqw solid #a3b098;
+	border-bottom: 0.4cqw solid #a3b098;
+	gap: 1.5cqw;
+}
+.garmin-screen .native-links a.is-selected {
+	background: #254e36;
+	color: #f0f7df;
+}
+.garmin-screen .native-link-icon svg {
+	width: 4cqw;
+	height: 4cqw;
+}
+.garmin-screen .native-link-arrow {
+	display: none;
+}
+.garmin-screen .device-about {
+	background: #eaf0dc;
+	padding: 5cqw;
+}
+.garmin-model {
+	position: absolute;
+	top: 122cqw;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font: 2.5cqw var(--sans);
+	letter-spacing: 0.5cqw;
+	color: #b9c4b1;
+}
+.garmin-model strong {
+	font-weight: 500;
+	color: #edf1e0;
+}
+.garmin-left-controls {
+	position: absolute;
+	left: -2.8cqw;
+	top: 30cqw;
+	display: grid;
+	gap: 8cqw;
+}
+.garmin-right-controls {
+	position: absolute;
+	right: -2.5cqw;
+	top: 51cqw;
+	display: grid;
+	gap: 9cqw;
+}
+.garmin-left-controls button,
+.garmin-right-controls button {
+	width: 8cqw;
+	height: 14cqw;
+	padding: 0;
+	border: 0.4cqw solid #6b7467;
+	border-radius: 2cqw;
+	color: #e9eedf;
+	background: linear-gradient(90deg, #19271b, #46513f, #152419);
+	box-shadow: 1px 2px 1px #0d190e;
+	font:
+		3.4cqw Arial,
+		sans-serif;
+}
+.garmin-left-controls button {
+	padding-right: 3cqw;
+}
+.garmin-right-controls button {
+	padding-left: 3cqw;
+}
+.garmin-bottom-controls {
+	position: absolute;
+	bottom: 1.8cqw;
+	left: 14cqw;
+	right: 14cqw;
+	display: flex;
+	justify-content: space-between;
+}
+.garmin-bottom-controls button {
+	width: 21cqw;
+	height: 11cqw;
+	border: 0.4cqw solid #606d58;
+	border-radius: 2cqw 2cqw 5cqw 5cqw;
+	color: #d5e0c8;
+	background: linear-gradient(#35452f, #18281b);
+	box-shadow:
+		inset 0 1px 1px #8c9a7e,
+		1px 2px 1px #101b11;
+	font-size: 4cqw;
+}
+.garmin-device button:active {
+	filter: brightness(1.4);
+}
+
+/* Africa Twin — the colour TFT, independent lower LCD and left switchgear. */
+.honda-position {
+	width: 530px;
+	max-width: 91%;
+	transform: rotate(-5deg);
+}
+.honda-device {
+	height: 95cqw;
+}
+.honda-windscreen {
+	position: absolute;
+	top: -8cqw;
+	left: 13cqw;
+	right: 13cqw;
+	height: 49cqw;
+	border: 0.45cqw solid #6771653b;
+	border-radius: 15cqw 15cqw 3cqw 3cqw;
+	background: linear-gradient(140deg, #e2e7d333, #8e9b8220 45%, #a9b59808);
+	box-shadow: inset 1px 2px 1px #ffffdf50;
+	transform: perspective(600px) rotateX(15deg);
+}
+.honda-mount {
+	position: absolute;
+	top: 60cqw;
+	left: 28cqw;
+	right: 28cqw;
+	height: 22cqw;
+	background: linear-gradient(90deg, #17201b, #596052 48%, #243123);
+	border-radius: 3cqw;
+	transform: perspective(500px) rotateX(-20deg);
+	box-shadow: 3px 8px 10px var(--deep-shadow);
+}
+.honda-cluster {
+	position: absolute;
+	top: 4cqw;
+	left: 0;
+	right: 0;
+	height: 68cqw;
+	border-radius: 7cqw 7cqw 10cqw 10cqw;
+	background: linear-gradient(
+		132deg,
+		#5b6159,
+		#1d2721 8%,
+		#1b241e 85%,
+		#080f0b
+	);
+	border: 0.8cqw solid #6b7064;
+	box-shadow:
+		inset 1px 1px 2px #a5aa8c,
+		inset -1px -2px 2px #101d0e,
+		1px 3px 0 #142015,
+		3px 6px 0 #4a5343,
+		5px 9px 0 #121f13,
+		11px 18px 18px var(--deep-shadow),
+		20px 34px 37px var(--object-shadow);
+}
+.honda-cluster::before {
+	content: "";
+	position: absolute;
+	inset: 1.4cqw;
+	border: 0.35cqw solid #858d7933;
+	border-radius: 5cqw 5cqw 8cqw 8cqw;
+	pointer-events: none;
+}
+.cluster-bolt {
+	position: absolute;
+	width: 2.3cqw;
+	height: 2.3cqw;
+	border-radius: 50%;
+	border: 0.4cqw solid #111b11;
+	background: linear-gradient(135deg, #889076, #2c3a2a);
+	box-shadow: inset 0 1px #b2b79766;
+}
+.cluster-bolt::after {
+	content: "";
+	position: absolute;
+	top: 0.5cqw;
+	left: 0.2cqw;
+	right: 0.2cqw;
+	height: 0.3cqw;
+	background: #141f11;
+	transform: rotate(40deg);
+}
+.bolt-one {
+	top: 4cqw;
+	left: 4cqw;
+}
+.bolt-two {
+	top: 4cqw;
+	right: 4cqw;
+}
+.bolt-three {
+	bottom: 5cqw;
+	left: 5cqw;
+}
+.bolt-four {
+	bottom: 5cqw;
+	right: 5cqw;
+}
+.honda-top-label {
+	position: absolute;
+	top: 2.8cqw;
+	left: 11cqw;
+	right: 11cqw;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: #879877;
+	font: italic 600 2.3cqw var(--sans);
+	letter-spacing: 0.5cqw;
+}
+.honda-top-label > span {
+	font-size: 2.7cqw;
+	color: #a2bb71;
+}
+.honda-screen {
+	position: absolute;
+	top: 8.5cqw;
+	left: 8cqw;
+	width: 82.5cqw;
+	height: 49.5cqw;
+	border: 0.7cqw solid #09150d;
+	border-radius: 1.5cqw;
+	background: #17241e;
+	color: #e7eed8;
+	box-shadow:
+		0 0 0 0.4cqw #627358,
+		inset 0 0 2cqw #061008;
+	font-family: var(--sans);
+}
+.honda-tft-header {
+	display: flex;
+	align-items: center;
+	gap: 2cqw;
+	padding: 1cqw 2cqw;
+	height: 4.5cqw;
+	border-bottom: 0.35cqw solid #bd9b55;
+	font-size: 1.5cqw;
+	color: #d6d7ba;
+	background: #25372b;
+}
+.honda-tft-header strong {
+	background: #e0b967;
+	color: #192a1d;
+	padding: 0.2cqw 1.2cqw;
+	font-style: italic;
+	font-size: 2cqw;
+}
+.honda-tft-header > span:last-child {
+	margin-left: auto;
+}
+.honda-tachometer {
+	height: 7cqw;
+	padding: 0.7cqw 2cqw 0;
+	position: relative;
+}
+.tach-numbers {
+	display: flex;
+	justify-content: space-between;
+	font:
+		italic 1.8cqw Arial,
+		sans-serif;
+	color: #cbdac1;
+	padding: 0 0.5cqw;
+}
+.tach-segments {
+	display: flex;
+	gap: 0.4cqw;
+	height: 1.9cqw;
+	margin-top: 0.5cqw;
+	transform: skewX(-23deg);
+}
+.tach-segments i {
+	flex: 1;
+	background: #b5c6a3;
+	opacity: 0.35;
+	transition:
+		opacity 120ms,
+		box-shadow 120ms;
+}
+.tach-segments i.is-lit {
+	opacity: 1;
+	background: #eff7d9;
+	box-shadow: 0 0 1cqw #e8f7b97a;
+}
+.tach-segments i:nth-child(n + 25) {
+	background: #e7975c;
+	opacity: 0.7;
+}
+.tach-segments i:nth-child(n + 29) {
+	background: #df7058;
+}
+.honda-tachometer > small {
+	position: absolute;
+	bottom: 0;
+	right: 3cqw;
+	font-size: 1.1cqw;
+	color: #aabc9e;
+}
+.honda-tft-content {
+	position: absolute;
+	inset: 12cqw 0 3.7cqw;
+	display: grid;
+	grid-template-columns: 27% 73%;
+	animation: screen-wake 500ms ease-out both;
+}
+.honda-riding-display {
+	padding: 0 2cqw;
+	border-right: 0.35cqw solid #58724d;
+	text-align: center;
+}
+.honda-speed {
+	display: flex;
+	flex-direction: column;
+	line-height: 1;
+}
+.honda-speed > strong {
+	font: italic 600 14cqw var(--sans);
+	letter-spacing: -1cqw;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+}
+.honda-speed > span {
+	font:
+		1.8cqw Arial,
+		sans-serif;
+	margin-top: -0.8cqw;
+	padding-left: 5cqw;
+}
+.honda-gear {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1cqw;
+	margin-top: 1cqw;
+	color: #a9d870;
+}
+.honda-gear > strong {
+	font-size: 5cqw;
+	line-height: 1;
+}
+.honda-gear > span {
+	font-size: 1.1cqw;
+}
+.honda-gear[data-gear="D"] {
+	color: #e1bf75;
+}
+.honda-compass {
+	position: relative;
+	margin: 1.2cqw auto 0;
+	width: 9cqw;
+	height: 7cqw;
+	border: 0.3cqw solid #798a66;
+	border-radius: 50% 50% 0 0;
+	border-bottom: 0;
+	color: #c9d2b1;
+	font-size: 1.5cqw;
+}
+.honda-compass > span {
+	position: absolute;
+	top: -1cqw;
+	left: 3cqw;
+	padding: 0 0.5cqw;
+	background: #17241e;
+}
+.honda-compass i {
+	position: absolute;
+	top: 2cqw;
+	left: 3cqw;
+	width: 3cqw;
+	height: 4cqw;
+	background: #d7b871;
+	clip-path: polygon(50% 0, 100% 100%, 50% 70%, 0 100%);
+}
+.honda-compass small {
+	position: absolute;
+	bottom: -1cqw;
+	left: 0;
+	right: 0;
+	font-size: 1cqw;
+}
+.honda-profile {
+	padding: 0.5cqw 2cqw 0 2.5cqw;
+	display: flex;
+	flex-direction: column;
+}
+.honda-profile-label {
+	font: 1.2cqw var(--mono);
+	letter-spacing: 0.2cqw;
+	color: #d4c496;
+}
+.honda-profile h2 {
+	font-size: 4.5cqw;
+	font-weight: 500;
+	line-height: 1.1;
+	letter-spacing: -0.2cqw;
+	margin: 0.8cqw 0;
+}
+.honda-profile .native-role {
+	font-size: 1.7cqw;
+	color: #d6e1c7;
+}
+.honda-profile .native-bio {
+	font-size: 1.7cqw;
+	margin: 1.5cqw 0;
+	color: #d6e1c7;
+}
+.honda-profile .native-links {
+	grid-template-columns: 1fr 1fr;
+	gap: 0.8cqw;
+	margin-top: auto;
+}
+.honda-profile .native-links a {
+	font-size: 2cqw;
+	border: 0.3cqw solid #5c7651;
+	padding: 1.2cqw 1.4cqw;
+	gap: 1cqw;
+	line-height: 1.1;
+	background: #263d2c;
+	border-radius: 0.5cqw;
+}
+.honda-profile .native-link-icon svg {
+	width: 2.4cqw;
+	height: 2.4cqw;
+}
+.honda-profile .native-links a.is-selected {
+	background: #e1bf75;
+	border-color: #f5d796;
+	color: #172c1b;
+}
+.honda-profile .native-link-arrow {
+	font-size: 2.5cqw;
+}
+.honda-tft-footer {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: space-between;
+	padding: 0.8cqw 2cqw;
+	background: #22352a;
+	border-top: 0.35cqw solid #698459;
+	font: 1.3cqw var(--mono);
+	color: #c9d6b5;
+}
+.honda-screen .device-about {
+	background: #17241e;
+	color: #e0e8d0;
+	padding: 2cqw;
+	gap: 1.2cqw;
+}
+.honda-screen .device-about .about-star {
+	color: #e1bf75;
+	font-size: 6cqw;
+}
+.honda-screen .device-about strong {
+	font-size: 3.5cqw;
+}
+.honda-screen .device-about p {
+	font-size: 2.6cqw;
+}
+.honda-screen .device-about small {
+	font-size: 1.8cqw;
+}
+.honda-wordmark {
+	position: absolute;
+	bottom: 1.8cqw;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	gap: 1.5cqw;
+	align-items: center;
+	font:
+		700 2cqw Georgia,
+		serif;
+	color: #b6c1a7;
+	letter-spacing: 0.1cqw;
+}
+.honda-wordmark svg {
+	width: 4cqw;
+	height: 2.8cqw;
+}
+.honda-secondary {
+	position: absolute;
+	top: 74cqw;
+	left: 30cqw;
+	right: 8cqw;
+	height: 12cqw;
+	border: 1.7cqw solid #2d392a;
+	border-radius: 2.4cqw;
+	background: #b5c69c;
+	color: #294328;
+	box-shadow:
+		0 0 0 0.4cqw #66725b,
+		2px 4px 0 #172411,
+		5px 10px 10px var(--deep-shadow),
+		inset 0 0 1cqw #233b2055;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.honda-secondary > div {
+	display: flex;
+	align-items: baseline;
+	gap: 1.4cqw;
+}
+.honda-secondary strong {
+	font: 6cqw var(--mono);
+	line-height: 1;
+}
+.honda-secondary small {
+	font: 1.4cqw var(--mono);
+}
+.honda-secondary i {
+	font: 2.5cqw var(--mono);
+	margin-left: 3cqw;
+}
+.honda-secondary > span {
+	font: 2cqw var(--mono);
+	text-align: center;
+}
+.honda-secondary .honda-indicator {
+	font: 3.5cqw var(--mono);
+	color: #214127;
+	background: #8cad72;
+	padding: 0.7cqw 1.2cqw;
+	border: 0.3cqw solid #526d40;
+}
+.honda-switchgear {
+	position: absolute;
+	top: 70cqw;
+	left: 2cqw;
+	width: 22cqw;
+	height: 25cqw;
+	border-radius: 5cqw 3cqw 6cqw 4cqw;
+	border: 0.5cqw solid #68705e;
+	background: linear-gradient(120deg, #555e4e, #283825 70%, #172812);
+	box-shadow:
+		inset 1px 1px 2px #9aab8177,
+		1px 3px 0 #172810,
+		4px 7px 0 #263721,
+		7px 12px 11px var(--deep-shadow);
+	transform: rotate(7deg);
+}
+.switchgear-label {
+	position: absolute;
+	top: 1.6cqw;
+	left: 0;
+	right: 0;
+	text-align: center;
+	color: #d4dec3;
+	font:
+		1.2cqw Arial,
+		sans-serif;
+	letter-spacing: 0.2cqw;
+}
+.honda-switchgear button {
+	position: absolute;
+	background: linear-gradient(#69725e, #3e5034);
+	border: 0.4cqw solid #899b76;
+	border-radius: 1.2cqw;
+	color: #f1f2db;
+	box-shadow: 0 0.7cqw 0 #1a2c14;
+	font:
+		2cqw Arial,
+		sans-serif;
+	padding: 0;
+}
+.honda-up {
+	top: 4.6cqw;
+	left: 7.5cqw;
+	width: 6.6cqw;
+	height: 5cqw;
+}
+.honda-down {
+	top: 16cqw;
+	left: 7.5cqw;
+	width: 6.6cqw;
+	height: 5cqw;
+}
+.honda-enter {
+	top: 10.2cqw;
+	left: 6cqw;
+	width: 9.7cqw;
+	height: 5cqw;
+}
+.honda-home {
+	top: 11cqw;
+	left: 0.8cqw;
+	width: 4.8cqw;
+	height: 6cqw;
+}
+.honda-back {
+	top: 11cqw;
+	right: 0.8cqw;
+	width: 4.8cqw;
+	height: 6cqw;
+}
+.honda-switchgear button:active {
+	transform: translateY(0.5cqw);
+	box-shadow: none;
+}
+
+/* Lighting stays consistent while the materials retain their identity. */
+[data-theme="dark"] .device-gallery {
+	--object-shadow: #050e0955;
+	--deep-shadow: #000a0877;
+	--muted: #a0aa9a;
+	--chapter-active: var(--accent);
+}
+[data-theme="dark"] .nokia-front {
+	background: linear-gradient(
+		96deg,
+		#7e3936,
+		#b65349 8%,
+		#ba5c4c 20%,
+		#94443e 90%,
+		#57302b
+	);
+}
+[data-theme="dark"] .nokia-front::before {
+	background: linear-gradient(105deg, #d6d7c7, #b7bead 80%, #899a87);
+	border-color: #d2d7c2;
+}
+[data-theme="dark"] .mac-case {
+	background: linear-gradient(115deg, #c2c2a8, #aaaf95 65%, #7b8a73);
+	border-color: #d3d1b5;
+	box-shadow:
+		inset 2px 2px 3px #e6e4c1,
+		inset -2px -2px 3px #374d3555,
+		1px 3px 0 #7c8a71,
+		3px 6px 0 #6d7c65,
+		5px 9px 0 #64745e,
+		8px 13px 0 #52644f,
+		13px 18px 18px var(--deep-shadow),
+		28px 37px 37px var(--object-shadow);
+}
+[data-theme="dark"] .mac-crt-recess {
+	background: linear-gradient(
+		135deg,
+		#66735d,
+		#8d9d80 13%,
+		#b3bea0 88%,
+		#c8d0b0
+	);
+}
+[data-theme="dark"] .mac-screen {
+	box-shadow:
+		0 0 0 0.5cqw #0c1b1266,
+		0 0 4cqw #c2eaa11c,
+		inset 0 0 4cqw #12291b70;
+}
+[data-theme="dark"] .ipod-device {
+	background: linear-gradient(115deg, #dce1d5, #b6c3b7 56%, #98ac9c);
+	border-color: #d2dccb;
+}
+[data-theme="dark"] .ipod-wheel {
+	background: linear-gradient(145deg, #dce5d4, #b2c3ae);
+	border-color: #7d947c;
+}
+[data-theme="dark"] .device-change-light {
+	background: radial-gradient(
+		ellipse closest-side at 44% 48%,
+		#d7eab124,
+		#d7eab10c 32%,
+		#d7eab103 68%,
+		#d7eab100 94%
+	);
+}
+
+@keyframes accessory-arrive {
+	from {
+		opacity: 0;
+		transform: translateY(13px) rotate(calc(var(--prop-angle, 0deg) - 9deg))
+			scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) rotate(var(--prop-angle, 0deg)) scale(1);
+	}
+}
+@keyframes object-enter {
+	0% {
+		opacity: 0;
+		transform: translate3d(calc(var(--direction) * 160px), 42px, -400px)
+			rotateY(calc(var(--direction) * -48deg))
+			rotateZ(calc(var(--direction) * 10deg)) scale(0.82);
+		filter: blur(5px);
+		animation-timing-function: cubic-bezier(0.16, 0.85, 0.24, 1);
+	}
+	58% {
+		opacity: 1;
+		transform: translate3d(calc(var(--direction) * -13px), -6px, 32px)
+			rotateY(calc(var(--direction) * 6deg))
+			rotateZ(calc(var(--direction) * -1.5deg)) scale(1.018);
+		filter: blur(0);
+		animation-timing-function: cubic-bezier(0.3, 0, 0.28, 1);
+	}
+	82% {
+		transform: translate3d(calc(var(--direction) * 3px), 1px, -5px)
+			rotateY(calc(var(--direction) * -1.2deg)) scale(0.998);
+		animation-timing-function: cubic-bezier(0.2, 0.6, 0.2, 1);
+	}
+	100% {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) rotateY(0) rotateZ(0) scale(1);
+		filter: blur(0);
+	}
+}
+@keyframes object-exit {
+	0% {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) rotateY(0) scale(1);
+		filter: blur(0);
+	}
+	32% {
+		opacity: 0.85;
+		transform: translate3d(calc(var(--direction) * -24px), -12px, -60px)
+			rotateY(calc(var(--direction) * 12deg)) scale(0.96);
+	}
+	100% {
+		opacity: 0;
+		transform: translate3d(calc(var(--direction) * -125px), -45px, -410px)
+			rotateY(calc(var(--direction) * 49deg))
+			rotateZ(calc(var(--direction) * -9deg)) scale(0.77);
+		filter: blur(4px);
+	}
+}
+@keyframes object-light {
+	0% {
+		opacity: 0;
+		transform: scale(0.75);
+	}
+	36% {
+		opacity: 0.65;
+	}
+	100% {
+		opacity: 0;
+		transform: scale(1.2);
+	}
+}
+@keyframes caption-reveal {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes chapter-clock {
+	from {
+		transform: scaleX(var(--progress));
+	}
+	to {
+		transform: scaleX(1);
+	}
+}
+
+@media (min-width: 1600px) {
+	.gallery-stage {
+		height: 630px;
+	}
+	.gallery-stage .console-position {
+		width: 350px;
+	}
+	.nokia-position {
+		width: 229px;
+	}
+	.macintosh-position {
+		width: 425px;
+	}
+	.ipod-position {
+		width: 323px;
+	}
+	.garmin-position {
+		width: 312px;
+	}
+	.honda-position {
+		width: 570px;
+	}
+}
+@media (max-width: 1100px) and (min-width: 801px) {
+	.landing-main {
+		grid-template-columns: 0.85fr 1.15fr;
+		gap: 16px;
+	}
+	.landing-intro h1 {
+		font-size: 72px;
+	}
+	.gallery-stage {
+		height: 530px;
+	}
+	.gallery-stage .console-position {
+		width: 300px;
+	}
+	.nokia-position {
+		width: 194px;
+	}
+	.journey-header > span:last-child {
+		display: none;
+	}
+	.chapter-label {
+		font-size: 6px;
+		letter-spacing: 0;
+	}
+	.chapter-object {
+		padding-right: 0;
+	}
+}
+@media (max-width: 800px) {
+	.device-gallery {
+		max-width: 490px;
+	}
+	.gallery-stage {
+		height: 584px;
+		margin: 0;
+	}
+	.journey-header {
+		top: 0;
+		font-size: 6px;
+	}
+	.gallery-stage .scene-halo {
+		width: 470px;
+		height: 470px;
+		top: 48px;
+	}
+	.gallery-stage .console-position {
+		width: 328px;
+	}
+	.gallery-stage .adventure-ball {
+		left: 1%;
+	}
+	.journey-caption {
+		margin-top: 0;
+	}
+}
+@media (max-width: 480px) {
+	.landing-main {
+		gap: 32px;
+	}
+	.gallery-stage {
+		height: 518px;
+		padding: 0;
+	}
+	.gallery-stage .console-position {
+		width: 282px;
+		max-width: 77%;
+	}
+	.gallery-stage .scene-halo {
+		width: 350px;
+		height: 350px;
+		top: 80px;
+	}
+	.gallery-stage .adventure-ball {
+		width: 66px;
+		bottom: 26px;
+		left: 0;
+	}
+	.gallery-stage .adventure-sparkles {
+		width: 22px;
+		left: 2%;
+		top: 53px;
+	}
+	.gallery-stage .adventure-grass {
+		width: 26px;
+		right: 0;
+		bottom: 105px;
+	}
+	.prop-earbuds-nokia {
+		width: 92px;
+		right: -3px;
+		bottom: 40px;
+	}
+	.prop-earbuds-ipod {
+		width: 96px;
+		left: -1px;
+		bottom: 17px;
+	}
+	.prop-floppies {
+		width: 76px;
+		left: 3px;
+		bottom: 109px;
+	}
+	.prop-gloves {
+		width: 89px;
+		left: -3px;
+		bottom: 26px;
+	}
+	.prop-helmet {
+		width: 99px;
+		right: -1px;
+		bottom: 40px;
+	}
+	.journey-header {
+		left: 0;
+		right: 0;
+		font-size: 5.6px;
+		letter-spacing: 0.04em;
+	}
+	.nokia-position {
+		width: 190px;
+		max-width: 62%;
+	}
+	.macintosh-position {
+		width: 318px;
+		max-width: 86%;
+	}
+	.ipod-position {
+		width: 262px;
+		max-width: 72%;
+	}
+	.garmin-position {
+		width: 253px;
+		max-width: 71%;
+	}
+	.honda-position {
+		width: 342px;
+		max-width: 93%;
+	}
+	.journey-caption {
+		margin: -5px 2px 0;
+		min-height: 53px;
+	}
+	.journey-caption h2 {
+		font-size: 18px;
+	}
+	.journey-caption p {
+		font-size: 9px;
+	}
+	.journey-count {
+		font-size: 24px;
+	}
+	.chapter-rail {
+		margin: 14px -4px 0;
+	}
+	.chapter-rail button {
+		gap: 10px;
+		padding: 7px 5px;
+	}
+	.chapter-label {
+		font-size: 6px;
+		letter-spacing: 0;
+	}
+	.chapter-object {
+		padding-right: 1px;
+	}
+	.chapter-object svg {
+		width: 19px;
+		height: 21px;
+	}
+	.chapter-object > span {
+		font-size: 5px;
+	}
+	.chapter-track {
+		margin-right: -10px;
+	}
+	.journey-playback {
+		margin: 6px 1px 0;
+		font-size: 7px;
+	}
+}
+@media (max-width: 359px) {
+	.gallery-stage {
+		height: 463px;
+	}
+	.journey-header > span:last-child {
+		display: none;
+	}
+	.chapter-object > span {
+		display: none;
+	}
+	.chapter-label {
+		font-size: 5px;
+	}
+	.journey-caption p {
+		font-size: 8px;
+	}
+}
+@media (hover: none), (pointer: coarse) {
+	.device-object,
+	.gallery-stage .console-shell {
+		transform: none;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.device-layer,
+	.journey-prop,
+	.device-change-light,
+	.journey-caption > div,
+	.chapter-progress,
+	.nokia-screen-content,
+	.mac-desktop,
+	.ipod-screen-content,
+	.garmin-screen-content,
+	.honda-tft-content {
+		animation: none;
+	}
+	.device-layer.is-exiting {
+		display: none;
+	}
+	.device-object,
+	.gallery-stage .console-shell {
+		transform: none;
+		transition: none;
+	}
+	.nokia-front,
+	.nokia-back,
+	.chapter-object svg,
+	.chapter-track > i {
+		transition: none;
+	}
+}

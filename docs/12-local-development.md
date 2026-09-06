@@ -14,7 +14,7 @@ The server listens on 127.0.0.1:7046. Existing Caddy mappings and trusted mkcert
 
 ## Implemented behavior
 
-- Preview HTML includes render-blocking links to base and surface CSS. It renders correctly even when the client script is delayed or blocked; no hidden-body or fake loading overlay is used.
+- Preview HTML includes render-blocking links to base and surface CSS, including the personal page's device gallery stylesheet. It renders correctly even when the client script is delayed or blocked; no hidden-body or fake loading overlay is used.
 - Vite warms both client entry points and the SSR renderer, and explicitly optimizes React dependencies before demand-driven loading.
 - CSS changes use Vite HMR and preserve the document, theme and current controls. React Fast Refresh preserves the handheld's selected panel.
 - Résumé templates are server-rendered with no React runtime in production. A development-only event refreshes their HTML; theme and browser reading position remain intact. Theme/observer listeners are disposed during module replacement.
@@ -30,5 +30,7 @@ Observed Red: blocking client JavaScript left both pages with zero stylesheets a
 The browser/performance suites use workerd and production assets; this suite specifically verifies the development renderer and Vite HMR. Keep both kinds of checks, since a correct production build does not prove the local editing experience is correct.
 
 The actual Caddy HTTPS entry points were also checked in system Chrome with trusted certificates: both pages had two stylesheets and their intended font/background while the client entry was blocked. Both established their wss:// HMR connection with no page errors.
+
+The v3.1.0 gallery adds a third initial stylesheet to the personal page. Its first-paint regression initially observed a block-layout chapter rail with JavaScript disabled; it now asserts the intended grid layout. The same eight development tests pass with the new stylesheet and self-hosted CJK assets included in the isolated fixture. See [13](13-devices-journey.md) for the current extension.
 
 Vite owns UI hot updates. The start command runs one Bun server process; after changing the server bootstrap or its HTTP routing setup, restart bun run dev. This avoids the nested Bun watcher terminating the server on bootstrap edits.

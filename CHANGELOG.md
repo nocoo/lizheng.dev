@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.0] - 2026-09-06
+
+- Turn the personal page into six interactive chapters: Game Boy, Nokia 5300, Macintosh Plus, iPod Classic, Garmin Edge 540 and Honda Africa Twin instruments, with device-specific screens and physical controls.
+- Add a clickable chapter rail, sequential 12-second autoplay on by default, explicit playback and pauses for reading, keyboard focus, hidden pages and offscreen scenes; pointer selection resumes naturally.
+- Strengthen pointer tilt to ±6° and add nonlinear depth transitions, responsive lighting and immediate reduced-motion switching.
+- Separate keyboard navigation into up/down for screen menus and left/right for devices, with a left-side legend and restrained native focus indicators.
+- Make the Nokia slider and iPod click wheel functional; preserve the same public profile and four real destinations on every screen.
+- Add wired earbuds with aligned cable joins, floppy disks, matching half-finger cycling gloves and a side-profile riding helmet; straighten the Macintosh, inset the iPod Hold switch, conceal the Garmin rear mount and let stage shadows fade naturally above the chapter rail.
+- Smooth the iPod face gradient; let transition light and animated accessories extend beyond the stage without a hard clipping edge or horizontal page scrolling.
+- Animate the Honda's synchronized speed, gear and RPM displays in response to navigation, with gradual deceleration and delayed neutral; enrich the bilingual introduction about the objects that stay with us.
+- Stabilize Chinese screen typography with a self-hosted Noto Sans SC subset; load the gallery styles before JavaScript in local development.
+- Add the shared collectible decoration beside the résumé portrait, with matching light/dark and mobile treatments and a clean print view.
+
 ## [3.0.3] - 2026-09-05
 
 - Add original adventure-game decorations around the handheld: a shaded ember-and-ivory capsule ball, pixel sparkles and a grass motif, without brand names or character assets.

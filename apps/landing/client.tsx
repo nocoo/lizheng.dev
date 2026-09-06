@@ -1,6 +1,7 @@
 import { setupHandheld } from "../../packages/experience/handheld";
 import "../../packages/experience/base.css";
 import "./landing.css";
+import "./devices.css";
 import { hydrateRoot } from "react-dom/client";
 import type { PageContent } from "../../packages/content/model";
 import { setupPreferences } from "../../packages/experience/theme";
