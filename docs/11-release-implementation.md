@@ -2,6 +2,16 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## SEO, agents and social previews — v3.1.5
+
+On 2026-09-07 the user reviewed all four share images in Chrome and authorized `/su-release Z+1`: v3.1.4 → v3.1.5. The release includes the approved bilingual copy, separate résumé/personal-page metadata and images, complete public Markdown and llms.txt discovery, semantic text fixes and unknown-path 404 behavior. All twelve legacy blog 301 patterns remain covered. Production keeps indexing and link following enabled; development and isolated tests retain only noindex.
+
+The reviewed implementation is `a952cb1`. Its local commit hooks passed static checks, the 254 unit tests with 100% statements/functions/lines and 99.41% branches, and the production build. [15 — SEO, agents and social previews](15-seo-agent-social.md) records the full local browser, development, HTTP, performance and image review evidence. Package version is the single source for both footers and all live endpoints.
+
+Publication follows the existing main CI → validated Worker/assets artifact → production workflow. The [v3.1.5 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.5) records the final source commit, CI and deployment runs, production metadata/image checks and mandatory five-minute recheck. Before publication all four public hostnames returned v3.1.4 with deployment `e928def1-0d04-4d7d-89bb-9f431b360f08`; this is the rollback reference.
+
+The Cloudflare 403 / 1010 response to the default Python user agent is still unresolved: available credentials cannot read the relevant BIC setting or WAF rulesets, so no edge rule has been applied. Social-platform cache refreshes require separate evidence and are not implied by publishing the new metadata.
+
 ## Connected surfaces follow-up — v3.1.1 / v3.1.2 / v3.1.3
 
 The authorized patch release connects Journal, Play and Résumé through a common header, automatic/light/dark themes, aligned widths and six keepsake families. Play uses a single footer band, a 2:3 introduction/device grid and equal vertical padding. Device arrivals decelerate smoothly, and an unfinished pointer tilt pauses over controls to keep hit areas steady. [14](14-connected-surfaces.md) records the final local evidence and the shared Firefly implementation.

@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.1.5] - 2026-09-07
+
+- Give the résumé professional bilingual metadata and portrait cards, and the personal page direct copy with Game Boy artwork; publish four localized 1200 × 630 JPEG share images with content-hashed URLs.
+- Complete Open Graph and Twitter image metadata, language links and structured profile data, using one stable public Person identity across both sites.
+- Expand each site's llms.txt and public Markdown, add footer and HTTP discovery links, and expose all six device descriptions in the initial HTML without requiring JavaScript.
+- Repair missing word boundaries in headings, roles, section labels and footers, and keep the decorative cursor out of the person's name.
+- Keep production pages open to indexing and link following; remove nofollow from development and isolated-test responses while retaining preview-only noindex.
+- Return 404 for unknown personal-page paths while preserving all twelve legacy blog 301 patterns, including sitemap.xml.
+
 ## [3.1.4] - 2026-09-06
 
 - Add a shared `Portfolio` header link to `https://hexly.ai` on me and dev, matching the blog and keeping all four links visible on narrow screens.
