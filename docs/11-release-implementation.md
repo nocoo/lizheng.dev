@@ -12,6 +12,14 @@ Publication follows the existing main CI → validated Worker/assets artifact �
 
 The Cloudflare 403 / 1010 response to the default Python user agent is still unresolved: available credentials cannot read the relevant BIC setting or WAF rulesets, so no edge rule has been applied. Social-platform cache refreshes require separate evidence and are not implied by publishing the new metadata.
 
+### Custom Domain deployment follow-up, 2026-09-07
+
+The three-surface metadata and canonical-host changes passed [CI 34067254614](https://github.com/nocoo/lizheng.dev/actions/runs/34067254614). [Release 34067680101](https://github.com/nocoo/lizheng.dev/actions/runs/34067680101) uploaded the validated Worker and assets, then failed with Cloudflare 10000 while Wrangler 4.129 checked ordinary Worker routes in the new `lizheng.blog` zone. The CI token has Worker deployment access but lacks ordinary route access for that zone.
+
+`scripts/deploy-production.ts` keeps `wrangler.jsonc` as the domain/route source of truth. It checks the configured Custom Domains through the account API, deploys the exact CI artifact with `--no-bundle` and only the ordinary `.me` routes, then attaches missing Custom Domains through the official [account domain API](https://developers.cloudflare.com/api/resources/workers/subresources/domains/methods/update/). Existing domain assignments and certificates stay in place; conflicting assignments fail before deployment. That API uses the existing Workers Scripts permission, without requiring ordinary blog zone-route access. All existing CI gates and post-deployment verification remain mandatory.
+
+The deployment regression suite covers scoped API access, the exact validated artifact, existing assignments, conflicts, missing configuration/credentials, API failures with redacted errors, and failed Worker deployment. The blog apex remains on Railway.
+
 ## Connected surfaces follow-up — v3.1.1 / v3.1.2 / v3.1.3
 
 The authorized patch release connects Journal, Play and Résumé through a common header, automatic/light/dark themes, aligned widths and six keepsake families. Play uses a single footer band, a 2:3 introduction/device grid and equal vertical padding. Device arrivals decelerate smoothly, and an unfinished pointer tilt pauses over controls to keep hit areas steady. [14](14-connected-surfaces.md) records the final local evidence and the shared Firefly implementation.

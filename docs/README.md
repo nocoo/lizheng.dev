@@ -1,6 +1,6 @@
 # Active documentation
 
-Updated: 2026-09-07. The original rebuild is documented in 11; the six-device design is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14. Document 15 records the SEO, agent access and differentiated social previews, including the approved direct copy, implementation and authorized v3.1.5 release. It also records the subsequent www canonical redirects, hexly identity link, raster browser icons and synchronized theme-color follow-up. Documents 11 and 15 link the release record for production evidence; the Cloudflare crawler-access issue remains open. The current copy supersedes the earlier narrative direction; the device design remains in use.
+Updated: 2026-09-07. The original rebuild is documented in 11; the six-device design is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14. Document 15 records the SEO, agent access and differentiated social previews, including the approved direct copy, implementation and authorized v3.1.5 release. It also records the subsequent www canonical redirects, hexly identity link, raster browser icons and synchronized theme-color follow-up. Document 11 covers the Custom Domain deployment follow-up for scoped CI credentials. Documents 11 and 15 link the release record for production evidence; the Cloudflare crawler-access issue remains open. The current copy supersedes the earlier narrative direction; the device design remains in use.
 
 ## Reading order
 
