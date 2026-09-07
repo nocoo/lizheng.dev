@@ -183,7 +183,7 @@ button {
 
 .site-version {
 	font-family: "Geist Mono Variable", monospace;
-	font-size: 10px;
+	font-size: 11px;
 	margin-inline-start: 12px;
 	white-space: nowrap;
 }
@@ -284,7 +284,7 @@ button {
 	align-items: center;
 	min-height: 44px;
 	color: var(--site-muted);
-	font: 11px / 1 var(--site-mono);
+	font: 12px / 1 var(--site-mono);
 	text-decoration: none;
 	white-space: nowrap;
 }
@@ -319,7 +319,7 @@ button {
 .site-footer {
 	border-top: 1px solid var(--site-line);
 	color: var(--site-muted);
-	font: 10px / 1.6 var(--site-mono);
+	font: 11px / 1.6 var(--site-mono);
 }
 .site-footer-inner {
 	max-width: var(--site-layout-max);
@@ -353,7 +353,7 @@ button {
 	margin-inline-start: 0;
 }
 .site-footer .surface-links a {
-	font-size: 10px;
+	font-size: inherit;
 }
 .public-formats {
 	display: flex;
@@ -435,7 +435,7 @@ button {
 		gap: 15px;
 	}
 	.surface-links a {
-		font-size: 10px;
+		font-size: 11px;
 	}
 	.icon-toggle {
 		width: 36px;

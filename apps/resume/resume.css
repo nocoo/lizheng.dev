@@ -65,7 +65,7 @@ body {
 .index-label {
 	font-family: var(--mono);
 	color: var(--muted);
-	font-size: 10px;
+	font-size: 11px;
 	letter-spacing: 0.12em;
 }
 .sidebar-rule {
@@ -112,7 +112,7 @@ body {
 }
 .sidebar-location {
 	font-family: var(--mono);
-	font-size: 8px;
+	font-size: 9px;
 	letter-spacing: 0.03em;
 	color: var(--muted);
 	line-height: 2;
@@ -198,8 +198,8 @@ body {
 	display: block;
 	text-align: center;
 	font-family: var(--mono);
-	font-size: 6.5px;
-	letter-spacing: 0.1em;
+	font-size: 9px;
+	letter-spacing: 0.08em;
 	padding-top: 9px;
 	color: var(--muted);
 }
@@ -250,11 +250,11 @@ body {
 }
 .section-number {
 	font-family: var(--mono);
-	font-size: 10px;
+	font-size: 11px;
 	color: var(--accent);
 }
 .section-heading h2 {
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 600;
 	text-transform: uppercase;
 	letter-spacing: 0.09em;
@@ -313,7 +313,7 @@ body {
 .section-experience h3 + p + p,
 .section-education h3 + p + p {
 	font-family: var(--mono);
-	font-size: 11px;
+	font-size: 12px;
 	color: var(--muted);
 	margin-top: 9px;
 }
@@ -375,7 +375,7 @@ html[lang="zh-CN"] .identity-row h1 {
 		padding: 30px 0 0;
 	}
 	.resume-eyebrow {
-		font-size: 7.5px;
+		font-size: 9px;
 		margin-bottom: 30px;
 		letter-spacing: 0.025em;
 	}
@@ -408,7 +408,7 @@ html[lang="zh-CN"] .identity-row h1 {
 		height: 94px;
 	}
 	.portrait-caption {
-		font-size: 5px;
+		font-size: 9px;
 		padding-top: 6px;
 		padding-bottom: 2px;
 	}
@@ -431,7 +431,7 @@ html[lang="zh-CN"] .identity-row h1 {
 		margin-bottom: 25px;
 	}
 	.section-heading h2 {
-		font-size: 11px;
+		font-size: 12px;
 		letter-spacing: 0.06em;
 	}
 	.resume-prose {
@@ -541,7 +541,7 @@ html[lang="zh-CN"] .identity-row h1 {
 		height: 80px;
 	}
 	.resume-eyebrow {
-		font-size: 6.5px;
+		font-size: 9px;
 	}
 	.resume-socials {
 		gap: 18px;

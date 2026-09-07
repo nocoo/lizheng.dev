@@ -88,7 +88,7 @@ body::before {
 	align-items: center;
 	gap: 9px;
 	font-family: var(--mono);
-	font-size: 10px;
+	font-size: 11px;
 	letter-spacing: 0.06em;
 	color: var(--muted);
 	margin-bottom: 31px;
@@ -123,7 +123,7 @@ body::before {
 .intro-story {
 	max-width: 355px;
 	margin: 23px 0 0;
-	font-size: 13px;
+	font-size: 14px;
 	line-height: 1.95;
 	color: var(--muted);
 	text-wrap: pretty;
@@ -132,7 +132,7 @@ body::before {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	font-size: 11px;
+	font-size: 12px;
 	color: var(--muted);
 	margin-top: 28px;
 }
@@ -156,7 +156,7 @@ body::before {
 }
 .keyboard-legend dd {
 	margin: 0;
-	font-size: 10px;
+	font-size: 11px;
 	color: var(--muted);
 }
 .keyboard-keys {
@@ -178,7 +178,7 @@ body::before {
 }
 .keyboard-keys .key-enter {
 	width: 52px;
-	font-size: 8px;
+	font-size: 9px;
 }
 .desktop-instructions p {
 	font-size: 9px;
@@ -189,7 +189,7 @@ body::before {
 .journey-directory {
 	max-width: 390px;
 	margin-top: 22px;
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 1.7;
 	color: var(--muted);
 }
@@ -217,7 +217,7 @@ body::before {
 }
 .journey-directory h3 {
 	margin: 0;
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 500;
 	color: var(--ink);
 }
@@ -310,7 +310,7 @@ body::before {
 	top: 42px;
 	right: -31px;
 	font-family: var(--mono);
-	font-size: 7px;
+	font-size: 9px;
 	letter-spacing: 0.1em;
 	writing-mode: vertical-rl;
 	color: var(--muted);
@@ -1096,12 +1096,12 @@ html[lang="zh-CN"] .intro-description {
 	.intro-story {
 		max-width: 340px;
 		margin: 18px auto 0;
-		font-size: 12px;
+		font-size: 13px;
 		line-height: 1.9;
 	}
 	.intro-invitation {
 		justify-content: center;
-		font-size: 10px;
+		font-size: 11px;
 		margin-top: 16px;
 	}
 	.desktop-instructions {
@@ -1160,15 +1160,15 @@ html[lang="zh-CN"] .intro-description {
 		content: none;
 	}
 	.intro-kicker {
-		font-size: 8px;
+		font-size: 9px;
 		margin-bottom: 18px;
 	}
 	.intro-description {
-		font-size: 13px;
+		font-size: 15px;
 		line-height: 1.8;
 	}
 	.intro-invitation {
-		font-size: 8px;
+		font-size: 9px;
 		margin-top: 13px;
 		gap: 8px;
 	}
@@ -1186,7 +1186,7 @@ html[lang="zh-CN"] .intro-description {
 		line-height: 1.2;
 	}
 	html[lang="zh-CN"] .intro-description {
-		font-size: 12px;
+		font-size: 14px;
 		line-height: 1.8;
 	}
 }

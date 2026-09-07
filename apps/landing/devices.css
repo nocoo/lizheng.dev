@@ -19,7 +19,7 @@
 	display: flex;
 	justify-content: space-between;
 	gap: 15px;
-	font: 7px var(--mono);
+	font: 9px var(--mono);
 	letter-spacing: 0.1em;
 	color: var(--muted);
 	pointer-events: none;
@@ -65,7 +65,7 @@
 .gallery-stage .orbit-label {
 	right: 6px;
 	top: 100px;
-	font-size: 6px;
+	font-size: 9px;
 }
 .stage-ground {
 	position: absolute;
@@ -257,7 +257,7 @@
 	margin: 0 0 6px;
 }
 .journey-caption p {
-	font-size: 10px;
+	font-size: 12px;
 	color: var(--muted);
 	margin: 0;
 	line-height: 1.5;
@@ -320,7 +320,7 @@
 	transform: translateY(-2px) rotate(-5deg);
 }
 .chapter-object > span {
-	font: 7px var(--mono);
+	font: 9px var(--mono);
 	color: var(--muted);
 }
 .chapter-track {
@@ -359,7 +359,7 @@
 	animation: chapter-clock linear infinite;
 }
 .chapter-label {
-	font: 7px var(--mono);
+	font: 9px var(--mono);
 	letter-spacing: 0.075em;
 }
 .journey-playback {
@@ -370,7 +370,7 @@
 	justify-content: space-between;
 	gap: 8px;
 	margin: 8px 12px 0;
-	font: 8px var(--mono);
+	font: 9px var(--mono);
 	color: var(--muted);
 }
 .journey-playback > span {
@@ -2585,7 +2585,7 @@
 		display: none;
 	}
 	.chapter-label {
-		font-size: 6px;
+		font-size: 9px;
 		letter-spacing: 0;
 	}
 	.chapter-object {
@@ -2602,7 +2602,7 @@
 	}
 	.journey-header {
 		top: 0;
-		font-size: 6px;
+		font-size: 9px;
 	}
 	.gallery-stage .scene-halo {
 		width: 470px;
@@ -2679,7 +2679,7 @@
 	.journey-header {
 		left: 0;
 		right: 0;
-		font-size: 5.6px;
+		font-size: 9px;
 		letter-spacing: 0.04em;
 	}
 	.nokia-position {
@@ -2723,7 +2723,7 @@
 		padding: 7px 5px;
 	}
 	.chapter-label {
-		font-size: 6px;
+		font-size: 9px;
 		letter-spacing: 0;
 	}
 	.chapter-object {
@@ -2734,14 +2734,14 @@
 		height: 21px;
 	}
 	.chapter-object > span {
-		font-size: 5px;
+		font-size: 9px;
 	}
 	.chapter-track {
 		margin-right: -10px;
 	}
 	.journey-playback {
 		margin: 6px 1px 0;
-		font-size: 7px;
+		font-size: 9px;
 	}
 }
 @media (max-width: 359px) {
@@ -2755,10 +2755,10 @@
 		display: none;
 	}
 	.chapter-label {
-		font-size: 5px;
+		font-size: 9px;
 	}
 	.journey-caption p {
-		font-size: 8px;
+		font-size: 9px;
 	}
 }
 @media (hover: none), (pointer: coarse) {

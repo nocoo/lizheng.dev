@@ -8,7 +8,7 @@
 
 The frame is at most 1500px wide. The résumé uses Firefly's 272px sidebar (228px at 1100px) and 1060px content column; prose retains its readable 72ch measure. Header, content and footer gutters follow the journal's breakpoints. At 640px and below the header has two rows, keeping all four destinations visible with 24px navigation gaps. Native scrolling accounts for the sticky header; section links and the skip link remain usable without JavaScript.
 
-The footer keeps the brand, copyright/version, four destinations, reading formats and Beijing signature, using one 10px monospace size. Play merges these into one compact band, without the second divider, closing caption or back-to-top action; Résumé retains its two-band footer and back-to-top link. Firefly retains its fuller journal directories and closing invitation. Public biography, résumé sections, metadata and content exports are unchanged.
+The footer keeps the brand, copyright/version, four destinations, reading formats and Beijing signature, using one 11px monospace size. Page type is never smaller than 9px; 9px is reserved for micro labels. Play merges these into one compact band, without the second divider, closing caption or back-to-top action; Résumé retains its two-band footer and back-to-top link. Firefly retains its fuller journal directories and closing invitation. Public biography, résumé sections, metadata and content exports are unchanged.
 
 Play uses a 2:3 desktop grid for the introduction and device area, with matching top and bottom padding at every breakpoint. Narrow screens keep the stacked layout. The public CJK font subset includes the shared chrome and current theme guidance, avoiding system-font substitutions in these strings.
 
