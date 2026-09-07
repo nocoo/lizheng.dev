@@ -190,7 +190,8 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 						aria-controls="device-display"
 						aria-selected={index === snapshot.index}
 						aria-label={`0${index + 1} · ${chapter.chapter} · ${chapter.name}`}
-						tabIndex={index === snapshot.index ? 0 : -1}
+						// The DOM adapter updates roving focus before the scene commit.
+						tabIndex={index === 0 ? 0 : -1}
 						disabled={!ready}
 						onClick={() =>
 							gallery.select(index, index < snapshot.index ? -1 : 1)

@@ -20,6 +20,8 @@ The three-surface metadata and canonical-host changes passed [CI 34067254614](ht
 
 The deployment regression suite covers scoped API access, the exact validated artifact, existing assignments, conflicts, missing configuration/credentials, API failures with redacted errors, and failed Worker deployment. The blog apex remains on Railway.
 
+The new `www.lizheng.blog` Custom Domain was attached to the already validated live Worker with the logged-in account, and all three surfaces passed production metadata, icon and redirect checks. The deployment-script follow-up exposed a repeated 200 ms interaction-budget failure in Chromium; [13](13-devices-journey.md#tab-order-performance-follow-up-2026-09-07) records the resulting tab-order/layout fix and retained failure evidence. The automatic release continues to require a green main CI artifact.
+
 ## Connected surfaces follow-up — v3.1.1 / v3.1.2 / v3.1.3
 
 The authorized patch release connects Journal, Play and Résumé through a common header, automatic/light/dark themes, aligned widths and six keepsake families. Play uses a single footer band, a 2:3 introduction/device grid and equal vertical padding. Device arrivals decelerate smoothly, and an unfinished pointer tilt pauses over controls to keep hit areas steady. [14](14-connected-surfaces.md) records the final local evidence and the shared Firefly implementation.

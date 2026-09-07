@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, onTestFinished, vi } from "vitest";
 import {
 	createDeviceGallery,
 	DEVICE_INTERVAL,
@@ -32,6 +32,54 @@ afterEach(() => {
 });
 const root = () =>
 	document.querySelector<HTMLElement>("[data-gallery]") as HTMLElement;
+
+it("keeps one chapter tab stop through selection, autoplay and teardown", () => {
+	const gallery = createDeviceGallery();
+	const tabs = [
+		...root().querySelectorAll<HTMLButtonElement>("[data-chapter]"),
+	];
+	const stops = () => tabs.map((tab) => tab.tabIndex);
+	const cleanup = setupDeviceGallery(root(), gallery);
+	onTestFinished(cleanup);
+	expect(stops()).toEqual([0, -1, -1, -1, -1, -1]);
+	gallery.select(4);
+	expect(stops()).toEqual([-1, -1, -1, -1, 0, -1]);
+	vi.advanceTimersByTime(DEVICE_INTERVAL);
+	expect(stops()).toEqual([-1, -1, -1, -1, -1, 0]);
+	gallery.advance();
+	expect(stops()).toEqual([0, -1, -1, -1, -1, -1]);
+	gallery.setReducedMotion(true);
+	cleanup();
+	gallery.select(2);
+	expect(stops()).toEqual([0, -1, -1, -1, -1, -1]);
+	expect(vi.getTimerCount()).toBe(0);
+});
+
+it("restores the current tab stop on setup and leaves it untouched by pause updates", () => {
+	const gallery = createDeviceGallery();
+	gallery.setReducedMotion(true);
+	gallery.select(3);
+	const cleanup = setupDeviceGallery(root(), gallery);
+	onTestFinished(cleanup);
+	expect(
+		[...root().querySelectorAll<HTMLButtonElement>("[data-chapter]")].map(
+			(tab) => tab.tabIndex,
+		),
+	).toEqual([-1, -1, -1, 0, -1, -1]);
+	const observer = new MutationObserver(() => {});
+	observer.observe(root(), {
+		attributes: true,
+		subtree: true,
+		attributeFilter: ["tabindex"],
+	});
+	gallery.pause("pointer", true);
+	gallery.pause("pointer", false);
+	gallery.setPlaying(false);
+	expect(observer.takeRecords()).toEqual([]);
+	observer.disconnect();
+	cleanup();
+	expect(vi.getTimerCount()).toBe(0);
+});
 
 it("coordinates hover, internal focus and viewport pauses without losing time", () => {
 	const gallery = createDeviceGallery();

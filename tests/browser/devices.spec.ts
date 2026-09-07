@@ -497,6 +497,10 @@ test("keyboard arrows separate device chapters from screen menus and carry focus
 	for (const model of [...models.slice(1), "gameboy"]) {
 		await page.keyboard.press("ArrowRight");
 		await expect(current).toHaveAttribute("data-device-active", model);
+		const tabStop = page.locator('[data-chapter][tabindex="0"]');
+		await expect(tabStop).toHaveCount(1);
+		await expect(tabStop).toHaveAttribute("aria-selected", "true");
+		await expect(page.locator('[data-chapter][tabindex="-1"]')).toHaveCount(5);
 		await expect(current.locator('[data-screen-link="1"]')).toHaveClass(
 			"is-selected",
 		);

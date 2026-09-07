@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-07",
+  "trigger": {
+    "ciRun": "https://github.com/nocoo/lizheng.dev/actions/runs/34068056290",
+    "attempt1FailingInteractionMediansMs": [296, 240, 216],
+    "attempt2FailingInteractionMediansMs": [232],
+    "budgetMs": 200
+  },
+  "diagnostic": {
+    "tool": "Chrome DevTools MCP",
+    "viewport": "1440x900",
+    "cpuSlowdown": 4,
+    "network": "unthrottled",
+    "motion": "normal",
+    "actions": "six chapter switches with prepared scene DOM",
+    "before": {
+      "forcedLayoutCount": 6,
+      "forcedLayoutMs": 97.414,
+      "maxForcedLayoutMs": 32.891,
+      "eventDispatchMs": 164.139
+    },
+    "after": {
+      "forcedLayoutCount": 0,
+      "forcedLayoutMs": 0,
+      "maxForcedLayoutMs": 0,
+      "eventDispatchMs": 46.933
+    }
+  },
+  "cause": "Updating chapter tabindex after the scene DOM changed forced layout inside React's commit.",
+  "change": "Synchronize the roving tab stop from the gallery store before React commits the incoming scene; retain initial SSR tab stops.",
+  "coldLoadGate": {
+    "command": "bun run test:performance",
+    "result": "6 passed",
+    "model": "Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion, three samples per scenario",
+    "medians": [
+      { "surface": "resume", "locale": "en", "width": 390, "lcpMs": 492, "interactionMs": 40 },
+      { "surface": "resume", "locale": "en", "width": 1440, "lcpMs": 492, "interactionMs": 32 },
+      { "surface": "landing", "locale": "en", "width": 390, "lcpMs": 1016, "interactionMs": 64 },
+      { "surface": "landing", "locale": "en", "width": 1440, "lcpMs": 1036, "interactionMs": 72 },
+      { "surface": "landing", "locale": "zh", "width": 390, "lcpMs": 1020, "interactionMs": 72 },
+      { "surface": "landing", "locale": "zh", "width": 1440, "lcpMs": 1036, "interactionMs": 64 }
+    ]
+  },
+  "browserGate": {
+    "command": "bun run test:browser",
+    "result": "249 passed",
+    "browsers": ["chromium", "firefox", "webkit"],
+    "visualBaselinesChanged": false
+  },
+  "validationScope": "Local lab results. Remote CI repeats all six existing cold-load performance scenarios and the complete browser matrix before deployment."
+}

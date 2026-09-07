@@ -130,3 +130,13 @@ The maximum observed interaction was 80 ms and the largest observed long task wa
 | Résumé | 763 B | 3,881 B | 132,240 B | 27,250 B | 168,695 / 169,163 B |
 
 The release uses the existing mandatory CI → validated Worker artifact → production deployment flow. The [v3.1.0 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.0) records the remote CI, deployment and production verification when published; local results alone do not establish those outcomes.
+
+## Tab-order performance follow-up, 2026-09-07
+
+The P1/P2 canonical-host and browser-metadata follow-up exposed limited interaction headroom in [CI 34068056290](https://github.com/nocoo/lizheng.dev/actions/runs/34068056290). All functional browser checks passed, but the first run exceeded the 200 ms interaction budget in three scenarios; one desktop scenario still measured 232 ms after rerunning the failed job. Both attempts are retained as evidence.
+
+Chrome DevTools traced synchronous layout to `setAttribute("tabindex", "0")` during React's commit, after incoming/outgoing scene DOM had already changed. Roving tab stops now synchronize from the gallery store before that commit. The component retains the initial server-rendered tab order; the DOM adapter handles selection, autoplay and keyboard changes, and unsubscribes on teardown. Scene caching, markup order and visual effects continue through the existing renderer.
+
+The [local diagnostic](evidence/2026-09-07-tab-order-trace.json) recorded six forced layouts totaling 97.4 ms before the change and none afterward. Event-dispatch work across those six switches changed from 164.1 ms to 46.9 ms. This 4× CPU interaction trace is separate from the full cold-load gate. Two tab-order unit regressions first failed, then passed; browser keyboard coverage also verifies that exactly one selected chapter remains in the tab order after each switch. Release validation uses the existing performance budgets and visual baselines.
+
+All six local cold-load scenarios passed with the existing throttled network, 4× CPU and three samples per scenario. Me's LCP medians were 1,016–1,036 ms and interaction medians were 64–72 ms; résumé interaction medians were 32–40 ms. All 249 browser regressions passed across Chromium, Firefox and WebKit with unchanged visual baselines. These local results do not establish the remote CI outcome, which remains mandatory before automatic deployment.

@@ -6,6 +6,21 @@ export function setupDeviceGallery(
 	onLinkHover?: (index: number) => void,
 ) {
 	const scene = root.querySelector<HTMLElement>(".console-scene");
+	const tabs = [...root.querySelectorAll<HTMLElement>("[data-chapter]")];
+	let tabStop = -1;
+	const updateTabStops = () => {
+		const { index } = gallery.getSnapshot();
+		if (index === tabStop) return;
+		tabStop = index;
+		for (const tab of tabs) {
+			const next = Number(tab.dataset.chapter) === index ? 0 : -1;
+			if (tab.tabIndex !== next) tab.tabIndex = next;
+		}
+	};
+	// Setting tabindex after the scene DOM changes forces synchronous layout in
+	// Chromium. Update roving focus before React commits the incoming scene.
+	updateTabStops();
+	const unsubscribeTabStops = gallery.subscribe(updateTabStops);
 	const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 	const updateMotion = () => gallery.setReducedMotion(motion.matches);
 	const visibility = () => gallery.pause("visibility", document.hidden);
@@ -134,6 +149,7 @@ export function setupDeviceGallery(
 	motion.addEventListener("change", updateMotion);
 	document.addEventListener("visibilitychange", visibility);
 	return () => {
+		unsubscribeTabStops();
 		cancelAnimationFrame(focusFrame);
 		observer?.disconnect();
 		scene?.removeEventListener("pointerenter", enter);
