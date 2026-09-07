@@ -292,6 +292,10 @@ button {
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
 }
+html[lang="zh-CN"] .site-header .surface-links a {
+	letter-spacing: 0.04em;
+	text-transform: none;
+}
 .surface-links a[aria-current] {
 	color: var(--site-ink);
 }

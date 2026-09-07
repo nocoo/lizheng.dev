@@ -22,7 +22,10 @@ for (const surface of ["resume", "landing"]) {
 			await page.goto(
 				`http://${surface}.lizheng-test.localhost:27046/${locale}/`,
 			);
-			const destinations = ["Play", "Journal", "Résumé", "Portfolio"];
+			const destinations =
+				locale === "zh"
+					? ["主页", "博客", "简历", "作品集"]
+					: ["Play", "Journal", "Résumé", "Portfolio"];
 			const links = page.locator(".site-header .surface-links a");
 			const footerLinks = page.locator(".site-footer .surface-links a");
 			await expect(links).toHaveText(destinations);

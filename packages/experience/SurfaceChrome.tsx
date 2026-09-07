@@ -11,25 +11,39 @@ function SurfaceLinks({
 	footer?: boolean;
 }) {
 	const { locale, surface, origins } = content;
+	const names = {
+		en: {
+			landing: "Play",
+			blog: "Journal",
+			resume: "Résumé",
+			portfolio: "Portfolio",
+		},
+		zh: {
+			landing: "主页",
+			blog: "博客",
+			resume: "简历",
+			portfolio: "作品集",
+		},
+	}[locale];
 	const links = [
 		{
 			id: "landing",
-			name: "Play",
+			name: names.landing,
 			href: `${origins?.landing ?? "https://lizheng.me"}/${locale}/`,
 		},
 		{
 			id: "blog",
-			name: "Journal",
+			name: names.blog,
 			href: `${origins?.blog ?? "https://lizheng.blog"}/`,
 		},
 		{
 			id: "resume",
-			name: "Résumé",
+			name: names.resume,
 			href: `${origins?.resume ?? "https://lizheng.dev"}/${locale}/`,
 		},
 		{
 			id: "portfolio",
-			name: "Portfolio",
+			name: names.portfolio,
 			href: "https://hexly.ai",
 		},
 	];
@@ -52,7 +66,7 @@ function SurfaceLinks({
 					href={link.id === surface ? `/${locale}/` : link.href}
 					data-surface-link={link.id}
 					aria-current={link.id === surface ? "true" : undefined}
-					lang="en"
+					lang={locale === "zh" ? "zh-CN" : "en"}
 				>
 					{link.name}
 				</a>
