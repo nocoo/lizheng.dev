@@ -27,6 +27,11 @@ function SurfaceLinks({
 			name: "Résumé",
 			href: `${origins?.resume ?? "https://lizheng.dev"}/${locale}/`,
 		},
+		{
+			id: "portfolio",
+			name: "Portfolio",
+			href: "https://hexly.ai",
+		},
 	];
 	return (
 		<nav
@@ -53,11 +58,6 @@ function SurfaceLinks({
 					{link.id !== surface && <span aria-hidden="true">↗</span>}
 				</a>
 			))}
-			{!footer && (
-				<a href="https://hexly.ai" lang="en">
-					Portfolio<span aria-hidden="true">↗</span>
-				</a>
-			)}
 		</nav>
 	);
 }
@@ -87,39 +87,45 @@ export function SurfaceFooter({ content }: { content: PageContent }) {
 	const compact = content.surface === "landing";
 	return (
 		<footer className={`site-footer${compact ? " site-footer-compact" : ""}`}>
-			<div className="site-footer-body">
-				<div className="site-footer-identity">
-					<Brand locale={content.locale} />
-					<p lang="en">
-						{content.meta.copyright.replace("{year}", content.year)}
-						{" · "}
-						<Version />
-					</p>
+			<div className="site-footer-inner">
+				<div className="site-footer-body">
+					<div className="site-footer-identity">
+						<Brand locale={content.locale} />
+						<p lang="en">
+							{content.meta.copyright.replace("{year}", content.year)}
+							{" · "}
+							<Version />
+						</p>
+					</div>
+					{compact && <LocationSignature />}
+					<SurfaceLinks content={content} footer />
+					<nav
+						className="public-formats"
+						aria-label={
+							content.locale === "zh" ? "阅读格式" : "Reading formats"
+						}
+					>
+						<a href={`/${content.locale}/content.md`} lang="en">
+							Markdown
+						</a>
+						<a href="/llms.txt" lang="en">
+							llms.txt
+						</a>
+					</nav>
 				</div>
-				{compact && <LocationSignature />}
-				<SurfaceLinks content={content} footer />
-				<nav
-					className="public-formats"
-					aria-label={content.locale === "zh" ? "阅读格式" : "Reading formats"}
-				>
-					<a href={`/${content.locale}/content.md`} lang="en">
-						Markdown
-					</a>
-					<a href="/llms.txt" lang="en">
-						llms.txt
-					</a>
-				</nav>
 			</div>
 			{!compact && (
 				<div className="site-footer-bottom">
-					<LocationSignature />
-					<span className="footer-curiosity" lang="en">
-						WEB · MOBILE · AI
-					</span>
-					<a href="#main">
-						{content.locale === "zh" ? "返回顶部" : "Back to top"}
-						<span aria-hidden="true">↑</span>
-					</a>
+					<div className="site-footer-inner">
+						<LocationSignature />
+						<span className="footer-curiosity" lang="en">
+							WEB · MOBILE · AI
+						</span>
+						<a href="#main">
+							{content.locale === "zh" ? "返回顶部" : "Back to top"}
+							<span aria-hidden="true">↑</span>
+						</a>
+					</div>
 				</div>
 			)}
 		</footer>

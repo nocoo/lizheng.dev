@@ -22,13 +22,19 @@ for (const surface of ["resume", "landing"]) {
 			await page.goto(
 				`http://${surface}.lizheng-test.localhost:27046/${locale}/`,
 			);
-			const links = page.locator(".site-header .surface-links a");
-			await expect(links).toHaveText(
+			const destinations =
 				surface === "resume"
 					? ["Journal↗", "Play↗", "Résumé", "Portfolio↗"]
-					: ["Journal↗", "Play", "Résumé↗", "Portfolio↗"],
-			);
+					: ["Journal↗", "Play", "Résumé↗", "Portfolio↗"];
+			const links = page.locator(".site-header .surface-links a");
+			const footerLinks = page.locator(".site-footer .surface-links a");
+			await expect(links).toHaveText(destinations);
+			await expect(footerLinks).toHaveText(destinations);
 			await expect(links.last()).toHaveAttribute("href", "https://hexly.ai");
+			await expect(footerLinks.last()).toHaveAttribute(
+				"href",
+				"https://hexly.ai",
+			);
 			await expect(
 				page.locator(`.site-header [data-surface-link="${surface}"]`),
 			).toHaveAttribute("aria-current", "true");
@@ -48,6 +54,17 @@ for (const surface of ["resume", "landing"]) {
 				expect(
 					await page
 						.locator(".site-header-inner")
+						.evaluate((el) => el.getBoundingClientRect().width),
+				).toBe(Math.min(width, 1500));
+				expect(
+					await page
+						.locator(".site-footer")
+						.evaluate((el) => el.getBoundingClientRect().width),
+				).toBe(width);
+				expect(
+					await page
+						.locator(".site-footer-inner")
+						.first()
 						.evaluate((el) => el.getBoundingClientRect().width),
 				).toBe(Math.min(width, 1500));
 				expect(
