@@ -118,21 +118,21 @@ for (const surface of ["resume", "landing"])
 					await page.locator("[data-theme-toggle]").click();
 					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme-preference",
-						"light",
+						theme === "light" ? "dark" : "light",
 					);
 					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme",
-						"light",
+						theme === "light" ? "dark" : "light",
 					);
 					await page.locator("[data-theme-toggle]").click();
 					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme-preference",
-						"dark",
+						theme,
 					);
 					await page.reload();
 					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme",
-						"dark",
+						theme,
 					);
 					await page
 						.locator(`.languages a[href="/${locale === "en" ? "zh" : "en"}/"]`)

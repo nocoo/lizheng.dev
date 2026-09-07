@@ -120,7 +120,7 @@ try {
 	await page.goto(`${origins.landing}/en/`);
 	await page.locator("[data-theme-toggle]").click();
 	const theme = await page.locator("html").getAttribute("data-theme");
-	await page.getByRole("link", { name: "中文", exact: true }).click();
+	await page.getByRole("link", { name: "Switch to Chinese" }).click();
 	assert.equal(await page.locator("html").getAttribute("data-theme"), theme);
 	for (const viewport of [
 		{ width: 320, height: 568 },

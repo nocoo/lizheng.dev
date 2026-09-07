@@ -13,14 +13,14 @@ function SurfaceLinks({
 	const { locale, surface, origins } = content;
 	const links = [
 		{
-			id: "blog",
-			name: "Journal",
-			href: `${origins?.blog ?? "https://lizheng.blog"}/`,
-		},
-		{
 			id: "landing",
 			name: "Play",
 			href: `${origins?.landing ?? "https://lizheng.me"}/${locale}/`,
+		},
+		{
+			id: "blog",
+			name: "Journal",
+			href: `${origins?.blog ?? "https://lizheng.blog"}/`,
 		},
 		{
 			id: "resume",
@@ -55,7 +55,6 @@ function SurfaceLinks({
 					lang="en"
 				>
 					{link.name}
-					{link.id !== surface && <span aria-hidden="true">↗</span>}
 				</a>
 			))}
 		</nav>

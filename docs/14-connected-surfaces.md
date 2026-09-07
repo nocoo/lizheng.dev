@@ -4,7 +4,7 @@
 
 ## Navigation and layout
 
-`packages/experience/SurfaceChrome.tsx` owns the me/dev header and footer. Both display Journal / Play / Résumé / Portfolio in that order, with the current surface identified by `aria-current`. Portfolio points to `https://hexly.ai` with the same external-link styling; the portfolio index is maintained separately. Cross-links between me and dev retain the current locale. The shared wordmark, monospaced navigation, small terracotta current indicator, round theme control, fine rules and location signature follow Firefly. The header and footer rules span the full viewport; their inner bands use the same 1500px measure and gutters.
+`packages/experience/SurfaceChrome.tsx` owns the me/dev header and footer. Both display Play / Journal / Résumé / Portfolio in that order, with the current surface identified by `aria-current`. Portfolio points to `https://hexly.ai`. Cross-links between me and dev retain the current locale. Header destinations are unmarked uppercase labels; the current item uses a full-width terracotta rule. Language and theme are icon controls: a bilingual languages mark, and a borderless sun/moon pair. The header and footer rules span the full viewport; their inner bands use the same 1500px measure and gutters.
 
 The frame is at most 1500px wide. The résumé uses Firefly's 272px sidebar (228px at 1100px) and 1060px content column; prose retains its readable 72ch measure. Header, content and footer gutters follow the journal's breakpoints. At 640px and below the header has two rows, keeping all four destinations visible with 24px navigation gaps. Native scrolling accounts for the sticky header; section links and the skip link remain usable without JavaScript.
 
@@ -16,9 +16,9 @@ The existing HTTPS development origins link to each other, including Firefly. Pr
 
 ## Theme preference
 
-The preference is **system → light → dark → system**, starting with system when nothing valid has been saved. The resolved light/dark palette is separate from that preference. Returning to system resumes live OS updates; explicit choices ignore subsequent OS changes. Existing `zl-theme=light` and `zl-theme=dark` values continue to work. Preferences remain local to each origin.
+The default preference is automatic. The control shows the resolved sun or moon and switches between explicit light and dark; it does not offer a system button. Returning visitors with `zl-theme=light` or `zl-theme=dark` keep that choice. Unsaved sessions follow the OS until the first click. Preferences remain local to each origin.
 
-The monitor, sun and moon represent the current preference. The accessible name and tooltip announce both the current state and next action in the page's locale. A binary `aria-pressed` is not used for this three-state action. The inline bootstrap applies the preference before paint, with the exact CSP hash still generated from the same script. Denied storage preserves an in-memory choice. Listeners are removed on teardown.
+The sun and moon represent the resolved appearance. The accessible name and tooltip announce both the current state and next action in the page's locale. A binary `aria-pressed` is not used. The inline bootstrap applies the preference before paint, with the exact CSP hash still generated from the same script. Denied storage preserves an in-memory choice. Listeners are removed on teardown.
 
 ## Six keepsake families
 

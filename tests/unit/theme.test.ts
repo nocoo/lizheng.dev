@@ -48,7 +48,7 @@ it.each([null, "invalid", "system"])(
 		const cleanup = setupPreferences();
 		expect(root.dataset.themePreference).toBe("system");
 		expect(root.dataset.theme).toBe("light");
-		expect(button().getAttribute("aria-label")).toMatch(/System.*light/);
+		expect(button().getAttribute("aria-label")).toMatch(/Light.*dark/);
 		expect(button().hasAttribute("aria-pressed")).toBe(false);
 		matches = true;
 		change?.();
@@ -79,23 +79,24 @@ it.each(["light", "dark"])(
 	},
 );
 
-it("cycles system → light → dark → system and resumes following the OS", () => {
+it("switches automatic appearance to explicit light and dark without a system control", () => {
 	matches = true;
 	const cleanup = setupPreferences();
-	for (const preference of ["light", "dark", "system"]) {
-		button().click();
-		expect(root.dataset.themePreference).toBe(preference);
-		expect(localStorage.getItem("zl-theme")).toBe(preference);
-		expect(root.dataset.theme).toBe(
-			preference === "system" ? "dark" : preference,
-		);
-	}
+	expect(root.dataset.themePreference).toBe("system");
+	expect(root.dataset.theme).toBe("dark");
+	button().click();
+	expect(root.dataset.themePreference).toBe("light");
+	expect(root.dataset.theme).toBe("light");
+	expect(localStorage.getItem("zl-theme")).toBe("light");
+	button().click();
+	expect(root.dataset.themePreference).toBe("dark");
+	expect(root.dataset.theme).toBe("dark");
 	matches = false;
 	change?.();
-	expect(root.dataset.theme).toBe("light");
-	cleanup();
+	expect(root.dataset.theme).toBe("dark");
 	button().click();
-	expect(root.dataset.themePreference).toBe("system");
+	expect(root.dataset.themePreference).toBe("light");
+	cleanup();
 	expect(remove).toHaveBeenCalledWith("change", change);
 });
 
@@ -106,15 +107,15 @@ it("preserves the resolved palette when hydration or a preference change keeps t
 	const cleanup = setupPreferences();
 	expect(observer.takeRecords()).toEqual([]);
 	button().click();
-	expect(root.dataset.themePreference).toBe("light");
-	expect(button().getAttribute("aria-label")).toMatch(/Light.*dark/);
-	expect(localStorage.getItem("zl-theme")).toBe("light");
-	expect(observer.takeRecords().map((record) => record.attributeName)).toEqual([
-		"data-theme-preference",
-	]);
+	expect(root.dataset.themePreference).toBe("dark");
+	expect(button().getAttribute("aria-label")).toMatch(/Dark.*light/);
+	expect(localStorage.getItem("zl-theme")).toBe("dark");
+	expect(observer.takeRecords().map((record) => record.attributeName)).toEqual(
+		expect.arrayContaining(["data-theme", "data-theme-preference"]),
+	);
 	button().click();
-	expect(root.dataset.theme).toBe("dark");
-	expect(root.style.colorScheme).toBe("dark");
+	expect(root.dataset.theme).toBe("light");
+	expect(root.style.colorScheme).toBe("light");
 	observer.disconnect();
 	cleanup();
 });
@@ -126,13 +127,13 @@ it("announces the current preference and next action in both locales", () => {
 	);
 	const cleanup = setupPreferences();
 	const zh = document.querySelectorAll("button")[1] as HTMLButtonElement;
-	expect(zh.getAttribute("aria-label")).toMatch(/自动.*浅色/);
+	expect(zh.getAttribute("aria-label")).toMatch(/浅色.*深色/);
+	zh.click();
+	expect(button().getAttribute("aria-label")).toMatch(/Dark.*light/);
+	expect(zh.getAttribute("aria-label")).toMatch(/深色.*浅色/);
 	zh.click();
 	expect(button().getAttribute("aria-label")).toMatch(/Light.*dark/);
 	expect(zh.getAttribute("aria-label")).toMatch(/浅色.*深色/);
-	zh.click();
-	expect(button().getAttribute("aria-label")).toMatch(/Dark.*system/);
-	expect(zh.getAttribute("aria-label")).toMatch(/深色.*自动/);
 	cleanup();
 });
 
@@ -150,11 +151,10 @@ it("survives denied storage and keeps an in-memory manual choice", () => {
 	change?.();
 	expect(root.dataset.theme).toBe("light");
 	button().click();
-	button().click();
-	expect(root.dataset.themePreference).toBe("system");
+	expect(root.dataset.themePreference).toBe("dark");
 	matches = false;
 	change?.();
-	expect(root.dataset.theme).toBe("light");
+	expect(root.dataset.theme).toBe("dark");
 	cleanup();
 });
 

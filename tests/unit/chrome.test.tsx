@@ -20,15 +20,30 @@ for (const surface of ["landing", "resume"] as const)
 			document.documentElement.innerHTML = await renderPage(surface, locale);
 			const header = links(".site-header");
 			const footer = links(".site-footer");
-			expect(header).toHaveLength(4);
+			expect(header.map((link) => link.label)).toEqual([
+				"Play",
+				"Journal",
+				"Résumé",
+				"Portfolio",
+			]);
 			expect(footer).toEqual(header);
 			expect(footer.at(-1)).toMatchObject({
-				label: "Portfolio↗",
+				label: "Portfolio",
 				href: "https://hexly.ai",
 			});
 			expect(footer.find((link) => link.current === "true")?.label).toBe(
 				surface === "landing" ? "Play" : "Résumé",
 			);
+			const other = locale === "en" ? "zh" : "en";
+			const language = document.querySelector(".languages a");
+			expect(language?.getAttribute("href")).toBe(`/${other}/`);
+			expect(language?.querySelector("svg")).not.toBeNull();
+			expect(language?.textContent?.replace(/\s+/g, "")).toBe("");
+			expect(document.querySelector(".theme-system")).toBeNull();
+			expect(document.querySelector(".theme-toggle .theme-sun")).not.toBeNull();
+			expect(
+				document.querySelector(".theme-toggle .theme-moon"),
+			).not.toBeNull();
 			expect(
 				document
 					.querySelector(".site-footer")

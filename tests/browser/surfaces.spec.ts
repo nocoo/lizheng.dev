@@ -22,10 +22,7 @@ for (const surface of ["resume", "landing"]) {
 			await page.goto(
 				`http://${surface}.lizheng-test.localhost:27046/${locale}/`,
 			);
-			const destinations =
-				surface === "resume"
-					? ["Journal↗", "Play↗", "Résumé", "Portfolio↗"]
-					: ["Journal↗", "Play", "Résumé↗", "Portfolio↗"];
+			const destinations = ["Play", "Journal", "Résumé", "Portfolio"];
 			const links = page.locator(".site-header .surface-links a");
 			const footerLinks = page.locator(".site-footer .surface-links a");
 			await expect(links).toHaveText(destinations);
@@ -81,7 +78,7 @@ for (const surface of ["resume", "landing"]) {
 		}
 	});
 
-	test(`${surface}: three-state theme returns to live system tracking`, async ({
+	test(`${surface}: theme toggle switches light and dark without a system control`, async ({
 		page,
 	}) => {
 		await page.emulateMedia({ colorScheme: "dark" });
@@ -93,7 +90,8 @@ for (const surface of ["resume", "landing"]) {
 		await expect(
 			page.locator('meta[name="theme-color"]').first(),
 		).toHaveAttribute("content", "#1e2824");
-		await expect(page.locator(".theme-system")).toBeVisible();
+		await expect(page.locator(".theme-system")).toHaveCount(0);
+		await expect(page.locator(".theme-moon")).toBeVisible();
 		await toggle.focus();
 		await page.keyboard.press("Enter");
 		await expect(html).toHaveAttribute("data-theme-preference", "light");
@@ -112,13 +110,13 @@ for (const surface of ["resume", "landing"]) {
 		await page.emulateMedia({ colorScheme: "light" });
 		await expect(html).toHaveAttribute("data-theme", "dark");
 		await toggle.click();
-		await expect(html).toHaveAttribute("data-theme-preference", "system");
+		await expect(html).toHaveAttribute("data-theme-preference", "light");
 		await expect(html).toHaveAttribute("data-theme", "light");
 		await page.emulateMedia({ colorScheme: "dark" });
-		await expect(html).toHaveAttribute("data-theme", "dark");
+		await expect(html).toHaveAttribute("data-theme", "light");
 		await page.reload();
-		await expect(html).toHaveAttribute("data-theme-preference", "system");
-		await expect(html).toHaveAttribute("data-theme", "dark");
+		await expect(html).toHaveAttribute("data-theme-preference", "light");
+		await expect(html).toHaveAttribute("data-theme", "light");
 	});
 }
 

@@ -2,26 +2,31 @@ import type { Locale } from "../content/model";
 import { themeColors } from "./theme-colors";
 
 type ThemePreference = "system" | "light" | "dark";
-const nextTheme: Record<ThemePreference, ThemePreference> = {
-	system: "light",
-	light: "dark",
-	dark: "system",
-};
+type ResolvedTheme = "light" | "dark";
 const labels = {
 	en: {
-		system: "Theme: System (automatic). Switch to light theme.",
 		light: "Theme: Light. Switch to dark theme.",
-		dark: "Theme: Dark. Switch to system (automatic).",
+		dark: "Theme: Dark. Switch to light theme.",
 	},
 	zh: {
-		system: "主题：自动（跟随系统）；切换为浅色",
 		light: "主题：浅色；切换为深色",
-		dark: "主题：深色；切换为自动（跟随系统）",
+		dark: "主题：深色；切换为浅色",
 	},
 };
 
-export function themeLabel(locale: Locale, preference: ThemePreference) {
-	return labels[locale][preference];
+export function themeLabel(locale: Locale, theme: ResolvedTheme) {
+	return labels[locale][theme];
+}
+
+function resolvedTheme(
+	preference: ThemePreference,
+	prefersDark: boolean,
+): ResolvedTheme {
+	return preference === "system"
+		? prefersDark
+			? "dark"
+			: "light"
+		: preference;
 }
 
 function savedTheme(): ThemePreference {
@@ -40,12 +45,7 @@ export function setupPreferences() {
 	);
 	let preference = savedTheme();
 	const apply = () => {
-		const theme =
-			preference === "system"
-				? system.matches
-					? "dark"
-					: "light"
-				: preference;
+		const theme = resolvedTheme(preference, system.matches);
 		const root = document.documentElement;
 		// A preference can change without changing the palette (system → light).
 		// Preserve the existing root styles instead of invalidating every scene.
@@ -62,14 +62,15 @@ export function setupPreferences() {
 		for (const button of buttons) {
 			const label = themeLabel(
 				button.dataset.themeLocale === "zh" ? "zh" : "en",
-				preference,
+				theme,
 			);
 			button.setAttribute("aria-label", label);
 			button.title = label;
 		}
 	};
 	const toggle = () => {
-		preference = nextTheme[preference];
+		preference =
+			resolvedTheme(preference, system.matches) === "light" ? "dark" : "light";
 		apply();
 		try {
 			localStorage.setItem("zl-theme", preference);
