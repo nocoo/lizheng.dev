@@ -42,6 +42,18 @@ for (const surface of ["resume", "landing"] as const)
 			expect(llms).toContain(`${page.meta.canonical}content.md`);
 		}
 		expect(llms).toContain("/sitemap-index.xml");
+		expect(llms).toContain("https://hexly.ai/");
+		expect(llms).toContain("[Portfolio]");
+		expect(llms).toContain("[Journal]");
+		const related = llms.split("## Related sites")[1]?.split("## ")[0] ?? "";
+		expect(related).toContain("https://lizheng.blog/");
+		if (surface === "resume") {
+			expect(related).not.toContain("https://lizheng.dev/");
+			expect(related).toContain("https://lizheng.me/");
+		} else {
+			expect(related).not.toContain("https://lizheng.me/");
+			expect(related).toContain("https://lizheng.dev/");
+		}
 		expect(llms).not.toContain("docs/");
 		expect(() => llmsDocument(zh, en)).toThrow(/languages/);
 		expect(() => llmsDocument(en, en)).toThrow(/languages/);

@@ -125,7 +125,7 @@ HTML 增加一个紧凑的原生 `details` 设备目录，含六个名称与说�
 ### 4.2 可发现的机器阅读入口
 
 - 在共享页脚增加本页 `Markdown` 与 `llms.txt` 的真实链接，沿用紧凑布局。HTML head 的 Markdown alternate 改用绝对的同语言 URL。
-- `/llms.txt` 分别写明 Play 和 Résumé 的用途、英文/中文 HTML 与 Markdown、本站 sitemap，以及 Journal / Play / Résumé 的关系。说明公开页面欢迎搜索与 AI 客户端读取；职业事实指向 dev，个人物件指向 me，文章指向 blog。
+- `/llms.txt` 分别写明 Play 和 Résumé 的用途、英文/中文 HTML 与 Markdown、本站 sitemap，以及 Journal / Play / Résumé / Portfolio 的关系。Related 不列入当前访问面，并包含 `https://hexly.ai/`。说明公开页面欢迎搜索与 AI 客户端读取；职业事实指向 dev，个人物件指向 me，文章指向 blog，作品指向 hexly。
 - llms.txt 从经过校验的公共 metadata 生成，避免继续维护另一组姓名与职业描述常量。
 - HTML 与 Markdown 响应提供 HTTP `Link` 发现信息。可借鉴 Firefly 的 `rel="service-doc"` 指向 llms.txt；HTML 同时列出 `rel="alternate"; type="text/markdown"`。
 - `/en/content.md`、`/zh/content.md` 及现有短别名返回正确 Markdown MIME；HTTP `rel="canonical"` 指向同语言 HTML 主页面，明确它们是该页面的文本表示。
