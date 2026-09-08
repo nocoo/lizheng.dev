@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.6] - 2026-09-08
+
+- Complete the shared Play / Journal / Résumé / Portfolio destinations in header and footer, with full-width footer rules and Chinese labels 主页 / 博客 / 简历 / 作品集.
+- Replace the circular theme control and EN/中文 text with icon buttons; default to the system appearance and switch only between light and dark.
+- Raise page type to a 9px floor, keeping 9px only for micro labels.
+- List Portfolio (`https://hexly.ai/`) in `llms.txt` Related and omit the current surface.
+- Canonicalize www host aliases, deploy Custom Domains with scoped credentials, and avoid forced layout when changing device chapters.
+
 ## [3.1.5] - 2026-09-07
 
 - Give the résumé professional bilingual metadata and portrait cards, and the personal page direct copy with Game Boy artwork; publish four localized 1200 × 630 JPEG share images with content-hashed URLs.

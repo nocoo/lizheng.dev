@@ -2,6 +2,12 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Shared chrome and discovery — v3.1.6
+
+On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.5 → v3.1.6. The release includes the shared header and footer destinations (Play / Journal / Résumé / Portfolio, localized), icon language and light/dark controls, a 9px page type floor, `llms.txt` Related that includes hexly and omits the current surface, www canonical aliases, scoped Custom Domain deployment, and the tab-order layout fix.
+
+Package version is the single source for both footers and all live endpoints. Publication follows the existing main CI → validated Worker/assets artifact → production workflow. The [v3.1.6 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.6) records the final source commit, CI and deployment runs once published. Before publication both public surfaces returned v3.1.5 with deployment `5eb1e09f-c2b6-4132-b405-0ada985ea009`; this is the rollback reference.
+
 ## SEO, agents and social previews — v3.1.5
 
 On 2026-09-07 the user reviewed all four share images in Chrome and authorized `/su-release Z+1`: v3.1.4 → v3.1.5. The release includes the approved bilingual copy, separate résumé/personal-page metadata and images, complete public Markdown and llms.txt discovery, semantic text fixes and unknown-path 404 behavior. All twelve legacy blog 301 patterns remain covered. Production keeps indexing and link following enabled; development and isolated tests retain only noindex.
