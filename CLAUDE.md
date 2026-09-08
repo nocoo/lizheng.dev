@@ -25,6 +25,19 @@ Do not copy the previous UI, CSS, components, template engine, browser scripts, 
 - lizheng.me: high quality, tactile retro handheld portfolio; original branding; designed screen, physical controls, typography, imagery, and motion. Support desktop and mobile.
 - Semantic HTML, keyboard access, SEO, agent-readable content, and progressive enhancement must support the visual design. Do not replace the designed experience with a generic accessibility or crawler page.
 
+## Public destinations and SEO
+
+The four public destinations are Play (`lizheng.me`), Journal (`lizheng.blog`), Résumé (`lizheng.dev`) and Portfolio (`https://hexly.ai/`). Chinese labels are 主页 / 博客 / 简历 / 作品集. Header, footer, `llms.txt` Related and Person `sameAs` must stay in that set.
+
+When adding, removing or renaming a destination:
+
+- Update header and footer on both me and dev, including Chinese labels.
+- Update `llms.txt` Related on both surfaces: include Portfolio/`hexly.ai`, omit the current surface, do not only point at self.
+- Update JSON-LD `sameAs` and any crawler discovery copy that lists sister sites.
+- Keep decorative English in Chinese mode (copyright, MADE IN BEIJING, Markdown, llms.txt). Localize functional nav and guidance.
+
+Do not treat HSTS preload, extra Person fields (`hasOccupation` / `alumniOf`) or copying the résumé portrait onto me as required follow-ups. The portrait stays a shared `lizheng.dev` asset.
+
 ## Engineering workflow
 
 - Use Bun for package management and project commands. Use exact dependency versions and a frozen bun.lock. Follow the current framework's supported build runtime; Astro/Vite restrictions from the old instructions are obsolete.
