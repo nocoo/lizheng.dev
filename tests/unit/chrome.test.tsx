@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { expect, it } from "vitest";
 import { renderPage } from "../../packages/publishing/render";
@@ -68,3 +69,14 @@ for (const surface of ["landing", "resume"] as const)
 				expect(document.querySelector(".site-footer-bottom")).toBeNull();
 			}
 		});
+
+it("keeps résumé footer rules inside the content column", () => {
+	const css = readFileSync("packages/experience/base.css", "utf8");
+	const footer = css.match(/^\.site-footer \{\n([^}]+)\}/m)?.[1] ?? "";
+	const bottom = css.match(/^\.site-footer-bottom \{\n([^}]+)\}/m)?.[1] ?? "";
+	expect(footer).not.toMatch(/border-top:\s*1px/);
+	expect(bottom).not.toMatch(/border-top:\s*1px/);
+	expect(css).toMatch(/\.site-footer:not\(\.site-footer-compact\)::before/);
+	expect(css).toMatch(/\.site-footer-bottom::before/);
+	expect(css).toMatch(/\.site-footer-compact \{\n[^}]*border-top:\s*1px/m);
+});

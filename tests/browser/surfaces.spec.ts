@@ -67,6 +67,36 @@ for (const surface of ["resume", "landing"]) {
 						.first()
 						.evaluate((el) => el.getBoundingClientRect().width),
 				).toBe(Math.min(width, 1500));
+				if (surface === "resume") {
+					const rules = await page.evaluate(() => {
+						const footer = document.querySelector(".site-footer");
+						const inner = document.querySelector(
+							".site-footer > .site-footer-inner",
+						);
+						const bottom = document.querySelector(".site-footer-bottom");
+						if (!footer || !inner || !bottom) return null;
+						const padding = Number.parseFloat(
+							getComputedStyle(inner).paddingLeft,
+						);
+						const box = inner.getBoundingClientRect();
+						return {
+							footerBorder: getComputedStyle(footer).borderTopWidth,
+							bottomBorder: getComputedStyle(bottom).borderTopWidth,
+							topWidth: Number.parseFloat(
+								getComputedStyle(footer, "::before").width,
+							),
+							bottomWidth: Number.parseFloat(
+								getComputedStyle(bottom, "::before").width,
+							),
+							contentWidth: box.width - padding * 2,
+						};
+					});
+					expect(rules).not.toBeNull();
+					expect(rules?.footerBorder).toBe("0px");
+					expect(rules?.bottomBorder).toBe("0px");
+					expect(rules?.topWidth).toBe(rules?.contentWidth);
+					expect(rules?.bottomWidth).toBe(rules?.contentWidth);
+				}
 				expect(
 					await page
 						.locator("main")

@@ -322,10 +322,32 @@ html[lang="zh-CN"] .site-header .surface-links a {
 	scroll-margin-top: 24px;
 }
 .site-footer {
-	border-top: 1px solid var(--site-line);
 	color: var(--site-muted);
 	font: 11px / 1.6 var(--site-mono);
 	contain: style;
+}
+.site-footer-compact {
+	border-top: 1px solid var(--site-line);
+}
+.site-footer:not(.site-footer-compact)::before,
+.site-footer-bottom::before {
+	content: "";
+	display: block;
+	height: 1px;
+	width: min(
+		calc(
+			100% -
+			max(var(--site-header-gutter), env(safe-area-inset-left, 0px)) -
+			max(var(--site-header-gutter), env(safe-area-inset-right, 0px))
+		),
+		calc(
+			var(--site-layout-max) -
+			max(var(--site-header-gutter), env(safe-area-inset-left, 0px)) -
+			max(var(--site-header-gutter), env(safe-area-inset-right, 0px))
+		)
+	);
+	margin-inline: auto;
+	background: var(--site-line);
 }
 .site-footer-inner {
 	max-width: var(--site-layout-max);
@@ -376,7 +398,6 @@ html[lang="zh-CN"] .site-header .surface-links a {
 	color: var(--site-orange);
 }
 .site-footer-bottom {
-	border-top: 1px solid var(--site-line);
 	letter-spacing: 0.03em;
 }
 .site-footer-bottom .site-footer-inner {

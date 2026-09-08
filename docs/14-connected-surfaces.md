@@ -1,10 +1,10 @@
 # Journal, Play and Résumé
 
-2026-09-06. A common frame for `lizheng.blog`, `lizheng.me` and `lizheng.dev`, following the public Journal design in the sibling Firefly repository. 2026-09-08: header and footer share the four destinations, and the footer rules span the full viewport.
+2026-09-06. A common frame for `lizheng.blog`, `lizheng.me` and `lizheng.dev`, following the public Journal design in the sibling Firefly repository. 2026-09-08: header and footer share the four destinations. The header rule spans the full viewport; Résumé's two footer rules stay inside the content gutters.
 
 ## Navigation and layout
 
-`packages/experience/SurfaceChrome.tsx` owns the me/dev header and footer. Both display Play / Journal / Résumé / Portfolio in that order, localized as 主页 / 博客 / 简历 / 作品集, with the current surface identified by `aria-current`. Portfolio points to `https://hexly.ai`. Cross-links between me and dev retain the current locale. English header destinations are unmarked uppercase labels; Chinese destinations keep their written form. The current item uses a full-width terracotta rule. Language and theme are icon controls: a bilingual languages mark, and a borderless sun/moon pair. The header and footer rules span the full viewport; their inner bands use the same 1500px measure and gutters.
+`packages/experience/SurfaceChrome.tsx` owns the me/dev header and footer. Both display Play / Journal / Résumé / Portfolio in that order, localized as 主页 / 博客 / 简历 / 作品集, with the current surface identified by `aria-current`. Portfolio points to `https://hexly.ai`. Cross-links between me and dev retain the current locale. English header destinations are unmarked uppercase labels; Chinese destinations keep their written form. The current item uses a full-width terracotta rule. Language and theme are icon controls: a bilingual languages mark, and a borderless sun/moon pair. The header rule spans the full viewport. Play keeps one full-width footer rule; Résumé draws its two footer rules inside the 1500px content gutters. Inner bands use the same 1500px measure and gutters.
 
 The frame is at most 1500px wide. The résumé uses Firefly's 272px sidebar (228px at 1100px) and 1060px content column; prose retains its readable 72ch measure. Header, content and footer gutters follow the journal's breakpoints. At 640px and below the header has two rows, keeping all four destinations visible with 24px navigation gaps. Native scrolling accounts for the sticky header; section links and the skip link remain usable without JavaScript.
 
