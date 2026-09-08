@@ -77,10 +77,12 @@ body::before {
 	gap: 42px;
 	align-items: center;
 	padding: 18px var(--site-gutter);
+	contain: layout style;
 }
 .landing-intro {
 	padding: 0;
 	align-self: center;
+	contain: layout style;
 	animation: intro-arrive 0.8s 0.08s both;
 }
 .intro-kicker {

@@ -261,6 +261,7 @@ button {
 	background: var(--site-background);
 	color: var(--site-ink);
 	border-bottom: 1px solid var(--site-line);
+	contain: style;
 }
 .site-header-inner {
 	display: flex;
@@ -324,6 +325,7 @@ html[lang="zh-CN"] .site-header .surface-links a {
 	border-top: 1px solid var(--site-line);
 	color: var(--site-muted);
 	font: 11px / 1.6 var(--site-mono);
+	contain: layout style;
 }
 .site-footer-inner {
 	max-width: var(--site-layout-max);
