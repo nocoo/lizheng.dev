@@ -113,8 +113,10 @@ for (const surface of ["resume", "landing"])
 					});
 					// Allow paint observers to flush; keep all decorative animation running.
 					await page.waitForTimeout(500);
-					await page.locator("[data-theme-toggle]").click();
-					await page.locator("[data-theme-toggle]").click();
+					if (
+						(await page.locator("html").getAttribute("data-theme")) !== "dark"
+					)
+						await page.locator("[data-theme-toggle]").click();
 					await expect(page.locator("html")).toHaveAttribute(
 						"data-theme",
 						"dark",
