@@ -2,6 +2,12 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Résumé footer rules — v3.1.7
+
+On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.6 → v3.1.7. The résumé two-band footer draws both divider rules inside the 1500px content gutters; Play keeps one full-width compact rule. Header rules remain full viewport.
+
+Package version is the single source for both footers and all live endpoints. Publication follows the existing main CI → validated Worker/assets artifact → production workflow. The [v3.1.7 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.7) records the final source commit, CI and deployment runs once published. Before publication both public surfaces returned v3.1.6 with deployment `2dfd2e20-9624-4634-948f-fe61511c9c83`; this is the rollback reference.
+
 ## Shared chrome and discovery — v3.1.6
 
 On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.5 → v3.1.6. The release includes the shared header and footer destinations (Play / Journal / Résumé / Portfolio, localized), icon language and light/dark controls, a 9px page type floor, `llms.txt` Related that includes hexly and omits the current surface, www canonical aliases, scoped Custom Domain deployment, and the tab-order layout fix.

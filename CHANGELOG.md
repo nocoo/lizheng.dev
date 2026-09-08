@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.7] - 2026-09-08
+
+- Draw the résumé's two footer rules inside the content gutters instead of across the viewport; Play keeps its single full-width rule.
+
 ## [3.1.6] - 2026-09-08
 
 - Complete the shared Play / Journal / Résumé / Portfolio destinations in header and footer, with full-width footer rules and Chinese labels 主页 / 博客 / 简历 / 作品集.
