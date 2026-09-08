@@ -5,7 +5,7 @@
 	width: 100%;
 	max-width: 620px;
 	margin: auto;
-	contain: layout style;
+	contain: style;
 	--object-shadow: #24362230;
 	--deep-shadow: #19251d40;
 	--muted: #606b59;
@@ -2483,8 +2483,11 @@
 		transform: translate3d(calc(var(--direction) * 160px), 42px, -400px)
 			rotateY(calc(var(--direction) * -48deg))
 			rotateZ(calc(var(--direction) * 10deg)) scale(0.82);
-		filter: blur(5px);
+		filter: blur(0);
 		animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	18% {
+		filter: blur(5px);
 	}
 	100% {
 		opacity: 1;
