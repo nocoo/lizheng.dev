@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.8] - 2026-09-08
+
+- Hide the header preference divider when destinations wrap to a second row on mobile.
+
 ## [3.1.7] - 2026-09-08
 
 - Draw the résumé's two footer rules inside the content gutters instead of across the viewport; Play keeps its single full-width rule.

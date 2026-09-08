@@ -2,6 +2,12 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Header preference divider — v3.1.8
+
+On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.7 → v3.1.8. At 640px and below the header destinations wrap to a second row; the preference divider next to the language control is hidden so it does not sit on that first row.
+
+Package version is the single source for both footers and all live endpoints. Publication follows the existing main CI → validated Worker/assets artifact → production workflow. The [v3.1.8 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.1.8) records the final source commit, CI and deployment runs once published. Before publication both public surfaces returned v3.1.7 with deployment `fe976ff4-ce3a-461d-9dbf-e52ed9f227d3`; this is the rollback reference.
+
 ## Résumé footer rules — v3.1.7
 
 On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.6 → v3.1.7. The résumé two-band footer draws both divider rules inside the 1500px content gutters; Play keeps one full-width compact rule. Header rules remain full viewport.
