@@ -494,6 +494,11 @@ html[lang="zh-CN"] .site-header .surface-links a {
 		margin: 0;
 		gap: 24px;
 	}
+	.preferences {
+		margin-left: 0;
+		padding-left: 0;
+		border-left: none;
+	}
 	.site-footer-body {
 		align-items: flex-start;
 		flex-direction: column;

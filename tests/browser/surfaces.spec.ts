@@ -58,6 +58,11 @@ for (const surface of ["resume", "landing"]) {
 				).toBe(Math.min(width, 1500));
 				expect(
 					await page
+						.locator(".preferences")
+						.evaluate((el) => getComputedStyle(el).borderLeftWidth),
+				).toBe(width <= 640 ? "0px" : "1px");
+				expect(
+					await page
 						.locator(".site-footer")
 						.evaluate((el) => el.getBoundingClientRect().width),
 				).toBe(width);

@@ -80,3 +80,13 @@ it("keeps résumé footer rules inside the content column", () => {
 	expect(css).toMatch(/\.site-footer-bottom::before/);
 	expect(css).toMatch(/\.site-footer-compact \{\n[^}]*border-top:\s*1px/m);
 });
+
+it("hides the header preference divider when destinations wrap", () => {
+	const css = readFileSync("packages/experience/base.css", "utf8");
+	expect(css).toMatch(
+		/\.preferences \{\n[^}]*border-left:\s*1px solid var\(--site-line\)/m,
+	);
+	expect(css).toMatch(
+		/@media \(max-width: 640px\) \{[\s\S]*?\.preferences \{[^}]*border-left:\s*none/,
+	);
+});
