@@ -2,6 +2,12 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Justified résumé reading — v3.2.1
+
+On 2026-09-11 the user authorized justified Chinese and English résumé text, capped desktop reading widths, full available mobile width and “改完上线 Z+1”: v3.2.0 → v3.2.1. Paragraphs and lists use native justification, natural final-line alignment and language-aware hyphenation. The existing 64ch/36em reading columns and mobile page gutters already meet the requested width behavior; [17](17-kami-reading.md#两端对齐跟进--v321) records the rendered measurements and local checks.
+
+Publication follows main CI → validated Worker/assets artifact → production. The [v3.2.1 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.2.1) records the final source, CI/deployment runs and the five-minute production recheck. Both public surfaces returned v3.2.0 with deployment `1862d4da-c064-45ae-ab59-73bb7d3501b7` before publication; this is the rollback reference, checked at 05:11 UTC.
+
 ## Résumé reading and engineering profile — v3.2.0
 
 On 2026-09-11 the user authorized “上线，release Y+1”: v3.1.8 → v3.2.0. The release includes the approved [Kami reading layout](17-kami-reading.md), aligned sidebar and résumé labels, mobile portrait sizing and sharper [keepsake artwork](14-connected-surfaces.md), and the final [bilingual engineering and AI profile](18-engineering-and-ai-profile.md). The résumé retains its complete career structure and current Microsoft Teams affiliation, describing engineering, management, AI transformation and open-source practice without specific project details.

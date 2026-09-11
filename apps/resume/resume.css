@@ -332,6 +332,13 @@ html[lang="zh-CN"] .resume-layout {
 	widows: 3;
 	orphans: 3;
 }
+.resume-prose p,
+.resume-prose li {
+	text-align: justify;
+	text-align-last: start;
+	hyphens: auto;
+	hyphenate-limit-chars: 6 3 3;
+}
 .resume-prose p {
 	margin: 0 0 20px;
 }

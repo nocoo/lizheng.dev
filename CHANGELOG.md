@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.2.1] - 2026-09-11
+
+- Justify Chinese and English résumé paragraphs and lists on desktop and mobile, keeping final lines naturally aligned and using language-aware hyphenation to reduce uneven word spacing.
+- Preserve the capped desktop reading column and let mobile text fill the available width inside the page gutters.
+
 ## [3.2.0] - 2026-09-11
 
 - Refresh both résumés with the current Microsoft Teams role, systems engineering and IC work, AI-native transformation, people development and open-source practice; retain the complete career history without naming specific projects.
