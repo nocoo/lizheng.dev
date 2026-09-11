@@ -12,6 +12,8 @@ The initial pre-push scan blocked publication on [GHSA-rgj7-g3m4-5g8c](https://o
 
 The [first remote CI](https://github.com/nocoo/lizheng.dev/actions/runs/34555811359) exposed two Chinese mobile screenshot differences. The runner's system sans-serif glyph metrics wrap the master's degree description onto two lines at 390px, adding 26px to the page. Both themes passed the content, overflow and axe assertions before screenshot comparison. Visual review confirmed complete text, normal wrapping and unobstructed layout; the two `darwin-ci` reference images now use those reviewed CI captures. Page styles, public copy, local baselines and screenshot thresholds are unchanged.
 
+The following CI and one controlled rerun passed the browser checks but exposed limited interaction headroom on Play. The [cached layout follow-up](13-devices-journey.md#cached-layout-follow-up-2026-09-11) records the failure samples, CDP diagnosis and change to prepare hidden device geometry during idle time. The final release includes that rendering fix alongside the approved résumé work.
+
 ## Header preference divider — v3.1.8
 
 On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.7 → v3.1.8. At 640px and below the header destinations wrap to a second row; the preference divider next to the language control is hidden so it does not sit on that first row.
