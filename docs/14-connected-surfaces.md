@@ -41,6 +41,8 @@ bun scripts/create-keepsakes.ts ../firefly/public/journal-keepsakes
 
 The résumé assets live in `design-public/design-assets/keepsakes`. Firefly commits its own six generated assets in `public/journal-keepsakes`; neither repository imports the other at build time or in production. No runtime dependency was added.
 
+The 2026-09-11 résumé adjustment fixes the mobile portrait at 96 × 114px inside a 108px frame, so its name caption cannot widen the frame beyond the photograph. The existing 320 × 380px photo covers mobile displays at 3× density. Portrait SVGs now omit their internal object-shadow filters; CSS supplies the soft shadow because WebKit rasterized the filtered details at visibly lower resolution. The six compositions and their journal exports retain their geometry.
+
 The document owns one random scene. Theme changes, reading, resize, HMR and Firefly client navigation do not redraw the selection; a new document can choose again. No scene is stored across refreshes. The static résumé renders the Game Boy family as a useful no-JavaScript fallback. Firefly chooses its scene on the server for each document request and passes that same choice through hydration, so no default image appears before the selected image. Fixed image dimensions prevent layout shifts. All decorative images are hidden from assistive technology and accept no input.
 
 The me device gallery retains its autoplay and controls. Arrival now follows a single `cubic-bezier(0.16, 1, 0.3, 1)` curve over 950ms. Translation, rotation and scale approach the final pose without crossing it; the former 58% and 82% overshoot keyframes are removed. Lighting and accessory choreography continue around the smooth stop.

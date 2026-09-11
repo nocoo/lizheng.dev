@@ -288,6 +288,36 @@ test("handheld responds to touch on a narrow screen", async ({ browser }) => {
 	await context.close();
 });
 
+test.describe("resume reading navigation", () => {
+	test.use({ javaScriptEnabled: false });
+	for (const locale of ["en", "zh"]) {
+		test(`${locale}: mobile contents works with keyboard and without JavaScript`, async ({
+			page,
+		}) => {
+			await page.setViewportSize({ width: 375, height: 812 });
+			await page.goto(`${origin("resume")}/${locale}/`);
+			const contents = page.locator(".resume-contents");
+			const summary = contents.locator("summary");
+			await expect(summary).toBeVisible();
+			await expect(contents.locator("nav")).toBeHidden();
+			await summary.focus();
+			await page.keyboard.press("Enter");
+			await expect(contents.locator("nav a")).toHaveCount(6);
+			await contents.locator('a[href="#education"]').click();
+			await expect(page).toHaveURL(/#education$/);
+			await expect
+				.poll(async () => {
+					const heading = await page.locator("#education").boundingBox();
+					const header = await page.locator(".site-header").boundingBox();
+					return (heading?.y ?? 0) >= (header?.height ?? 0);
+				})
+				.toBe(true);
+			await page.emulateMedia({ media: "print" });
+			await expect(contents).toBeHidden();
+		});
+	}
+});
+
 test("resume print retains identity and full document", async ({
 	page,
 	browserName,

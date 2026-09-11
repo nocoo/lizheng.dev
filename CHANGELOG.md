@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0] - 2026-09-11
+
+- Refresh both résumés with the current Microsoft Teams role, systems engineering and IC work, AI-native transformation, people development and open-source practice; retain the complete career history without naming specific projects.
+- Apply Kami-inspired reading widths, Chinese and English typography, native mobile section navigation and two-page A4 print layouts while preserving the site's colors, branding and portrait decorations.
+- Align the résumé and sidebar labels, and size the mobile portrait frame independently of its caption so text cannot stretch the photograph's surroundings.
+- Keep all six portrait decorations sharp on mobile by replacing internal SVG shadow filters with CSS shadows, preserving the original artwork without increasing image payloads.
+
 ## [3.1.8] - 2026-09-08
 
 - Hide the header preference divider when destinations wrap to a second row on mobile.

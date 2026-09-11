@@ -6,6 +6,15 @@ import {
 } from "../../packages/experience/SurfaceChrome";
 import { Markdown } from "./Markdown";
 
+function SectionLinks({ sections }: Pick<PageContent, "sections">) {
+	return sections.map((section, index) => (
+		<a key={section.id} href={`#${section.id}`}>
+			<span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>{" "}
+			{section.title}
+		</a>
+	));
+}
+
 export function ResumePage({ content }: { content: PageContent }) {
 	const { locale, meta, sections, links } = content;
 	const zh = locale === "zh";
@@ -23,12 +32,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 						</span>
 						<div className="sidebar-rule" />
 						<nav aria-label={zh ? "章节导航" : "On this page"}>
-							{sections.map((section, index) => (
-								<a key={section.id} href={`#${section.id}`}>
-									<span>{String(index + 1).padStart(2, "0")}</span>{" "}
-									{section.title}
-								</a>
-							))}
+							<SectionLinks sections={sections} />
 						</nav>
 						<button type="button" className="print-button" data-print>
 							<Icon name="print" />
@@ -95,6 +99,12 @@ export function ResumePage({ content }: { content: PageContent }) {
 							))}
 						</div>
 					</div>
+					<details className="resume-contents">
+						<summary>{zh ? "浏览简历目录" : "Browse résumé sections"}</summary>
+						<nav aria-label={zh ? "章节导航" : "On this page"}>
+							<SectionLinks sections={sections} />
+						</nav>
+					</details>
 					{sections.map((section, index) => (
 						<section
 							key={section.id}
@@ -102,7 +112,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 							className={`resume-section section-${section.id}`}
 						>
 							<div className="section-heading">
-								<span className="section-number">
+								<span className="section-number" aria-hidden="true">
 									{String(index + 1).padStart(2, "0")}
 								</span>{" "}
 								<h2>{section.title}</h2>

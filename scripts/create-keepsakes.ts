@@ -358,7 +358,11 @@ const portraits = {
 await mkdir(portraitDirectory, { recursive: true });
 await mkdir(journalDirectory, { recursive: true });
 for (const id of Object.keys(journals) as (keyof typeof journals)[]) {
-	await writeFile(`${portraitDirectory}/${id}.svg`, svg(portraits[id], true));
+	// CSS shadows keep small portrait details sharp in WebKit's SVG renderer.
+	await writeFile(
+		`${portraitDirectory}/${id}.svg`,
+		svg(portraits[id].replace(/ filter="url\(#(?:soft|shadow)\)"/g, ""), true),
+	);
 	await writeFile(`${journalDirectory}/${id}.svg`, svg(journals[id]));
 }
 console.info(

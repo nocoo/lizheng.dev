@@ -25,7 +25,10 @@ describe("public content boundary", () => {
 	});
 	it("rejects nested raw HTML", async () => {
 		vi.mocked(readFile).mockResolvedValue(
-			en.replace("He believes", "- <script>alert(1)</script>\n\nHe believes"),
+			en.replace(
+				"## Professional Summary",
+				"## Professional Summary\n\n- <script>alert(1)</script>",
+			),
 		);
 		await expect(loadContent("resume", "en")).rejects.toThrow(/HTML/i);
 	});
@@ -118,7 +121,7 @@ const mutations = [
 	[
 		"duplicate link",
 		(s: string) =>
-			s.replace("https://github.com/nocoo", "https://lizheng.blog/"),
+			s.replace("(https://github.com/nocoo)", "(https://lizheng.blog/)"),
 		/four/,
 	],
 	["missing link", (s: string) => s.replace(/^- \[github.*\n/m, ""), /four/],
@@ -135,7 +138,7 @@ const mutations = [
 	],
 	[
 		"missing achievement",
-		(s: string) => s.replace(/^- Promoted.*\n/m, ""),
+		(s: string) => s.replace(/(^## Work Experience[\s\S]*?)^- [^\n]+\n/m, "$1"),
 		/achievements/,
 	],
 	[

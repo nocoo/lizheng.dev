@@ -1,6 +1,8 @@
 # Active documentation
 
-Updated: 2026-09-08. The original rebuild is documented in 11; the six-device design is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14. Document 15 records the SEO, agent access and differentiated social previews, including the approved direct copy, implementation and authorized v3.1.5 release, plus the v3.1.6 llms Related Portfolio follow-up. It also records the subsequent www canonical redirects, hexly identity link, raster browser icons and synchronized theme-color follow-up. Document 11 covers the Custom Domain deployment follow-up for scoped CI credentials, the authorized v3.1.6 chrome release, the v3.1.7 résumé footer-rule follow-up, and the v3.1.8 mobile header-divider follow-up. Documents 11 and 15 link the release record for production evidence; the Cloudflare crawler-access issue remains open. The current copy supersedes the earlier narrative direction; the device design remains in use.
+The latest 2026-09-11 résumé work preserves the user's approved Kami layout and rewrites the bilingual copy around engineering depth and AI transformation, without naming specific projects. [18](18-engineering-and-ai-profile.md) records the complete 491-article blog research and collaboration with Gemini through Herdr / pi. [17](17-kami-reading.md) retains the reading design and the preceding original-copy restoration; [16](16-resume-refresh.md) retains the earlier research. These updates remain local and have not been deployed.
+
+Updated: 2026-09-11. The original rebuild is documented in 11; the six-device design is in 13; the common Journal / Play / Résumé frame and keepsakes are in 14, including the mobile résumé portrait sizing and WebKit decoration clarity adjustment. Document 15 records the SEO, agent access and differentiated social previews, including the approved direct copy, implementation and authorized v3.1.5 release, plus the v3.1.6 llms Related Portfolio follow-up. It also records the subsequent www canonical redirects, hexly identity link, raster browser icons and synchronized theme-color follow-up. Document 11 covers the Custom Domain deployment follow-up for scoped CI credentials, the authorized v3.1.6 chrome release, the v3.1.7 résumé footer-rule follow-up, and the v3.1.8 mobile header-divider follow-up. Documents 11 and 15 link the release record for production evidence; the Cloudflare crawler-access issue remains open. The current copy supersedes the earlier narrative direction; the device design remains in use.
 
 ## Reading order
 
@@ -22,6 +24,9 @@ Updated: 2026-09-08. The original rebuild is documented in 11; the six-device de
 | [13 — Objects along the way](13-devices-journey.md) | Six interactive personal devices, chapter navigation, motion and tab-order performance |
 | [14 — Connected surfaces](14-connected-surfaces.md) | Shared navigation, automatic/light/dark themes, layout and six keepsake families |
 | [15 — SEO, agents and social previews](15-seo-agent-social.md) | Audit baseline, implemented bilingual metadata and artwork, public content parity, crawler access and verification status |
+| [16 — Résumé research and earlier draft](16-resume-refresh.md) | Blog and GitHub evidence, source limits and the superseded editorial pass |
+| [17 — Kami reading and original résumé copy](17-kami-reading.md) | Approved typography, mobile contents, print, and the preceding original-copy restoration |
+| [18 — Engineering and AI profile](18-engineering-and-ai-profile.md) | Complete blog research, Gemini collaboration, engineering and leadership synthesis, and current bilingual résumé copy |
 
 ## Authority and status
 

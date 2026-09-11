@@ -1,6 +1,6 @@
 # 04 — lizheng.dev 简历设计
 
-状态：新设计规格，尚未实现。内容来源：[英文简历](content/01-resume-en.md)、[中文简历](content/02-resume-zh.md)。不沿用旧模板、旧 CSS 或旧装饰系统。
+本页保留最初的简历设计规格。当前已实现的共同框架与装饰见 [14](14-connected-surfaces.md)，2026-09-11 引入并经用户确认的 Kami 阅读排印见 [17](17-kami-reading.md)，后者覆盖本页的字号、阅读宽度和目录方案。用户随后授权基于博客全文重新写作，当前文案及依据见 [18](18-engineering-and-ai-profile.md)，本轮保留版式。内容来源：[英文简历](content/01-resume-en.md)、[中文简历](content/02-resume-zh.md)。
 
 ## 视觉方向：一份认真排印的个人履历
 

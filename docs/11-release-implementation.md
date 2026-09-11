@@ -2,6 +2,12 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Résumé reading and engineering profile — v3.2.0
+
+On 2026-09-11 the user authorized “上线，release Y+1”: v3.1.8 → v3.2.0. The release includes the approved [Kami reading layout](17-kami-reading.md), aligned sidebar and résumé labels, mobile portrait sizing and sharper [keepsake artwork](14-connected-surfaces.md), and the final [bilingual engineering and AI profile](18-engineering-and-ai-profile.md). The résumé retains its complete career structure and current Microsoft Teams affiliation, describing engineering, management, AI transformation and open-source practice without specific project details.
+
+Package version remains the single source for both footers and all live endpoints. Publication follows the existing main CI → validated Worker/assets artifact → production workflow. The [v3.2.0 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.2.0) records the final source commit, CI and deployment runs, production verification and the mandatory five-minute recheck once published. Before publication both public surfaces returned v3.1.8 with deployment `35308e93-7e80-4014-9c1c-02b871c4f615`; this is the rollback reference, checked on 2026-09-11 at 02:40 UTC.
+
 ## Header preference divider — v3.1.8
 
 On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.7 → v3.1.8. At 640px and below the header destinations wrap to a second row; the preference divider next to the language control is hidden so it does not sit on that first row.

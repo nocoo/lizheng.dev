@@ -3,49 +3,51 @@ id: "resume-en"
 surface: "resume"
 locale: "en"
 title: "Zheng Li — Principal Engineering Manager at Microsoft"
-description: "Principal Software Engineering Manager at Microsoft, leading teams across web, mobile, and AI. Experience, leadership, and selected work."
+description: "Principal Software Engineering Manager in Microsoft Teams. Deep systems engineering experience and sustained AI-native practice, leading reliable delivery and changes in how teams build software."
 socialHeading: "Zheng Li"
 socialLabel: "Principal Software\nEngineering Manager\nat Microsoft"
 socialImageAlt: "Zheng Li, Principal Software Engineering Manager at Microsoft, with a portrait."
 name: "Zheng Li"
 role: "Principal Software Engineering Manager @ Microsoft"
-tagline: "15 years building web & mobile software.\nNow rebuilding myself for the AI era."
+tagline: "Engineering depth. Global product experience.\nLeading the shift to AI-native development."
 canonical: "https://lizheng.dev/en/"
 copyright: "© {year} Zheng Li. All rights reserved."
 ---
 
 ## Professional Summary
 
-### Engineering Leader Driving AI Transformation at Microsoft
+### Engineering leader pioneering AI-native development
 
-Zheng is a seasoned engineering manager with over a decade of experience building resilient, full-stack teams that deliver at massive scale. Combining strategic vision with deep technical execution, he has guided his team through multiple technology cycles—from mobile-first to AI-native.
+I am a Principal Software Engineering Manager in Microsoft Teams, with deep software development and systems architecture experience built through global product delivery across web, mobile, cloud services and data systems. As an IC, I design architectures, implement critical code and resolve performance and reliability problems, independently taking complex systems from problem definition to verified delivery. As a manager, I develop people by working through real engineering problems alongside them, helping them build technical judgment and the ability to deliver independently.
 
-In his current role leading a 15-person cross-functional unit, Zheng is redefining engineering leadership for the AI era. He focuses on internalizing AI capabilities personally to serve as a practical role model, bridging the gap between high-level strategy and daily code. This hands-on approach enabled the successful, high-velocity launch of Microsoft's Copilot mobile app. Zheng builds teams defined by autonomy, psychological safety, and a relentless pursuit of efficiency, ensuring his engineers are equipped not just to use AI, but to build the future with it.
+I manage dozens of agents in daily engineering work, exploring and applying an AI software factory approach through intensive use of multiple models and agent harnesses. I organize task decomposition, context management, implementation, review and automated verification into repeatable workflows, making generated results checkable and correctable and delivering reliable software at scale. Lower execution costs let me test more alternatives; I remain responsible for architecture, acceptance and long-term quality.
 
 ## Work Experience
 
-### Microsoft (ASG → WebXT → MAI)
+### Microsoft
 
 Principal Software Engineering Manager
 
 2012 - Present · Beijing
 
-- Promoted through ranks: SDE → SDE II → Senior SDE → Senior SDE Manager → Principal SDE Manager
-- Longtime owner of mobile development for Bing and Microsoft Start (MSN) across Android, iOS, and iPad
-- Built and led a cross-functional team across Android, iOS, Web, Data, and Services, capable of full-scope delivery from UX to backend ops
-- Designed and scaled an Azure-based platform for mobile delivery: distributed data pipelines for logging, A/B testing, and insights; multi-platform push systems and telemetry-based alerting; service clusters for search, personalization, and monetization; CI/CD and in-house tooling for release management and experimentation
-- Led from zero the launch of Copilot Mobile App, delivering 3 clean releases under executive visibility, with zero major regressions
-- Partnered with product and marketing to create a data-informed growth engine for paid acquisition, integrating Adjust, backend attribution, and real-time dashboards—yielding 120%+ ROI annually
-- Embraced the AI transition by leading LLM-driven platform rewrites, decoupling legacy architecture and piloting new semantic layers for mobile-native Copilot interactions
-- Known internally for balancing discipline with trust, Zheng focuses on team health, cultural integrity, and decision velocity
-- Participated in early-stage Windows-integrated experiments to extend mobile scenarios, contributing to design and feasibility
+Currently working in Microsoft Teams.
+
+- Progressed from SDE through SDE II, Senior SDE and Senior Engineering Manager to Principal Software Engineering Manager.
+- Hold a dedicated remit to drive AI-native development and Frontier Team transformation across my team and the wider organization, spanning three organizational levels. Serve as a technical advisor to senior leadership on transformation strategy and key engineering decisions.
+- Built and led a multidisciplinary team across mobile, web, data and backend services, with ownership spanning user experience through production operations.
+- Designed and evolved client and service architectures across multiple platforms, balancing performance, reliability and maintainability as requirements and dependencies changed.
+- Built data pipelines, experimentation infrastructure, monitoring and CI/CD workflows to connect development decisions with production behavior and user feedback.
+- Partnered with product and business teams on priorities and delivery, working through technical constraints and dependencies across organizations.
+- Rank among Microsoft's top 100 employees by AI token consumption, with intensive daily use across implementation, testing, review and documentation. Develop repeatable workflows and share lessons from real delivery.
+- Version requirements, design decisions and acceptance criteria with code; define agent roles, context budgets and handoffs for work across sessions. Verify system behavior with automated checks and human judgment proportionate to risk, and investigate failures, rework and omissions.
+- Evaluate technical choices against the total cost of execution, review, rework and maintenance; use prototypes and feedback to reduce uncertainty.
 
 ### Alibaba Group – UED Team
 
 2010 - 2012
 
-- Built internal tools and open-source projects (InfoViz, WebOS) using Flex, HTML5, and Node.js
-- Focused on developer productivity and data visualization frameworks
+- Built internal and open-source tools using web technologies across client and server components.
+- Focused on developer productivity and data visualization.
 
 ### Microsoft Research Asia
 
@@ -53,8 +55,8 @@ Summer Intern
 
 2005, 2007
 
-- Completed two summer internships focused on data visualization
-- Developed interactive prototypes using JavaScript and Silverlight
+- Completed two summer internships in data visualization research and development.
+- Developed interactive prototypes using JavaScript and Silverlight.
 
 ## Education
 
@@ -76,15 +78,15 @@ B.Eng. in Computer Science and Technology
 
 ## Leadership & Communication
 
-Zheng is known not only for technical rigor, but also for building resilient teams with a culture of autonomy and clarity. He actively cultivates shared ownership, pragmatic execution, and a calm-but-decisive leadership style—even in high-stakes, cross-org settings.
+I value people and the relationships and trust built through working together. I take colleagues' circumstances, motivations and concerns seriously, and lead through clear goals, explicit responsibilities and decisions people can understand. I set a shared quality bar while respecting individual experience and autonomy. Fluent in Chinese and English, I have worked extensively with teams in the US, India and Israel, connecting technical detail with business priorities and resolving differences across teams.
 
-Fluent in both Chinese and English, Zheng has long worked across time zones and cultures, collaborating (and negotiating) with global teams across the U.S., India, and Israel. He is as comfortable in architectural deep-dives as in heated prioritization debates.
+I lead AI transformation by testing new methods with the team, building trust through real results and sustained dialogue rather than management directives alone. I want people and AI to work well together: technology should extend people's capabilities while preserving their judgment, creativity and opportunities to grow. I make room for learning, experimentation, timely feedback and honest discussion of failures, giving engineers a real role in shaping how work changes.
 
 ## Beyond Work
 
-Zheng is an INFJ, often balancing long-term systems thinking with deep individual focus. He is passionate about efficiency tools, automation workflows, and personal knowledge systems—from command palette launchers to structured digital habits (Notion, PARA, Raycast, etc.).
+Outside work, I actively develop open-source software, contribute to the community and maintain an extensive portfolio of personal open-source projects. I turn ideas into usable software, test engineering decisions through real use and ongoing maintenance, and share code and lessons openly. I write regularly about systems design, human–AI collaboration and technical leadership, including failed approaches and revisions to my own thinking.
 
-He believes that great tools extend the mind, and that every system—from software to self—deserves thoughtful iteration.
+I care about the experience a system creates: whether it clarifies a problem, removes unnecessary effort and gives people more freedom to act. The same standard guides my approach to productivity: leaving more time and attention for thinking, creating and life beyond work.
 
 ## Links
 
