@@ -57,7 +57,15 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 	const [state, setState] = useState(initialHandheld);
 	const [prepared, setPrepared] = useState(1);
 	useEffect(() => {
-		if (prepared === deviceChapters.length) return;
+		if (prepared === deviceChapters.length) {
+			// Let the last hidden scene receive layout before suspending its rendering.
+			let frame = window.requestAnimationFrame(() => {
+				frame = window.requestAnimationFrame(() => {
+					root.current?.setAttribute("data-layout-ready", "");
+				});
+			});
+			return () => window.cancelAnimationFrame(frame);
+		}
 		const prepare = () => setPrepared((count) => count + 1);
 		if (typeof window.requestIdleCallback === "function") {
 			const id = window.requestIdleCallback(prepare);

@@ -107,6 +107,18 @@
 	visibility: hidden;
 	pointer-events: none;
 }
+@supports not (-moz-appearance: none) {
+	.device-gallery[data-layout-ready] .device-layer.is-cached {
+		/* Keep prepared geometry; resolve the current palette when a scene returns. */
+		content-visibility: hidden;
+	}
+}
+@supports (-moz-appearance: none) {
+	.device-layer.is-cached {
+		/* Firefox repeatedly resolves styles in skipped subtrees; retain its DOM cache. */
+		display: none;
+	}
+}
 .device-layer.is-cached,
 .device-layer.is-cached * {
 	animation: none;

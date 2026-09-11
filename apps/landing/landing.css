@@ -55,9 +55,7 @@ body {
 	background: var(--page);
 	color: var(--ink);
 	font-family: var(--sans);
-	transition:
-		background 0.35s,
-		color 0.35s;
+	transition: background-color 0.35s;
 }
 body::before {
 	content: "";
