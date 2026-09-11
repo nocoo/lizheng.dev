@@ -6,6 +6,7 @@
 - Apply Kami-inspired reading widths, Chinese and English typography, native mobile section navigation and two-page A4 print layouts while preserving the site's colors, branding and portrait decorations.
 - Align the résumé and sidebar labels, and size the mobile portrait frame independently of its caption so text cannot stretch the photograph's surroundings.
 - Keep all six portrait decorations sharp on mobile by replacing internal SVG shadow filters with CSS shadows, preserving the original artwork without increasing image payloads.
+- Update Wrangler and Miniflare to upstream releases that use patched sharp 0.35.4, removing the vulnerable transitive copy from the build and test toolchain.
 
 ## [3.1.8] - 2026-09-08
 

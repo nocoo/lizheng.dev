@@ -8,6 +8,8 @@ On 2026-09-11 the user authorized “上线，release Y+1”: v3.1.8 → v3.2.0.
 
 Package version remains the single source for both footers and all live endpoints. Publication follows the existing main CI → validated Worker/assets artifact → production workflow. The [v3.2.0 release record](https://github.com/nocoo/lizheng.dev/releases/tag/v3.2.0) records the final source commit, CI and deployment runs, production verification and the mandatory five-minute recheck once published. Before publication both public surfaces returned v3.1.8 with deployment `35308e93-7e80-4014-9c1c-02b871c4f615`; this is the rollback reference, checked on 2026-09-11 at 02:40 UTC.
 
+The initial pre-push scan blocked publication on [GHSA-rgj7-g3m4-5g8c](https://osv.dev/GHSA-rgj7-g3m4-5g8c): Miniflare still pinned sharp 0.35.2 although the direct dependency was already patched. Wrangler 4.131.0 and its matching Miniflare 5.20260910.0-alpha use sharp 0.35.4 throughout the dependency graph. The release updates both upstream tools and regenerates Worker types; the application compatibility date and deployment flow remain unchanged.
+
 ## Header preference divider — v3.1.8
 
 On 2026-09-08 the user authorized `/su-release Z+1`: v3.1.7 → v3.1.8. At 640px and below the header destinations wrap to a second row; the preference divider next to the language control is hidden so it does not sit on that first row.
