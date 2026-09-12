@@ -82,6 +82,8 @@ jobs:
           install-policy: "blocked"
       - run: bun run check:hooks
       - run: bun run check:budgets
+      - name: Require dist before Wrangler dry-run
+        run: test -d dist
       - run: ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
       - run: tar -czf release-artifact.tgz dist .release-worker
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
