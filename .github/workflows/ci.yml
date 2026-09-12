@@ -27,7 +27,6 @@ jobs:
       typecheck-command: "bun run typecheck"
       l2: true
       l2-command: "bun run test:http"
-    secrets: inherit
 
   browser:
     name: L3 ${{ matrix.browser }}
