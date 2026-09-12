@@ -68,27 +68,18 @@ jobs:
   artifact:
     name: Verify and package Worker
     needs: [quality, browser]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@081cdf665b9c67f233abfcc9242ce0be76ce2bb4
-        with:
-          package-manager: bun
-          runtime-version: "1.4.0"
-          node-version: "26.8.1"
-          install-policy: "blocked"
-      - run: bun run check:hooks
-      - run: bun run check:budgets
-      - name: Require dist before Wrangler dry-run
-        run: test -d dist
-      - run: ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
-      - run: tar -czf release-artifact.tgz dist .release-worker
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: worker-${{ github.sha }}
-          path: release-artifact.tgz
-          if-no-files-found: error
-          retention-days: 14
+    uses: nocoo/base-ci/.github/workflows/test-job.yml@ad43150de3a2be2fa464b5cd2f921dc4fa9f8f0f
+    with:
+      runtime-version: "1.4.0"
+      node-version: "26.8.1"
+      install-policy: "blocked"
+      timeout-minutes: 10
+      command: |
+        bun run check:hooks
+        bun run check:budgets
+        test -d dist
+        ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
+        tar -czf release-artifact.tgz dist .release-worker
+      artifact-name: worker-${{ github.sha }}
+      artifact-path: release-artifact.tgz
+      artifact-retention-days: 14
