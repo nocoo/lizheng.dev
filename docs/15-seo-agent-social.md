@@ -87,7 +87,7 @@ me 的英文 H1 为 `A little bit of me.`，保留两行排版和真实空白；
 **素材流程**
 
 1. dev 优先直接使用真实肖像；me 优先从当前掌机设计生成固定场景。先 review 这两种构图是否足够。
-2. 若 me 需要更有质感的独立静物素材，使用用户指定的本机技能 `../workflow/agents/skills/azure-gpt-image-cover/SKILL.md`，调用 `gpt-image-2`，`high`，原生 `1024x1024`。保留完整原生构图，以 contain 方式放入分享画布，再叠加文字。
+2. 若 me 需要更有质感的独立静物素材，使用用户指定的本机技能 `../workflow/agents/skills/agi-image-generation/SKILL.md`，调用 `gpt-image-2`，`high`，原生 `1024x1024`。保留完整原生构图，以 contain 方式放入分享画布，再叠加文字。
 3. 建议给模型的主体提示词：`A studio product photograph for a personal website: one ivory handheld console, olive monochrome screen, terracotta buttons, precise material details, soft directional lighting, warm paper and graphite palette, a single small cartridge nearby. The entire handheld and its shadow are visible with generous breathing room. Original unbranded industrial design, no lettering, no numbers, no logos, no people. Square composition.`
 4. 认证采用 workflow 已有环境变量 `AZURE_OPENAI_ENDPOINT` / `AZURE_OPENAI_API_KEY` 和脚本；密钥不复制到本站配置、文档或命令参数中。素材生成不成为日常 build 或 CI 的外部 API 依赖。
 5. 生成的原图与出处信息保存在源码素材目录，最终衍生图记录来源和生成参数。dev 肖像直接使用真实照片；生成模型可用于背景材质。
