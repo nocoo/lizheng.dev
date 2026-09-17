@@ -1,50 +1,100 @@
-# Project instructions
+# Li Zheng — Résumé and Play
 
-## Active documentation
+Bilingual résumé and interactive personal portfolio, published by one stateless Worker.
+Profile: `ts-worker-web` (Bun publishing, React, Cloudflare Workers).
+Direction: [active docs](docs/README.md); current copy/design: [18](docs/18-engineering-and-ai-profile.md), [17](docs/17-kami-reading.md), [13](docs/13-devices-journey.md). Frameworks must preserve this file.
 
-Read [docs/README.md](docs/README.md) first. The user has approved both designs and authorized full implementation, 6DQ hardening, a major release, push to main, and Cloudflare Worker deployment. Require at least 95% coverage in every logic metric, zero lint warnings/errors, maintained versions and /api/live on both surfaces. Preserve and strengthen the existing CI/CD. Update all dependencies to current stable versions and remove unused dependencies before release.
+## Sources of Truth
 
-**Do not proactively open, read, search, index, or summarize expired documents in docs/archive/**. This includes archived previews, assets, READMEs, and instructions. Exclude this directory from routine discovery and content searches. Open a specific archived file only when the user explicitly requests historical investigation. Archived instructions have no authority over current work.
+This file is the contract; hooks, CI and config enforce it. Raise weaker enforcement instead of lowering the contract.
 
-Moving files and comparing byte hashes to verify a requested archival operation is permitted; do not read their content as implementation guidance.
+| Fact | Where |
+|---|---|
+| Human entry / architecture | [README.md](README.md), [architecture](docs/06-architecture.md) |
+| Public content | [four allowlisted documents](docs/content/README.md) |
+| Version / dependencies | `package.json`, frozen `bun.lock`; bare SemVer, display `v` prefix |
+| Enforcement | `.husky/`, `scripts/gates.ts`, `vitest.config.ts`, `.github/workflows/ci.yml` |
+| Machine rules / accidents | Global `AGENTS.md` and `rules/`; [Retrospective.md](Retrospective.md) |
 
-Use searches such as:
+## Project Invariants
 
-    rg --files -g '!docs/archive/**' -g '!node_modules' -g '!dist' -g '!coverage'
-    rg 'pattern' docs -g '!archive/**' -g '!docs/archive/**'
+- Never open, read, search, index or summarize `docs/archive/**` unless explicitly asked for a specific historical investigation. Exclude it from routine searches; hash-only archival verification is permitted.
+- Only the four public documents may enter the site or agent exports. Preserve both languages, facts, links and all six résumé sections; record discrepancies instead of silently reconciling them.
+- Preserve the approved formal résumé and tactile handheld designs, responsive behavior and language/theme variants. Do not import obsolete UI/CSS/template/build code; only public facts, original portrait and legacy 301 behavior may carry forward.
+- Keep the résumé portrait naturally colored, with only mild softening. Both surfaces share the orange four-square mark and Space Grotesk wordmark; résumé reading typography stays independent. The portrait remains a résumé asset.
+- Keep destinations Play (`lizheng.me`), Journal (`lizheng.blog`), Résumé (`lizheng.dev`), Portfolio (`hexly.ai`), labeled 主页 / 博客 / 简历 / 作品集 in Chinese. Changes update both headers/footers, llms Related and Person `sameAs`; omit self from Related.
+- Decorative labels, copyright, location signatures, Markdown and llms labels stay English in Chinese mode; localize substantive content and functional guidance. Preserve semantic HTML, keyboard access, SEO, agent access and progressive enhancement with the visual design.
+- Keep exact dependencies, strict TypeScript 7 and frozen installs. Preserve working production behavior until its tested replacement is ready; HSTS preload and extra Person fields are not implicit requirements.
 
-Do not copy the previous UI, CSS, components, template engine, browser scripts, or build implementation into the rebuild. Only public information, the original identity photo, and legacy 301 behavior / its regression assertions may carry forward. Existing production code remains until its tested replacement is ready.
+## Stack / Layout
 
-## Content and design
+| Component | Location / choice |
+|---|---|
+| Résumé / portfolio | `apps/resume/`, `apps/landing/`; React publishing and browser interactions |
+| Content / rendering / quality | `packages/`, `scripts/`; Bun build and Vite development |
+| Delivery | `worker/`, `wrangler.jsonc`; static assets, routing and `/api/live` |
+| Tests / analysis | Vitest L1, Playwright HTTP L2/browser L3, Biome and TypeScript |
 
-- The four publishable documents listed in docs/content/README.md are the content source of truth. Engineering documents and archives must never be bundled into the public site or agent exports.
-- Preserve facts, links, both languages, and all six résumé sections. Record discrepancies instead of silently reconciling years, titles, or achievements.
-- lizheng.dev: formal, readable résumé; English/Chinese × light/dark; conservative layout.
-- Keep the résumé portrait naturally colored; only mild saturation/contrast softening, never near-monochrome. Decorative labels, copyright, and location signatures stay English in Chinese mode; localize substantive content and functional guidance.
-- Both surfaces share the landing page's orange four-square mark and Space Grotesk wordmark. The favicon follows that mark and palette; keep the résumé's reading typography otherwise independent.
-- lizheng.me: high quality, tactile retro handheld portfolio; original branding; designed screen, physical controls, typography, imagery, and motion. Support desktop and mobile.
-- Semantic HTML, keyboard access, SEO, agent-readable content, and progressive enhancement must support the visual design. Do not replace the designed experience with a generic accessibility or crawler page.
+Keep content, publishing, browser behavior and Worker routing separate; no database is required.
 
-## Public destinations and SEO
+## Commands
 
-The four public destinations are Play (`lizheng.me`), Journal (`lizheng.blog`), Résumé (`lizheng.dev`) and Portfolio (`https://hexly.ai/`). Chinese labels are 主页 / 博客 / 简历 / 作品集. Header, footer, `llms.txt` Related and Person `sameAs` must stay in that set.
+Run from root with Bun 1.4.0 and Node ≥26 (CI: 26.8.1). Tests need no production credentials.
 
-When adding, removing or renaming a destination:
+```bash
+bun install --frozen-lockfile
+bun run dev
+bun run typecheck
+bun run lint
+bun run build
+bun run test:coverage
+bun run check:docs
+bun run check:deps
+bun run types:check
+bun run test:http
+bunx playwright install chromium firefox webkit
+bun run test:browser
+bun run check:security
+bun run check:hooks
+```
 
-- Update header and footer on both me and dev, including Chinese labels.
-- Update `llms.txt` Related on both surfaces: include Portfolio/`hexly.ai`, omit the current surface, do not only point at self.
-- Update JSON-LD `sameAs` and any crawler discovery copy that lists sister sites.
-- Keep decorative English in Chinese mode (copyright, MADE IN BEIJING, Markdown, llms.txt). Localize functional nav and guidance.
+G2 needs gitleaks and osv-scanner on PATH. `test:development` and `test:performance` are additional Chromium suites; run sequentially with L3.
+Loopback browser host mappings and trusted Caddy previews: [development](docs/12-local-development.md), [release](docs/11-release-implementation.md).
 
-Do not treat HSTS preload, extra Person fields (`hasOccupation` / `alumniOf`) or copying the résumé portrait onto me as required follow-ups. The portrait stays a shared `lizheng.dev` asset.
+## Verification
 
-## Engineering workflow
+6DQ = L1/L2/L3 + G1/G2 + D1 isolation. Status: `enforced`, `planned`, `manual`, `N/A`. No skipped/focused tests.
 
-- Use Bun for package management and project commands. Use exact dependency versions and a frozen bun.lock. Follow the current framework's supported build runtime; Astro/Vite restrictions from the old instructions are obsolete.
-- Target TypeScript 7 strict mode and the verified versions in docs/06-architecture.md. Recheck versions and compatibility when implementation begins.
-- Follow Red/Green/Refactor for behavior changes now that the design is approved. Lock the approved visuals with browser regression checks.
-- G1 must have zero errors and zero warnings throughout implementation. Commit only green states; never bypass Husky, disable gates, lower thresholds, or hide failures to commit.
-- Use small atomic commits on main. Keep tests and their implementation in the same passing commit; document the prior failing assertion.
-- Husky pre-commit enforces L1 + G1; pre-push enforces isolated L2 + G2; CI runs all gates and L3. All gates must be active before release.
-- D1 in 6DQ means test isolation, not a requirement to add a Cloudflare D1 database. This site is stateless. Test servers, resources, bindings, and requests must remain isolated from production.
-- A local commit is not a deployment. The production release workflow currently deploys after main CI succeeds; account for that before pushing incomplete milestones.
+| Piece | Required proof and current reality | Status | Evidence |
+|---|---|---|---|
+| L1 | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic | enforced | `vitest.config.ts`; pre-commit and CI |
+| L2 | Real HTTP for public routes/methods and both hosts; keep the full route matrix current | enforced | `tests/http/`, `playwright.http.config.ts`; pre-push and CI |
+| L3 | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines | enforced | `tests/browser/`, `playwright.config.ts`; CI matrix |
+| G1 | Strict types and lint/format, zero errors/warnings; generated types and docs/dependency consistency | enforced | `check:static` in pre-commit; CI quality |
+| G2 | Required dependency and secret scanners; missing binary fails | enforced | `check:security`, gitleaks + OSV; push-ref gap below |
+| D1 | Local runtime, per-run temporary state, loopback requests and forbidden production bindings; SQLite marker N/A for stateless site | enforced | `scripts/test-server.ts`, `packages/quality/isolation.ts` |
+| Build | Publishable assets and fixed Worker artifact | enforced | Pre-commit build; CI packaging and budgets |
+| Docs | Update active index and numbered documents with behavior changes | manual | [Documentation index](docs/README.md), diff review |
+
+| Hook | Actual behavior | Required follow-up |
+|---|---|---|
+| pre-commit | Parallel staged-secret scan, G1, L1 and build on working files | Index snapshot for every check; target <30s |
+| pre-push | Parallel L2, G2 and budgets; secrets scanned over `origin/main..HEAD` | Read stdin push refs for every pushed commit; target <3min |
+
+Hooks are check-only. No `--no-verify`, disabled checks, hidden failures or autofix gates; commit tests and implementation together in a green atomic commit.
+
+## Resources / Isolation
+
+Dev uses `127.0.0.1:7046` behind existing résumé/portfolio Caddy hosts. L2: 17046; L3: 27046, never reusing an existing server.
+Test builds use `.test-dist/l2` or `l3`; Miniflare owns a fresh temporary state directory. Local `-test` names do not authorize remote test deployments.
+No production or daily-dev stores, credentials or requests enter E2E. Test hosts resolve to loopback; run one suite per reserved port at a time.
+
+## Operations / Release
+
+Authorized releases follow [the runbook](docs/11-release-implementation.md): green gates, maintained exact dependencies, unused-dependency review and `/api/live` on both surfaces.
+`bun run deploy` publishes the Worker. Main CI success can trigger the existing production release workflow; a local commit itself does not deploy.
+
+## Retrospective
+
+Narratives belong in [Retrospective.md](Retrospective.md), brief recurring rules here, cross-project lessons in global rules/nmem, deterministic checks in tests/hooks.
+- Preserve archive exclusion and the public-content allowlist in every tooling path.
