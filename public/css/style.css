@@ -5,7 +5,6 @@
 		"Noto Sans", Helvetica, Arial, sans-serif;
 	--font-mono:
 		"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-	--font-serif: "IBM Plex Serif", Georgia, serif;
 	--font-family: var(--font-sans);
 	--font-size: 16px;
 	--line-height: 1.7;
@@ -37,7 +36,6 @@
 	--tomato: oklch(54% 0.18 35);
 	--mint: oklch(78% 0.1 165);
 	--sun: oklch(86% 0.13 95);
-	--sky: oklch(82% 0.07 230);
 
 	/* Grid line tint — ink on paper (light) */
 	--grid-line: oklch(20% 0.025 260 / 0.05);
@@ -67,30 +65,9 @@
 	--tomato: oklch(68% 0.19 35);
 	--mint: oklch(70% 0.11 165);
 	--sun: oklch(75% 0.12 95);
-	--sky: oklch(72% 0.08 230);
 
 	/* Grid line tint — paper on ink (dark) */
 	--grid-line: oklch(92% 0.01 260 / 0.06);
-}
-
-/* Reset Pico defaults */
-:root {
-	--pico-font-family: var(--font-family);
-	--pico-font-size: var(--font-size);
-	--pico-line-height: var(--line-height);
-	--pico-border-radius: 0;
-	--pico-box-shadow: none;
-}
-
-/* Reset article/section box styling from Pico */
-article,
-section {
-	background: transparent;
-	box-shadow: none;
-	border: none;
-	border-radius: 0;
-	padding: 0;
-	margin-bottom: var(--spacing);
 }
 
 * {
@@ -108,7 +85,6 @@ body {
 	background: var(--bg-elevated);
 	color: var(--text-primary);
 	margin: 0;
-	padding: 0;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -251,11 +227,26 @@ body {
 	left: 100%;
 }
 
-/* Ring at sidebar border × cross-divider intersection */
-.top-left {
-	position: relative;
+/* Top Row */
+.top-row {
+	display: flex;
+	background: var(--bg-primary);
 }
 
+.top-left {
+	position: relative;
+	width: var(--sidebar-width);
+	flex-shrink: 0;
+	background: var(--bg-sidebar);
+	padding: var(--content-padding) var(--spacing);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	border-right: 1px solid var(--border-color);
+}
+
+/* Ring at sidebar border × cross-divider intersection */
 .top-left::after {
 	content: "";
 	position: absolute;
@@ -268,24 +259,6 @@ body {
 	background: var(--bg-base);
 	transform: translate(50%, 50%);
 	z-index: 1;
-}
-
-/* Top Row */
-.top-row {
-	display: flex;
-	background: var(--bg-primary);
-}
-
-.top-left {
-	width: var(--sidebar-width);
-	flex-shrink: 0;
-	background: var(--bg-sidebar);
-	padding: var(--content-padding) var(--spacing);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-	border-right: 1px solid var(--border-color);
 }
 
 .top-left h1 {
@@ -353,10 +326,6 @@ body {
 
 .control-btn:hover {
 	color: var(--accent-color);
-}
-
-.control-btn:focus {
-	outline: none;
 }
 
 /* Theme toggle icons */
@@ -456,27 +425,13 @@ body {
 	flex-shrink: 0;
 }
 
-/* Main Content - reset Pico styles */
+/* Main Content */
 .content {
 	flex: 1;
 	min-width: 0;
 	max-width: var(--content-max-width);
 	padding: var(--content-padding);
 	background: var(--bg-primary);
-	box-shadow: none;
-	border: none;
-	border-radius: 0;
-}
-
-/* Reset article styles from Pico */
-.resume {
-	max-width: 100%;
-	background: transparent;
-	box-shadow: none;
-	border: none;
-	border-radius: 0;
-	padding: 0;
-	margin: 0;
 }
 
 .resume[hidden] {
@@ -497,7 +452,6 @@ h2 {
 	font-weight: 400;
 	margin: 0 0 1.25rem 0;
 	font-family: var(--font-display);
-	color: var(--text-primary);
 	letter-spacing: -0.01em;
 	line-height: 1.2;
 }
@@ -534,7 +488,6 @@ p {
 .job-meta,
 .edu-year {
 	font-family: var(--font-mono);
-	font-size: 0.75rem;
 	letter-spacing: 0.02em;
 }
 
