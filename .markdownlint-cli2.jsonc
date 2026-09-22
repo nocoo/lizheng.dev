@@ -1,5 +1,5 @@
 {
-	"globs": ["README.md", "CLAUDE.md", "docs/*.md", "docs/content/*.md"],
+	"globs": ["README.md", "AGENTS.md", "docs/*.md", "docs/content/*.md"],
 	"ignores": ["docs/archive/**"],
 	"config": {
 		// Preserve complete source paragraphs without an arbitrary line length.

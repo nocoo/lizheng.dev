@@ -7,7 +7,7 @@ for (const surface of ["resume", "landing"] as const)
 		await loadContent(surface, locale);
 const files = [
 	"README.md",
-	"CLAUDE.md",
+	"AGENTS.md",
 	...(await readdir("docs"))
 		.filter((name) => name.endsWith(".md"))
 		.map((name) => `docs/${name}`),

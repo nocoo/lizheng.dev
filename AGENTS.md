@@ -2,7 +2,7 @@
 
 Bilingual résumé and interactive personal portfolio, published by one stateless Worker.
 Profile: `ts-worker-web` (Bun publishing, React, Cloudflare Workers).
-Direction: [active docs](docs/README.md); current copy/design: [18](docs/18-engineering-and-ai-profile.md), [17](docs/17-kami-reading.md), [13](docs/13-devices-journey.md). Frameworks must preserve this file.
+Human overview: [README.md](README.md). Direction: [active docs](docs/README.md); current copy/design: [18](docs/18-engineering-and-ai-profile.md), [17](docs/17-kami-reading.md), [13](docs/13-devices-journey.md). Frameworks must preserve this file. Maintain this root `AGENTS.md` as the only project handbook; do not create a `CLAUDE.md` alias, copy or import.
 
 ## Sources of Truth
 
@@ -63,14 +63,13 @@ Loopback browser host mappings and trusted Caddy previews: [development](docs/12
 
 ## Verification
 
-6DQ = L1/L2/L3 + G1/G2 + D1 isolation. Status: `enforced`, `planned`, `manual`, `N/A`. No skipped/focused tests.
+6DQ = L1/L2/L3 + G2 + D1 isolation; the former G1 dimension was merged into L1 on 2026-09-21. Status: `enforced`, `planned`, `manual`, `N/A`. No skipped/focused tests.
 
 | Piece | Required proof and current reality | Status | Evidence |
 |---|---|---|---|
-| L1 | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic | enforced | `vitest.config.ts`; pre-commit and CI |
+| L1 (incl. former G1 static) | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic; strict types and lint/format with zero errors/warnings; generated types and docs/dependency consistency | planned | Achieved subchecks run today: `vitest.config.ts` coverage plus `check:static` (types, lint, docs/dependency consistency) in pre-commit and CI. Full unified L1 stays planned: checks run on working files rather than the index snapshot, and <30s timing plus isolated rejection proof are unverified |
 | L2 | Real HTTP for public routes/methods and both hosts; keep the full route matrix current | enforced | `tests/http/`, `playwright.http.config.ts`; pre-push and CI |
 | L3 | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines | enforced | `tests/browser/`, `playwright.config.ts`; CI matrix |
-| G1 | Strict types and lint/format, zero errors/warnings; generated types and docs/dependency consistency | enforced | `check:static` in pre-commit; CI quality |
 | G2 | Required dependency and secret scanners; missing binary fails | enforced | `check:security`, gitleaks + OSV; push-ref gap below |
 | D1 | Local runtime, per-run temporary state, loopback requests and forbidden production bindings; SQLite marker N/A for stateless site | enforced | `scripts/test-server.ts`, `packages/quality/isolation.ts` |
 | Build | Publishable assets and fixed Worker artifact | enforced | Pre-commit build; CI packaging and budgets |
@@ -78,7 +77,7 @@ Loopback browser host mappings and trusted Caddy previews: [development](docs/12
 
 | Hook | Actual behavior | Required follow-up |
 |---|---|---|
-| pre-commit | Parallel staged-secret scan, G1, L1 and build on working files | Index snapshot for every check; target <30s |
+| pre-commit | Parallel staged-secret scan, static checks, L1 and build on working files | Index snapshot for every check; target <30s |
 | pre-push | Parallel L2, G2 and budgets; secrets scanned over `origin/main..HEAD` | Read stdin push refs for every pushed commit; target <3min |
 
 Hooks are check-only. No `--no-verify`, disabled checks, hidden failures or autofix gates; commit tests and implementation together in a green atomic commit.
