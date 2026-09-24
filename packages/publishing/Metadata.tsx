@@ -15,6 +15,14 @@ export function Metadata({
 	const canonical = `${origin}/${locale}/`;
 	const image = `${origin}${socialImages[surface][locale]}`;
 	const [jobTitle, employer] = profile.meta.role.split(" @ ");
+	const schools = new Set(
+		profile.sections
+			.filter((section) => section.id === "education")
+			.flatMap((section) => section.tokens)
+			.flatMap((token) =>
+				token.type === "heading" && token.depth === 3 ? [token.text] : [],
+			),
+	);
 	const graph = {
 		"@context": "https://schema.org",
 		"@type": "ProfilePage",
@@ -27,10 +35,14 @@ export function Metadata({
 			"@type": "Person",
 			"@id": "https://lizheng.me/#person",
 			name: profile.meta.name,
-			alternateName: locale === "zh" ? "Zheng Li" : "李征",
+			alternateName: [locale === "zh" ? "Zheng Li" : "李征", "Li Zheng"],
 			url: "https://lizheng.me/",
 			jobTitle,
 			worksFor: { "@type": "Organization", name: employer },
+			alumniOf: [...schools].map((name) => ({
+				"@type": "CollegeOrUniversity",
+				name,
+			})),
 			image: "https://lizheng.dev/design-assets/portrait.webp",
 			sameAs: [
 				...new Set([

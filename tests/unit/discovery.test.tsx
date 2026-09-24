@@ -117,7 +117,13 @@ for (const surface of ["landing", "resume"] as const)
 	for (const locale of ["en", "zh"] as const)
 		it(`${surface}/${locale} exposes localized sharing and public reading formats`, async () => {
 			const origin = `https://lizheng.${surface === "landing" ? "me" : "dev"}`;
-			document.documentElement.innerHTML = await renderPage(surface, locale);
+			const html = await renderPage(surface, locale);
+			expect(html).toMatch(
+				new RegExp(
+					`^<!doctype html><html lang="${locale === "zh" ? "zh-CN" : "en"}">`,
+				),
+			);
+			document.documentElement.innerHTML = html;
 			const meta = (name: string) =>
 				document
 					.querySelector(`meta[property="${name}"], meta[name="${name}"]`)
@@ -182,4 +188,38 @@ for (const surface of ["landing", "resume"] as const)
 					"https://x.com/zhengli",
 				]),
 			);
+			expect(graph.mainEntity.alternateName).toEqual([
+				locale === "zh" ? "Zheng Li" : "李征",
+				"Li Zheng",
+			]);
+			expect(graph.mainEntity.worksFor.name).toBe("Microsoft");
+			const school = locale === "zh" ? "同济大学" : "Tongji University";
+			expect(graph.mainEntity.alumniOf).toEqual([
+				{ "@type": "CollegeOrUniversity", name: school },
+			]);
+			expect(
+				[...document.querySelectorAll("#education h3")].map(
+					(heading) => heading.textContent,
+				),
+			).toEqual(surface === "resume" ? [school, school] : []);
+			if (surface === "resume")
+				for (const term of [
+					locale === "zh" ? "李征" : "Zheng Li",
+					"Microsoft",
+					school,
+				])
+					expect(meta("description")).toContain(term);
+			const alternates = Object.fromEntries(
+				[...document.querySelectorAll('link[rel="alternate"][hreflang]')].map(
+					(link) => [link.getAttribute("hreflang"), link.getAttribute("href")],
+				),
+			);
+			expect(alternates).toEqual({
+				en: `${origin}/en/`,
+				"zh-CN": `${origin}/zh/`,
+				"x-default": `${origin}/en/`,
+			});
+			expect(
+				document.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+			).toBe(alternates[locale === "zh" ? "zh-CN" : "en"]);
 		});

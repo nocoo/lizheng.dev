@@ -198,7 +198,19 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 			const f = fixture(host);
 			const result = await f.request(path);
 			expect(result.status).toBe(200);
-			expect(await result.text()).toContain(`https://${host}/`);
+			const body = await result.text();
+			if (path === "/robots.txt")
+				expect(body).toBe(
+					`User-agent: *\nAllow: /\nSitemap: https://${host}/sitemap-index.xml\n`,
+				);
+			else
+				expect(
+					[...body.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]),
+				).toEqual(
+					path === "/sitemap-index.xml"
+						? [`https://${host}/sitemap-pages.xml`]
+						: [`https://${host}/en/`, `https://${host}/zh/`],
+				);
 			expect(f.asset).not.toHaveBeenCalled();
 		});
 	it(`serves ${host} llms from its public build artifact`, async () => {

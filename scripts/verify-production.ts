@@ -57,11 +57,17 @@ for (const host of [
 			throw new Error(`HTML transformation regression: ${host}/${locale}`);
 		const schema =
 			/<script type="application\/ld\+json">([^<]+)<\/script>/.exec(html)?.[1];
-		if (
-			!schema ||
-			!JSON.parse(schema).mainEntity.sameAs.includes("https://hexly.ai/")
-		)
+		const person = schema ? JSON.parse(schema).mainEntity : undefined;
+		if (!person?.sameAs.includes("https://hexly.ai/"))
 			throw new Error(`Missing portfolio identity: ${host}/${locale}`);
+		const school = locale === "zh" ? "同济大学" : "Tongji University";
+		if (
+			person.alumniOf?.[0]?.name !== school ||
+			!html.includes(
+				`<link rel="canonical" href="https://${host.replace(/^www\./, "")}/${locale}/"/>`,
+			)
+		)
+			throw new Error(`Missing identity SEO metadata: ${host}/${locale}`);
 		for (const color of ["#f0f0e9", "#1e2824"])
 			if (!html.includes(`content="${color}"`))
 				throw new Error(`Missing theme color: ${host}/${locale}`);

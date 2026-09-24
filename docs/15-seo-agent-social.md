@@ -267,3 +267,13 @@ E1 的只读排查从 M1 开始即可进行；无需等素材定稿再定位规�
 - [Google AI features 与网站要求](https://developers.google.com/search/docs/appearance/ai-features)：没有额外 AI 文件或特殊 schema 的收录要求。
 - [Cloudflare 1010](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/) 与 [Browser Integrity Check](https://developers.cloudflare.com/waf/tools/browser-integrity-check/)
 - [Open Graph 协议](https://ogp.me/)
+
+## 2026-09-24 身份检索优化
+
+Google 抽样（opencli，当天）：`site:lizheng.dev` 收录 `/en/` 与 `/zh/`；“李征 微软”“lizheng microsoft”由本站排第一；“李征 同济”“李征 tongji”“lizheng tongji”的前十被同济土木学院同名教师等他人占据，本站未出现。技术审计（Codex p1，只读）确认抓取、canonical、hreflang、robots、sitemap 与无 JS 正文均正常；缺口在于 metadata 与结构化数据没有把姓名、微软和同济学历连在一起。
+
+- 两份简历 description 以姓名开头，写明微软职位、Microsoft Teams 与同济大学学位；文案经 Pi p3 只读核对事实与堆砌风险。
+- Person 新增 `alumniOf`（CollegeOrUniversity，名称取自当前语言教育章节标题），`alternateName` 同时列出另一语言姓名与 Li Zheng。四页共享同一 Person `@id`，me 页也输出同一学历。
+- 回归检查：L1 断言四页 hreflang 互惠、canonical 与 `<html lang>`、alternateName / worksFor / alumniOf 与可见教育标题一致、简历摘要包含姓名、Microsoft 与学校；边缘测试锁定 robots 全文和 sitemap `loc` 集合。L2 在真实 Worker 上检查 canonical 与 alumniOf，发布后 `verify-production` 同样检查。
+- 排名、同名消歧和 canonical 选择仍由搜索引擎决定；需在 Search Console / Bing Webmaster 提交 sitemap 并请求重新抓取两个简历 URL 后观察，不以本次改动承诺排名。
+- 本地验证：新断言在旧实现上 4 项失败后通过；L1 283 项通过（statements / functions / lines 100%，branches 99.47%），`check:static` 零错误，构建通过，L2 5 组与三浏览器 L3 255 项通过，截图基线未更新。

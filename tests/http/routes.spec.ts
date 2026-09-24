@@ -107,6 +107,21 @@ for (const surface of ["resume", "landing"])
 					surface === "resume" ? "resume-document" : "console-shell",
 				);
 				expect(html).not.toContain("{{");
+				const origin = `https://lizheng.${surface === "resume" ? "dev" : "me"}`;
+				expect(html).toContain(
+					`<link rel="canonical" href="${origin}/${locale}/"/>`,
+				);
+				const person = JSON.parse(
+					/<script type="application\/ld\+json">([^<]+)<\/script>/.exec(
+						html,
+					)?.[1] ?? "{}",
+				).mainEntity;
+				expect(person.alumniOf).toEqual([
+					{
+						"@type": "CollegeOrUniversity",
+						name: locale === "zh" ? "同济大学" : "Tongji University",
+					},
+				]);
 				expect(page.headers()["content-security-policy"]).toContain(
 					"frame-ancestors 'none'",
 				);
