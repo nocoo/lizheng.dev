@@ -12,6 +12,7 @@ type Metrics = {
 	longTasks: number[];
 	eventTimings: unknown[];
 	longAnimationFrames: unknown[];
+	resourceTimings: unknown[];
 	frameTimingSupported: boolean;
 };
 declare global {
@@ -51,6 +52,7 @@ for (const surface of ["resume", "landing"])
 							longTasks: [],
 							eventTimings: [],
 							longAnimationFrames: [],
+							resourceTimings: [],
 							frameTimingSupported:
 								PerformanceObserver.supportedEntryTypes.includes(
 									"long-animation-frame",
@@ -193,7 +195,14 @@ for (const surface of ["resume", "landing"])
 						}
 					}
 					await page.waitForTimeout(500);
-					samples.push(await page.evaluate(() => window.labMetrics));
+					samples.push(
+						await page.evaluate(() => ({
+							...window.labMetrics,
+							resourceTimings: performance
+								.getEntriesByType("resource")
+								.map((entry) => entry.toJSON()),
+						})),
+					);
 					await context.close();
 				}
 				const result = {
