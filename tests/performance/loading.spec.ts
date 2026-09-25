@@ -4,13 +4,16 @@ import { assertLocalRequest } from "../../packages/quality/isolation";
 type Entry = PerformanceEntry & {
 	value?: number;
 	hadRecentInput?: boolean;
-	interactionId?: number;
 };
 type Metrics = {
 	lcp: number;
 	cls: number;
 	interactions: number[];
 	longTasks: number[];
+	eventTimings: unknown[];
+	longAnimationFrames: unknown[];
+	resourceTimings: unknown[];
+	frameTimingSupported: boolean;
 };
 declare global {
 	interface Window {
@@ -26,6 +29,18 @@ for (const surface of ["resume", "landing"])
 			test(`${surface}/${locale}/${width}: cold load and real interactions with normal motion`, async ({
 				browser,
 			}, info) => {
+				const browserSession = await browser.newBrowserCDPSession();
+				const { gpu } = await browserSession.send("SystemInfo.getInfo");
+				await browserSession.detach();
+				const browserEnvironment = {
+					version: browser.version(),
+					devices: gpu.devices.map(({ vendorString, deviceString }) => ({
+						vendorString,
+						deviceString,
+					})),
+					renderer: gpu.auxAttributes?.glRenderer ?? null,
+					features: gpu.featureStatus,
+				};
 				const samples: Metrics[] = [];
 				for (let sample = 0; sample < 3; sample++) {
 					const context = await browser.newContext({
@@ -47,6 +62,13 @@ for (const surface of ["resume", "landing"])
 							cls: 0,
 							interactions: [],
 							longTasks: [],
+							eventTimings: [],
+							longAnimationFrames: [],
+							resourceTimings: [],
+							frameTimingSupported:
+								PerformanceObserver.supportedEntryTypes.includes(
+									"long-animation-frame",
+								),
 						};
 						let session = 0,
 							first = 0,
@@ -74,9 +96,26 @@ for (const surface of ["resume", "landing"])
 							}
 						}).observe({ type: "layout-shift", buffered: true });
 						new PerformanceObserver((list) => {
-							for (const entry of list.getEntries() as Entry[])
-								if (entry.interactionId)
-									window.labMetrics.interactions.push(entry.duration);
+							for (const entry of list.getEntries() as PerformanceEventTiming[]) {
+								if (!entry.interactionId) continue;
+								window.labMetrics.interactions.push(entry.duration);
+								const target =
+									entry.target instanceof Element
+										? entry.target.closest("button, a")
+										: null;
+								window.labMetrics.eventTimings.push({
+									timing: entry.toJSON(),
+									target: target
+										? {
+												tag: target.tagName,
+												id: target.id,
+												class: target.getAttribute("class"),
+												chapter: target.getAttribute("data-chapter"),
+												control: target.getAttribute("data-control"),
+											}
+										: null,
+								});
+							}
 						}).observe({
 							type: "event",
 							buffered: true,
@@ -86,6 +125,11 @@ for (const surface of ["resume", "landing"])
 							for (const entry of list.getEntries())
 								window.labMetrics.longTasks.push(entry.duration);
 						}).observe({ type: "longtask", buffered: true });
+						if (window.labMetrics.frameTimingSupported)
+							new PerformanceObserver((list) => {
+								for (const entry of list.getEntries())
+									window.labMetrics.longAnimationFrames.push(entry.toJSON());
+							}).observe({ type: "long-animation-frame", buffered: true });
 					});
 					const page = await context.newPage();
 					const cdp = await context.newCDPSession(page);
@@ -163,12 +207,20 @@ for (const surface of ["resume", "landing"])
 						}
 					}
 					await page.waitForTimeout(500);
-					samples.push(await page.evaluate(() => window.labMetrics));
+					samples.push(
+						await page.evaluate(() => ({
+							...window.labMetrics,
+							resourceTimings: performance
+								.getEntriesByType("resource")
+								.map((entry) => entry.toJSON()),
+						})),
+					);
 					await context.close();
 				}
 				const result = {
 					model:
 						"Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+					browserEnvironment,
 					samples,
 					median: {
 						lcp: median(samples.map((s) => s.lcp)),
