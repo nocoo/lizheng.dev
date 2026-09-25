@@ -10,11 +10,11 @@ export default defineConfig({
 	projects: [{ name: "chromium", use: { browserName: "chromium" } }],
 	use: {
 		...browserConfig.use,
-		// Continuous filmstrip recording competes with the frame delivery being measured.
+		// DOM snapshot collection forces layout on the timed input path.
 		trace: {
 			mode: "retain-on-failure",
-			screenshots: false,
-			snapshots: true,
+			screenshots: true,
+			snapshots: false,
 		},
 	},
 	reporter: [
