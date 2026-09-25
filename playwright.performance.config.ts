@@ -8,6 +8,15 @@ export default defineConfig({
 	fullyParallel: false,
 	timeout: 90000,
 	projects: [{ name: "chromium", use: { browserName: "chromium" } }],
+	use: {
+		...browserConfig.use,
+		// Continuous filmstrip recording competes with the frame delivery being measured.
+		trace: {
+			mode: "retain-on-failure",
+			screenshots: false,
+			snapshots: true,
+		},
+	},
 	reporter: [
 		["list"],
 		["json", { outputFile: ".test-results/performance.json" }],
