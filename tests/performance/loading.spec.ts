@@ -29,6 +29,18 @@ for (const surface of ["resume", "landing"])
 			test(`${surface}/${locale}/${width}: cold load and real interactions with normal motion`, async ({
 				browser,
 			}, info) => {
+				const browserSession = await browser.newBrowserCDPSession();
+				const { gpu } = await browserSession.send("SystemInfo.getInfo");
+				await browserSession.detach();
+				const browserEnvironment = {
+					version: browser.version(),
+					devices: gpu.devices.map(({ vendorString, deviceString }) => ({
+						vendorString,
+						deviceString,
+					})),
+					renderer: gpu.auxAttributes?.glRenderer ?? null,
+					features: gpu.featureStatus,
+				};
 				const samples: Metrics[] = [];
 				for (let sample = 0; sample < 3; sample++) {
 					const context = await browser.newContext({
@@ -208,6 +220,7 @@ for (const surface of ["resume", "landing"])
 				const result = {
 					model:
 						"Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+					browserEnvironment,
 					samples,
 					median: {
 						lcp: median(samples.map((s) => s.lcp)),
