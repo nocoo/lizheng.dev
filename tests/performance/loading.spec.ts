@@ -4,13 +4,15 @@ import { assertLocalRequest } from "../../packages/quality/isolation";
 type Entry = PerformanceEntry & {
 	value?: number;
 	hadRecentInput?: boolean;
-	interactionId?: number;
 };
 type Metrics = {
 	lcp: number;
 	cls: number;
 	interactions: number[];
 	longTasks: number[];
+	eventTimings: unknown[];
+	longAnimationFrames: unknown[];
+	frameTimingSupported: boolean;
 };
 declare global {
 	interface Window {
@@ -47,6 +49,12 @@ for (const surface of ["resume", "landing"])
 							cls: 0,
 							interactions: [],
 							longTasks: [],
+							eventTimings: [],
+							longAnimationFrames: [],
+							frameTimingSupported:
+								PerformanceObserver.supportedEntryTypes.includes(
+									"long-animation-frame",
+								),
 						};
 						let session = 0,
 							first = 0,
@@ -74,9 +82,26 @@ for (const surface of ["resume", "landing"])
 							}
 						}).observe({ type: "layout-shift", buffered: true });
 						new PerformanceObserver((list) => {
-							for (const entry of list.getEntries() as Entry[])
-								if (entry.interactionId)
-									window.labMetrics.interactions.push(entry.duration);
+							for (const entry of list.getEntries() as PerformanceEventTiming[]) {
+								if (!entry.interactionId) continue;
+								window.labMetrics.interactions.push(entry.duration);
+								const target =
+									entry.target instanceof Element
+										? entry.target.closest("button, a")
+										: null;
+								window.labMetrics.eventTimings.push({
+									timing: entry.toJSON(),
+									target: target
+										? {
+												tag: target.tagName,
+												id: target.id,
+												class: target.getAttribute("class"),
+												chapter: target.getAttribute("data-chapter"),
+												control: target.getAttribute("data-control"),
+											}
+										: null,
+								});
+							}
 						}).observe({
 							type: "event",
 							buffered: true,
@@ -86,6 +111,11 @@ for (const surface of ["resume", "landing"])
 							for (const entry of list.getEntries())
 								window.labMetrics.longTasks.push(entry.duration);
 						}).observe({ type: "longtask", buffered: true });
+						if (window.labMetrics.frameTimingSupported)
+							new PerformanceObserver((list) => {
+								for (const entry of list.getEntries())
+									window.labMetrics.longAnimationFrames.push(entry.toJSON());
+							}).observe({ type: "long-animation-frame", buffered: true });
 					});
 					const page = await context.newPage();
 					const cdp = await context.newCDPSession(page);
