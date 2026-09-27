@@ -1,16 +1,20 @@
+import { open } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { assertLocalRequest } from "../../packages/quality/isolation";
 
 type Entry = PerformanceEntry & {
 	value?: number;
 	hadRecentInput?: boolean;
-	interactionId?: number;
 };
 type Metrics = {
 	lcp: number;
 	cls: number;
 	interactions: number[];
 	longTasks: number[];
+	eventTimings: unknown[];
+	longAnimationFrames: unknown[];
+	resourceTimings: unknown[];
+	frameTimingSupported: boolean;
 };
 declare global {
 	interface Window {
@@ -26,7 +30,24 @@ for (const surface of ["resume", "landing"])
 			test(`${surface}/${locale}/${width}: cold load and real interactions with normal motion`, async ({
 				browser,
 			}, info) => {
+				const browserSession = await browser.newBrowserCDPSession();
+				const { gpu } = await browserSession.send("SystemInfo.getInfo");
+				await browserSession.detach();
+				const browserEnvironment = {
+					version: browser.version(),
+					devices: gpu.devices.map(({ vendorString, deviceString }) => ({
+						vendorString,
+						deviceString,
+					})),
+					renderer: gpu.auxAttributes?.glRenderer ?? null,
+					features: gpu.featureStatus,
+				};
 				const samples: Metrics[] = [];
+				const profilePaint =
+					process.env.PERFORMANCE_PAINT_PROFILE === "1" &&
+					surface === "landing" &&
+					locale === "en" &&
+					width === 1440;
 				for (let sample = 0; sample < 3; sample++) {
 					const context = await browser.newContext({
 						viewport: { width, height: 900 },
@@ -47,6 +68,13 @@ for (const surface of ["resume", "landing"])
 							cls: 0,
 							interactions: [],
 							longTasks: [],
+							eventTimings: [],
+							longAnimationFrames: [],
+							resourceTimings: [],
+							frameTimingSupported:
+								PerformanceObserver.supportedEntryTypes.includes(
+									"long-animation-frame",
+								),
 						};
 						let session = 0,
 							first = 0,
@@ -74,9 +102,26 @@ for (const surface of ["resume", "landing"])
 							}
 						}).observe({ type: "layout-shift", buffered: true });
 						new PerformanceObserver((list) => {
-							for (const entry of list.getEntries() as Entry[])
-								if (entry.interactionId)
-									window.labMetrics.interactions.push(entry.duration);
+							for (const entry of list.getEntries() as PerformanceEventTiming[]) {
+								if (!entry.interactionId) continue;
+								window.labMetrics.interactions.push(entry.duration);
+								const target =
+									entry.target instanceof Element
+										? entry.target.closest("button, a")
+										: null;
+								window.labMetrics.eventTimings.push({
+									timing: entry.toJSON(),
+									target: target
+										? {
+												tag: target.tagName,
+												id: target.id,
+												class: target.getAttribute("class"),
+												chapter: target.getAttribute("data-chapter"),
+												control: target.getAttribute("data-control"),
+											}
+										: null,
+								});
+							}
 						}).observe({
 							type: "event",
 							buffered: true,
@@ -86,6 +131,11 @@ for (const surface of ["resume", "landing"])
 							for (const entry of list.getEntries())
 								window.labMetrics.longTasks.push(entry.duration);
 						}).observe({ type: "longtask", buffered: true });
+						if (window.labMetrics.frameTimingSupported)
+							new PerformanceObserver((list) => {
+								for (const entry of list.getEntries())
+									window.labMetrics.longAnimationFrames.push(entry.toJSON());
+							}).observe({ type: "long-animation-frame", buffered: true });
 					});
 					const page = await context.newPage();
 					const cdp = await context.newCDPSession(page);
@@ -113,6 +163,12 @@ for (const surface of ["resume", "landing"])
 					});
 					// Allow paint observers to flush; keep all decorative animation running.
 					await page.waitForTimeout(500);
+					if (profilePaint)
+						await cdp.send("Tracing.start", {
+							categories:
+								"devtools.timeline,disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.frame,blink.user_timing,cc,viz,gpu",
+							transferMode: "ReturnAsStream",
+						});
 					if (
 						(await page.locator("html").getAttribute("data-theme")) !== "dark"
 					)
@@ -163,12 +219,49 @@ for (const surface of ["resume", "landing"])
 						}
 					}
 					await page.waitForTimeout(500);
-					samples.push(await page.evaluate(() => window.labMetrics));
+					samples.push(
+						await page.evaluate(() => ({
+							...window.labMetrics,
+							resourceTimings: performance
+								.getEntriesByType("resource")
+								.map((entry) => entry.toJSON()),
+						})),
+					);
+					if (profilePaint) {
+						const completed = new Promise<{ stream?: string }>((resolve) =>
+							cdp.once("Tracing.tracingComplete", resolve),
+						);
+						await cdp.send("Tracing.end");
+						const { stream } = await completed;
+						if (!stream) throw new Error("Chromium paint trace stream missing");
+						const path = info.outputPath(`paint-profile-${sample}.json`);
+						const file = await open(path, "w");
+						try {
+							for (;;) {
+								const chunk = await cdp.send("IO.read", { handle: stream });
+								await file.writeFile(
+									Buffer.from(
+										chunk.data,
+										chunk.base64Encoded ? "base64" : "utf8",
+									),
+								);
+								if (chunk.eof) break;
+							}
+						} finally {
+							await file.close();
+							await cdp.send("IO.close", { handle: stream });
+						}
+						await info.attach(`paint-profile-${sample}`, {
+							path,
+							contentType: "application/json",
+						});
+					}
 					await context.close();
 				}
 				const result = {
 					model:
 						"Chromium, 4x CPU, 1.6 Mbps down / 0.75 Mbps up, 150ms latency, cold cache, normal motion",
+					browserEnvironment,
 					samples,
 					median: {
 						lcp: median(samples.map((s) => s.lcp)),

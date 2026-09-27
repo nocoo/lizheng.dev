@@ -53,7 +53,19 @@ jobs:
       - if: matrix.browser == 'chromium'
         run: bun run test:development
       - if: matrix.browser == 'chromium'
+        id: performance
         run: bun run test:performance
+      - name: Compare performance without the Playwright recorder
+        if: failure() && matrix.browser == 'chromium' && steps.performance.conclusion == 'failure'
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: .test-results/performance-control.json
+        run: bun run test:performance --grep 'landing/en/1440:' --trace off --reporter=line,json --output=.test-results/performance-control
+      - name: Capture Chromium paint diagnostics
+        if: failure() && matrix.browser == 'chromium' && steps.performance.conclusion == 'failure'
+        env:
+          PERFORMANCE_PAINT_PROFILE: "1"
+          PLAYWRIGHT_JSON_OUTPUT_FILE: .test-results/performance-paint.json
+        run: bun run test:performance --grep 'landing/en/1440:' --trace off --reporter=line,json --output=.test-results/performance-paint
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
