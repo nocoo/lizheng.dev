@@ -1,3 +1,4 @@
+import { open } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { assertLocalRequest } from "../../packages/quality/isolation";
 
@@ -42,6 +43,11 @@ for (const surface of ["resume", "landing"])
 					features: gpu.featureStatus,
 				};
 				const samples: Metrics[] = [];
+				const profilePaint =
+					process.env.PERFORMANCE_PAINT_PROFILE === "1" &&
+					surface === "landing" &&
+					locale === "en" &&
+					width === 1440;
 				for (let sample = 0; sample < 3; sample++) {
 					const context = await browser.newContext({
 						viewport: { width, height: 900 },
@@ -157,6 +163,12 @@ for (const surface of ["resume", "landing"])
 					});
 					// Allow paint observers to flush; keep all decorative animation running.
 					await page.waitForTimeout(500);
+					if (profilePaint)
+						await cdp.send("Tracing.start", {
+							categories:
+								"devtools.timeline,disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.frame,blink.user_timing,cc,viz,gpu",
+							transferMode: "ReturnAsStream",
+						});
 					if (
 						(await page.locator("html").getAttribute("data-theme")) !== "dark"
 					)
@@ -215,6 +227,35 @@ for (const surface of ["resume", "landing"])
 								.map((entry) => entry.toJSON()),
 						})),
 					);
+					if (profilePaint) {
+						const completed = new Promise<{ stream?: string }>((resolve) =>
+							cdp.once("Tracing.tracingComplete", resolve),
+						);
+						await cdp.send("Tracing.end");
+						const { stream } = await completed;
+						if (!stream) throw new Error("Chromium paint trace stream missing");
+						const path = info.outputPath(`paint-profile-${sample}.json`);
+						const file = await open(path, "w");
+						try {
+							for (;;) {
+								const chunk = await cdp.send("IO.read", { handle: stream });
+								await file.writeFile(
+									Buffer.from(
+										chunk.data,
+										chunk.base64Encoded ? "base64" : "utf8",
+									),
+								);
+								if (chunk.eof) break;
+							}
+						} finally {
+							await file.close();
+							await cdp.send("IO.close", { handle: stream });
+						}
+						await info.attach(`paint-profile-${sample}`, {
+							path,
+							contentType: "application/json",
+						});
+					}
 					await context.close();
 				}
 				const result = {

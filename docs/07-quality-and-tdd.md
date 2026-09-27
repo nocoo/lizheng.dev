@@ -133,3 +133,9 @@ hook 调用一个等待所有子任务的 gate runner，保留每项退出码，
 ## 证据与评级
 
 实际 L1/L2/L3、G1/G2、D1 命令和结果记录在 11。UI 行为通过浏览器测试；应用逻辑覆盖率阈值四项均为 95%。Husky 门禁使用真实临时 Git fixture 验证失败能阻断，CI 重跑检查并只打包通过验证的源码。没有存储的子项为 N/A，真实设备和真实用户 Web Vitals 不计为已验证。
+
+## Hosted performance failure diagnostics
+
+The six primary performance cases retain their original recorder settings, three cold samples, normal motion, network and CPU throttling, and 200ms interaction limit. A failed Chromium performance step triggers two separate desktop-English landing diagnostics on the same runner: a recorder-free control, then a recorder-free Chromium paint trace. Each uses its own JSON report and output directory, preserving the primary evidence. These additional runs cannot clear the original failure or authorize packaging or release. Native trace overhead must be considered when interpreting its timings.
+
+`PERFORMANCE_PAINT_PROFILE=1` enables native traces only for `landing/en/1440`; ordinary runs leave it disabled. The traces are streamed to files after metrics are sampled and retained in the existing CI evidence artifact.
