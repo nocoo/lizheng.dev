@@ -1,0 +1,37 @@
+name: Performance lab
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  performance:
+    name: Cold load and interaction budgets
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@081cdf665b9c67f233abfcc9242ce0be76ce2bb4
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.8.1"
+          install-policy: "blocked"
+      - run: bunx playwright install --with-deps chromium
+      - name: Resolve test hosts only to IPv4 loopback
+        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
+      - run: bun run test:performance
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: performance-${{ github.sha }}
+          path: .test-results
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true

@@ -58,7 +58,7 @@ bun run check:security
 bun run check:hooks
 ```
 
-G2 needs gitleaks and osv-scanner on PATH. `test:development` and `test:performance` are additional Chromium suites; run sequentially with L3.
+G2 needs gitleaks and osv-scanner on PATH. `test:development` remains a blocking Chromium check. `test:performance` runs in the independent daily/manual Performance lab workflow; failures remain visible but do not block publication. Run local suites sequentially with L3.
 Loopback browser host mappings and trusted Caddy previews: [development](docs/12-local-development.md), [release](docs/11-release-implementation.md).
 
 ## Verification
@@ -69,7 +69,7 @@ Loopback browser host mappings and trusted Caddy previews: [development](docs/12
 |---|---|---|---|
 | L1 (incl. former G1 static) | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic; strict types and lint/format with zero errors/warnings; generated types and docs/dependency consistency | planned | Achieved subchecks run today: `vitest.config.ts` coverage plus `check:static` (types, lint, docs/dependency consistency) in pre-commit and CI. Full unified L1 stays planned: checks run on working files rather than the index snapshot, and <30s timing plus isolated rejection proof are unverified |
 | L2 | Real HTTP for public routes/methods and both hosts; keep the full route matrix current | enforced | `tests/http/`, `playwright.http.config.ts`; pre-push and CI |
-| L3 | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines | enforced | `tests/browser/`, `playwright.config.ts`; CI matrix |
+| L3 | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines | enforced | `tests/browser/`, `playwright.config.ts`; complete CI matrix, WebKit split across three isolated runners |
 | G2 | Required dependency and secret scanners; missing binary fails | enforced | `check:security`, gitleaks + OSV; push-ref gap below |
 | D1 | Local runtime, per-run temporary state, loopback requests and forbidden production bindings; SQLite marker N/A for stateless site | enforced | `scripts/test-server.ts`, `packages/quality/isolation.ts` |
 | Build | Publishable assets and fixed Worker artifact | enforced | Pre-commit build; CI packaging and budgets |
@@ -91,7 +91,7 @@ No production or daily-dev stores, credentials or requests enter E2E. Test hosts
 ## Operations / Release
 
 Authorized releases follow [the runbook](docs/11-release-implementation.md): green gates, maintained exact dependencies, unused-dependency review and `/api/live` on both surfaces.
-`bun run deploy` publishes the Worker. Main CI success can trigger the existing production release workflow; a local commit itself does not deploy.
+`bun run deploy` publishes the Worker. Successful main push CI can trigger production release. CI `workflow_dispatch` is validation-only and cannot be used as a Release source. A local commit itself does not deploy. Every CI validates the release archive with the same extraction script as production; see [pipeline evidence](docs/19-ci-stability.md).
 
 ## Retrospective
 
