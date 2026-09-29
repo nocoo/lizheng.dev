@@ -22,3 +22,10 @@ During integration, redirecting `git show` directly to package.json truncated it
 when the PR object had not yet been fetched. The file was restored immediately
 from HEAD before validation; no broken state was committed. Fetch and materialize
 external Git files into temporary paths before replacing working files.
+
+The first CI-only calibration added a custom run title. Review identified that
+the pinned release-source action checks the API run name against `CI`; live run
+36643481028 confirmed that `run-name` changes that API field. The custom title
+was removed before any main push or deployment. Track validation by run ID and
+SHA without changing names used by downstream trust checks. This calibration
+does not count toward acceptance of the subsequent final commit.

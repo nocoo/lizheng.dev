@@ -1,5 +1,4 @@
 name: CI
-run-name: CI · ${{ github.event_name }} · ${{ inputs.validation || github.run_number }}
 
 on:
   push:
@@ -7,10 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      validation:
-        description: "CI-only validation label (never deploys)"
-        type: string
 
 permissions:
   contents: read
