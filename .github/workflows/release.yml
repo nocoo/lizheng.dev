@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           test -f release-artifact.tgz
-          tar -tzf release-artifact.tgz | grep -q '^\.release-worker'
+          tar -tzf release-artifact.tgz | grep '^\.release-worker' > /dev/null
           tar -xzf release-artifact.tgz
           test -d dist
           test -d .release-worker
