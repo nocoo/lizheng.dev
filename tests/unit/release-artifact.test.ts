@@ -56,14 +56,15 @@ function unpack(output: string, archive: string) {
 
 it("drains a large listing and extracts the complete release in an empty directory", async () => {
 	const { source, output, archive } = await fixture();
-	await Promise.all(
-		Array.from({ length: 600 }, (_, index) =>
-			writeFile(
-				join(source, ".release-worker", `${index}-${"x".repeat(150)}`),
-				"",
-			),
-		),
+	const directory = join(
+		".release-worker",
+		...Array.from({ length: 3 }, () => "d".repeat(190)),
 	);
+	await mkdir(join(source, directory), { recursive: true });
+	const files = Array.from({ length: 128 }, (_, index) =>
+		join(directory, `${index}-${"x".repeat(240)}`),
+	);
+	await Promise.all(files.map((file) => writeFile(join(source, file), file)));
 	const result = spawnSync(
 		"tar",
 		["-czf", archive, ".release-worker", "dist"],
@@ -72,8 +73,14 @@ it("drains a large listing and extracts the complete release in an empty directo
 		},
 	);
 	expect(result.status).toBe(0);
+	const listing = spawnSync("tar", ["-tzf", archive], { encoding: "utf8" });
+	expect(listing.status, listing.stderr).toBe(0);
+	expect(Buffer.byteLength(listing.stdout)).toBeGreaterThan(100_000);
 	const extracted = unpack(output, archive);
 	expect(extracted.status, extracted.stderr).toBe(0);
+	for (const file of files) {
+		expect(await readFile(join(output, file), "utf8")).toBe(file);
+	}
 	expect(await readFile(join(output, ".release-worker/index.js"), "utf8")).toBe(
 		".release-worker/index.js",
 	);

@@ -29,3 +29,7 @@ the pinned release-source action checks the API run name against `CI`; live run
 was removed before any main push or deployment. Track validation by run ID and
 SHA without changing names used by downstream trust checks. This calibration
 does not count toward acceptance of the subsequent final commit.
+
+## 2026-10-04 — Bound release archive fixture I/O
+
+The dependency commit gate exposed the existing 600-file release archive fixture taking 13.6 seconds while static checks and the build ran concurrently, exceeding its unchanged 5-second test limit. Profiling isolated filesystem packing/extraction as the cost. Use 128 longer paths to produce a larger real listing (108,169 bytes versus 102,820), assert the listing exceeds 100,000 bytes, and verify every extracted file's content. Keep the timeout, incomplete/corrupt archive checks and production extractor unchanged. Local BSD tar did not reject a temporary grep-q mutation with either the original or revised fixture; this local run does not prove GNU tar SIGPIPE behavior. Preserve that limitation and require the normal Linux CI artifact validation.
