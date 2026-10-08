@@ -1,15 +1,8 @@
 import type { PageContent } from "../content/model";
 import { Brand } from "./Brand";
 import { Preferences } from "./Preferences";
-import { Version } from "./Version";
 
-function SurfaceLinks({
-	content,
-	footer = false,
-}: {
-	content: PageContent;
-	footer?: boolean;
-}) {
+function SurfaceLinks({ content }: { content: PageContent }) {
 	const { locale, surface, origins } = content;
 	const names = {
 		en: {
@@ -50,15 +43,7 @@ function SurfaceLinks({
 	return (
 		<nav
 			className="surface-links"
-			aria-label={
-				locale === "zh"
-					? footer
-						? "页脚访问面"
-						: "访问面"
-					: footer
-						? "Footer surfaces"
-						: "Surfaces"
-			}
+			aria-label={locale === "zh" ? "访问面" : "Surfaces"}
 		>
 			{links.map((link) => (
 				<a
@@ -106,12 +91,9 @@ export function SurfaceFooter({ content }: { content: PageContent }) {
 						<Brand locale={content.locale} />
 						<p lang="en">
 							{content.meta.copyright.replace("{year}", content.year)}
-							{" · "}
-							<Version />
 						</p>
 					</div>
 					{compact && <LocationSignature />}
-					<SurfaceLinks content={content} footer />
 					<nav
 						className="public-formats"
 						aria-label={

@@ -102,7 +102,11 @@ for (const surface of ["resume", "landing"])
 				expect(html).toContain(
 					`<html lang="${locale === "zh" ? "zh-CN" : "en"}">`,
 				);
-				expect(html.replace(/<!--.*?-->/g, "")).toContain(`v${version}`);
+				const footer = /<footer\b[^>]*>([\s\S]*?)<\/footer>/.exec(html)?.[1];
+				expect(footer).toBeTruthy();
+				expect(footer).not.toContain('class="site-version"');
+				expect(footer).not.toContain('class="surface-links"');
+				expect(footer).toContain('class="public-formats"');
 				expect(html).toContain(
 					surface === "resume" ? "resume-document" : "console-shell",
 				);

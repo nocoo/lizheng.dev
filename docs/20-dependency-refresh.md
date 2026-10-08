@@ -28,9 +28,11 @@ The other 18 direct pins already match current stable releases. Miniflare's
 latest stable 4.20260730.0 would downgrade the existing runtime and is not
 adopted. The selected alpha matches Wrangler's exact dependency and workerd
 1.20261006.1. The application compatibility date remains 2026-09-04; generated
-Worker declarations are regenerated, not edited manually. No public content,
-layout, route, coverage floor, screenshot baseline or release workflow changes
-are intended. Knip and source/configuration inspection find no unused direct
+Worker declarations are regenerated, not edited manually. Dependency upgrades
+do not require public content, layout, route, coverage floor, screenshot baseline
+or release workflow changes. The user subsequently authorizes a separate footer
+simplification in [14](14-connected-surfaces.md), including intentional page
+baseline updates. Knip and source/configuration inspection find no unused direct
 dependencies.
 
 ## Transitive security fixes
@@ -64,8 +66,11 @@ Atomic dependency commits retain normal check-only hooks. Local evidence so far:
   issues across the upgraded graph.
 - The isolated real-Git hook fixture rejects all 17 injected failures and
   accepts restored commit/push. All four production resource budgets pass.
-- The upgraded three-engine browser matrix and final development recheck are
-  pending. No screenshot snapshots or thresholds have been changed.
+- The dependency-only Chromium run passes all 85 cases without baseline changes.
+  The three-engine run is deliberately stopped during Firefox after the user's
+  footer change request; it is not counted as a complete passing run. The final
+  layout requires a new full matrix and development recheck. Thresholds remain
+  unchanged; footer baseline updates belong to the separately requested design.
 
 Existing active Caddy routes map both HTTPS previews to 127.0.0.1:7046:
 [Resume](https://lizheng-dev.dev.hexly.ai) and

@@ -2,6 +2,16 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Footer simplification - 2026-10-08
+
+The user removes visible footer versions and repeated header destinations from
+both surfaces; [14](14-connected-surfaces.md) owns the current design. Versions
+remain authoritative in package.json and all `/api/live` responses. Production
+verification checks page availability, the simplified footer, metadata and
+existing routing, without requiring visible version text. Earlier release
+records below describe their historical footer displays. Local browser/user
+acceptance and publication of this follow-up are pending.
+
 ## Justified résumé reading — v3.2.1
 
 On 2026-09-11 the user authorized justified Chinese and English résumé text, capped desktop reading widths, full available mobile width and “改完上线 Z+1”: v3.2.0 → v3.2.1. Paragraphs and lists use native justification, natural final-line alignment and language-aware hyphenation. The existing 64ch/36em reading columns and mobile page gutters already meet the requested width behavior; [17](17-kami-reading.md#两端对齐跟进--v321) records the rendered measurements and local checks.

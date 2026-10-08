@@ -52,8 +52,9 @@ for (const surface of ["resume", "landing"])
 					);
 					await expect(page.locator("h1")).toBeVisible();
 					await expect(page.locator(".site-header .brand-grid")).toBeVisible();
-					await expect(page.locator(".site-version")).toContainText(
-						/^v\d+\.\d+\.\d+$/,
+					await expect(page.locator(".site-version")).toHaveCount(0);
+					await expect(page.locator(".site-footer .surface-links")).toHaveCount(
+						0,
 					);
 					expect(
 						await page.evaluate(
@@ -110,7 +111,6 @@ for (const surface of ["resume", "landing"])
 							{
 								fullPage: true,
 								animations: "disabled",
-								mask: [page.locator(".site-version")],
 								maxDiffPixelRatio: 0.001,
 							},
 						);

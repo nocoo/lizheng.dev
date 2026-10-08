@@ -17,7 +17,7 @@ const links = (root: string) =>
 
 for (const surface of ["landing", "resume"] as const)
 	for (const locale of ["en", "zh"] as const)
-		it(`${surface}/${locale} footer lists the same four destinations as the header`, async () => {
+		it(`${surface}/${locale} footer omits versions and repeated header navigation`, async () => {
 			document.documentElement.innerHTML = await renderPage(surface, locale);
 			const header = links(".site-header");
 			const footer = links(".site-footer");
@@ -26,8 +26,9 @@ for (const surface of ["landing", "resume"] as const)
 					? ["主页", "博客", "简历", "作品集"]
 					: ["Play", "Journal", "Résumé", "Portfolio"];
 			expect(header.map((link) => link.label)).toEqual(destinations);
-			expect(footer).toEqual(header);
-			expect(footer.at(-1)).toMatchObject({
+			expect(footer).toEqual([]);
+			expect(document.querySelector(".site-version")).toBeNull();
+			expect(header.at(-1)).toMatchObject({
 				label: destinations[3],
 				href: "https://hexly.ai",
 			});
@@ -40,9 +41,20 @@ for (const surface of ["landing", "resume"] as const)
 							: /^[A-Za-z]/.test(link.label)),
 				),
 			).toBe(true);
-			expect(footer.find((link) => link.current === "true")?.label).toBe(
+			expect(header.find((link) => link.current === "true")?.label).toBe(
 				surface === "landing" ? destinations[0] : destinations[2],
 			);
+			expect(
+				document.querySelector(".site-footer-identity p")?.textContent,
+			).toMatch(/^\u00a9 \d{4} Zheng Li/);
+			expect(
+				document.querySelector(".site-footer .location-signature")?.textContent,
+			).toBe("MADE IN BEIJING");
+			expect(
+				[...document.querySelectorAll(".site-footer .public-formats a")].map(
+					(anchor) => anchor.getAttribute("href"),
+				),
+			).toEqual([`/${locale}/content.md`, "/llms.txt"]);
 			const other = locale === "en" ? "zh" : "en";
 			const language = document.querySelector(".languages a");
 			expect(language?.getAttribute("href")).toBe(`/${other}/`);

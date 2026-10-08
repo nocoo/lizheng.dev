@@ -20,8 +20,15 @@ async function fetchCanonical(host: string, path: string) {
 async function verifyPage(host: string, locale: string) {
 	const page = await fetchCanonical(host, `/${locale}/`);
 	const html = (await page.text()).replace(/<!--.*?-->/g, "");
-	if (!page.ok || !html.includes(`v${manifest.version}`))
-		throw new Error(`Missing versioned page: ${host}/${locale}`);
+	if (!page.ok) throw new Error(`Missing public page: ${host}/${locale}`);
+	const footer = /<footer\b[^>]*>([\s\S]*?)<\/footer>/.exec(html)?.[1];
+	if (
+		!footer ||
+		footer.includes('class="site-version"') ||
+		footer.includes('class="surface-links"') ||
+		!footer.includes('class="public-formats"')
+	)
+		throw new Error(`Footer regression: ${host}/${locale}`);
 	if (
 		!page.headers.get("Cache-Control")?.includes("no-transform") ||
 		html.includes("https://static.cloudflareinsights.com/beacon.min.js")

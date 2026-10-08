@@ -181,13 +181,6 @@ button {
 	}
 }
 
-.site-version {
-	font-family: "Geist Mono Variable", monospace;
-	font-size: 11px;
-	margin-inline-start: 12px;
-	white-space: nowrap;
-}
-
 .location-signature {
 	display: inline-flex;
 	align-items: center;
@@ -375,14 +368,6 @@ html[lang="zh-CN"] .site-header .surface-links a {
 .site-footer-identity p {
 	margin: 0;
 }
-.site-footer .site-version {
-	color: var(--site-muted);
-	font-size: inherit;
-	margin-inline-start: 0;
-}
-.site-footer .surface-links a {
-	font-size: inherit;
-}
 .public-formats {
 	display: flex;
 	align-items: center;
@@ -425,9 +410,6 @@ html[lang="zh-CN"] .site-header .surface-links a {
 .site-footer-compact .location-signature {
 	margin-left: auto;
 	white-space: nowrap;
-}
-.site-footer-compact .surface-links {
-	margin-left: 0;
 }
 @media (max-width: 1100px) {
 	html {
@@ -503,13 +485,6 @@ html[lang="zh-CN"] .site-header .surface-links a {
 		align-items: flex-start;
 		flex-direction: column;
 		gap: 16px;
-	}
-	.site-footer .surface-links {
-		margin-left: 0;
-		gap: 28px;
-	}
-	.site-footer .surface-links a {
-		min-height: 32px;
 	}
 	.footer-curiosity {
 		display: none;

@@ -103,14 +103,14 @@ it("keeps identity and sentence boundaries in plain HTML text", async () => {
 		"Software engineering and team leadership. Web, mobile, data and AI.",
 	);
 	expect(text(".lcd-identity h2")).toBe("Zheng Li");
-	expect(text(".site-footer-identity p")).toMatch(/Zheng Li · v\d/);
+	expect(text(".site-footer-identity p")).toMatch(/Zheng Li$/);
 	document.documentElement.innerHTML = await renderPage("resume", "en");
 	expect(text(".resume-role")).toBe(
 		"Principal Software Engineering Manager @ Microsoft",
 	);
 	expect(text(".resume-sidebar nav a")).toBe("01 Professional Summary");
 	expect(text(".sidebar-location")).toContain("BEIJING 39.90°");
-	expect(text(".site-footer-identity p")).toMatch(/reserved\. · v\d/);
+	expect(text(".site-footer-identity p")).toMatch(/reserved\.$/);
 });
 
 for (const surface of ["landing", "resume"] as const)

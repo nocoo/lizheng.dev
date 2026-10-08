@@ -1,14 +1,14 @@
 # Journal, Play and Résumé
 
-2026-09-06. A common frame for `lizheng.blog`, `lizheng.me` and `lizheng.dev`, following the public Journal design in the sibling Firefly repository. 2026-09-08: header and footer share the four destinations. The header rule spans the full viewport; Résumé's two footer rules stay inside the content gutters.
+2026-09-06. A common frame for `lizheng.blog`, `lizheng.me` and `lizheng.dev`, following the public Journal design in the sibling Firefly repository. 2026-10-08: the user removes footer versions and duplicate header destinations on Play and Resume. The header rule spans the full viewport; Resume's two footer rules stay inside the content gutters.
 
 ## Navigation and layout
 
-`packages/experience/SurfaceChrome.tsx` owns the me/dev header and footer. Both display Play / Journal / Résumé / Portfolio in that order, localized as 主页 / 博客 / 简历 / 作品集, with the current surface identified by `aria-current`. Portfolio points to `https://hexly.ai`. Cross-links between me and dev retain the current locale. English header destinations are unmarked uppercase labels; Chinese destinations keep their written form. The current item uses a full-width terracotta rule. Language and theme are icon controls: a bilingual languages mark, and a borderless sun/moon pair. The header rule spans the full viewport. Play keeps one full-width footer rule; Résumé draws its two footer rules inside the 1500px content gutters. Inner bands use the same 1500px measure and gutters.
+`packages/experience/SurfaceChrome.tsx` owns the me/dev header and footer. Headers display Play / Journal / Résumé / Portfolio in that order, localized as 主页 / 博客 / 简历 / 作品集, with the current surface identified by `aria-current`. Footers do not repeat those destinations. Portfolio points to `https://hexly.ai`. Cross-links between me and dev retain the current locale. English header destinations are unmarked uppercase labels; Chinese destinations keep their written form. The current item uses a full-width terracotta rule. Language and theme are icon controls: a bilingual languages mark, and a borderless sun/moon pair. The header rule spans the full viewport. Play keeps one full-width footer rule; Résumé draws its two footer rules inside the 1500px content gutters. Inner bands use the same 1500px measure and gutters.
 
 The frame is at most 1500px wide. The résumé uses Firefly's 272px sidebar (228px at 1100px) and 1060px content column; prose retains its readable 72ch measure. Header, content and footer gutters follow the journal's breakpoints. At 640px and below the header has two rows, keeping all four destinations visible with 24px navigation gaps. The preference divider is hidden on that wrap so it does not sit beside the language control. Native scrolling accounts for the sticky header; section links and the skip link remain usable without JavaScript.
 
-The footer keeps the brand, copyright/version, four destinations, reading formats and Beijing signature, using one 11px monospace size. Page type is never smaller than 9px; 9px is reserved for micro labels. Play merges these into one compact band, without the second divider, closing caption or back-to-top action; Résumé retains its two-band footer and back-to-top link. Firefly retains its fuller journal directories and closing invitation. Public biography, résumé sections, metadata and content exports are unchanged.
+The footer keeps the brand, copyright, reading formats and Beijing signature, using one 11px monospace size. It has no visible version or duplicate surface navigation. Page type is never smaller than 9px; 9px is reserved for micro labels. Play merges these into one compact band, without the second divider, closing caption or back-to-top action; Résumé retains its two-band footer and back-to-top link. Firefly retains its fuller journal directories and closing invitation. Public biography, résumé sections, metadata and content exports are unchanged. Package versions remain in `/api/live` and release metadata; production page verification checks the simplified footer rather than visible version text.
 
 Play uses a 2:3 desktop grid for the introduction and device area, with matching top and bottom padding at every breakpoint. Narrow screens keep the stacked layout. The public CJK font subset includes the shared chrome and current theme guidance, avoiding system-font substitutions in these strings.
 
@@ -48,6 +48,16 @@ The document owns one random scene. Theme changes, reading, resize, HMR and Fire
 The me device gallery retains its autoplay and controls. Arrival now follows a single `cubic-bezier(0.16, 1, 0.3, 1)` curve over 950ms. Translation, rotation and scale approach the final pose without crossing it; the former 58% and 82% overshoot keyframes are removed. Lighting and accessory choreography continue around the smooth stop.
 
 ## Verification
+
+The 2026-10-08 footer tests first fail on duplicate destinations and version
+text in all four surface/locale variants, then pass after removal. The HTTP
+matrix also exposes its obsolete visible-version assertion; it now checks the
+simplified footer while retaining the existing `/api/live` version assertion.
+Only the 16 full-page baseline footer regions change, in both local and CI
+variants. Pixel equality above each footer is verified; the mobile Chinese
+Resume CI variant retains its existing 26px content-height difference. Device
+crops, comparison thresholds, content and platform-specific rendering outside
+the footer are unchanged. The complete three-engine recheck remains pending.
 
 The new theme tests failed against the binary implementation before the three-state controller was added. Scene tests initially failed without the document-scoped selector, then passed for all six choices, remount stability and invalid identifiers. Tests cover stored preferences, live system changes, localized actions, denied storage, bootstrap/CSP and listener cleanup.
 

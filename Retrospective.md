@@ -48,3 +48,9 @@ caught the unintended churn. Normalize only those location fields back to the
 repository's existing empty-location form, preserving versions and integrity
 hashes, then inspect the semantic diff and prove frozen-install hash stability.
 No mirror URLs were committed and no global registry settings were changed.
+
+The footer follow-up initially missed an HTTP assertion requiring visible
+version text because the first targeted reference search omitted tests/http.
+The full route matrix caught it before commit. Include unit, HTTP, browser and
+production verification consumers when removing a shared presentation contract;
+retain `/api/live` version checks rather than inventing hidden display metadata.

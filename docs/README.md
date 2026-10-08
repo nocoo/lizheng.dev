@@ -1,5 +1,9 @@
 # Active documentation
 
+The 2026-10-08 footer simplification in [14](14-connected-surfaces.md) removes
+visible versions and duplicate header destinations from both surfaces, retaining
+copyright, reading formats, location signatures and Resume's back-to-top action.
+
 The 2026-10-08 [dependency refresh](20-dependency-refresh.md) records stable
 release selection, the explicitly accepted Miniflare alpha exception, transitive
 security fixes and local verification. Browser/user acceptance and publication
