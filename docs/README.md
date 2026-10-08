@@ -1,5 +1,10 @@
 # Active documentation
 
+The user authorizes the 2026-10-08 dependency and footer follow-up as the explicit
+patch release v3.2.2. [11](11-release-implementation.md) records the scope,
+rollback reference and pending final-SHA CI/deployment verification. The test
+simplification audit remains a plan only and is not part of this release.
+
 The 2026-10-08 footer simplification in [14](14-connected-surfaces.md) removes
 visible versions and duplicate header destinations from both surfaces, retaining
 copyright, reading formats, location signatures and Resume's back-to-top action.
@@ -9,7 +14,7 @@ The follow-up uses `BUILT WITH CURIOSITY.` on Resume and adds
 The 2026-10-08 [dependency refresh](20-dependency-refresh.md) records stable
 release selection, the explicitly accepted Miniflare alpha exception, transitive
 security fixes and local verification. The complete browser matrix passes;
-user acceptance and publication remain pending. The independent performance lab
+publication is authorized and verification remains pending. The independent performance lab
 has three recorded failures requiring an idle-machine recheck.
 
 The 2026-09-30 [CI stability work](19-ci-stability.md) records the measured baseline, mandatory checks, isolated validation path and acceptance protocol. It supersedes the earlier requirement to run performance sampling inside every blocking browser job; development checks remain blocking.

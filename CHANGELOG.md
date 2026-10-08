@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.2.2] - 2026-10-08
+
+- Simplify both footers by removing visible versions and repeated header destinations, while retaining copyright, public reading formats and Beijing signatures.
+- Close the résumé footer with `BUILT WITH CURIOSITY.` and use `© 2026 Zheng Li. All rights reserved.` on Play in both languages; keep the résumé's back-to-top action.
+- Refresh exact runtime and development dependencies, including React, Vite, Playwright, Wrangler and its matching, explicitly accepted Miniflare alpha; patch sharp, smol-toml, source-map-js and Undici without suppressing advisories.
+- Connect the shared public Person identity, Microsoft affiliation and Tongji education across bilingual SEO metadata and verify canonical pages during edge propagation.
+- Stabilize the CI and validated-artifact release flow, retain blocking development checks and all three browser engines, and move cold-performance sampling to its independent scheduled/manual lab without changing budgets.
+- Validate complete release archives in an empty directory, drain large tar listings under pipefail, disable default Worker/preview URLs, and normalize bilingual project documentation and the project handbook.
+
 ## [3.2.1] - 2026-09-11
 
 - Justify Chinese and English résumé paragraphs and lists on desktop and mobile, keeping final lines naturally aligned and using language-aware hyphenation to reduce uneven word spacing.

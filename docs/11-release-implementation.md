@@ -9,8 +9,31 @@ both surfaces; [14](14-connected-surfaces.md) owns the current design. Versions
 remain authoritative in package.json and all `/api/live` responses. Production
 verification checks page availability, the simplified footer, metadata and
 existing routing, without requiring visible version text. Earlier release
-records below describe their historical footer displays. Local browser/user
-acceptance and publication of this follow-up are pending.
+records below describe their historical footer displays. Local browser checks
+pass; the user authorizes publication with the explicit Z+1 request below.
+
+## Dependency refresh and simplified footers - v3.2.2
+
+On 2026-10-08 the user authorizes `sys0-release z+1`: v3.2.1 to v3.2.2.
+The explicit patch request overrides the default elapsed-time/diff-size minor
+heuristic. The comparison baseline is the published v3.2.1 tag; this release
+includes subsequent dependency/security, SEO and CI/artifact maintenance as
+well as the approved footer changes. The read-only test-simplification plan is
+not implemented or included.
+
+Package.json remains the version source for both live endpoints; no visible
+version pill or footer version is restored. The prior local product checks and
+the three independent, nonblocking performance-lab failures are recorded in
+[20](20-dependency-refresh.md). No test, threshold or retry is weakened for this
+release. Publication follows successful main-push CI, its exact validated
+Worker/assets artifact and the existing production Release workflow. CI and
+deployment outcomes plus the five-minute follow-up will be recorded in the
+[v3.2.2 release](https://github.com/nocoo/lizheng.dev/releases/tag/v3.2.2).
+
+Before publication both apex `/api/live` endpoints returned v3.2.1 with
+deployment `8c044f19-fb63-4683-b928-f6f36a315cf8` on 2026-10-08; this is the
+rollback reference. No database or migration is involved. Final-SHA CI and
+production verification are pending at release preparation.
 
 ## Justified résumé reading — v3.2.1
 

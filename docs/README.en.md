@@ -12,7 +12,7 @@ One stateless Cloudflare Worker serves two experiences: a bilingual résumé at 
 - Use a lightweight DOM client for the résumé and hydrate device screens, controls and chapter navigation for the collection.
 - Navigate devices by keyboard, select chapters and pause the carousel.
 - Preserve exact 301 redirects from legacy lizheng.me blog URLs to lizheng.blog.
-- Share the root `package.json` version across site footers and `/api/live`.
+- Derive `/api/live` and release versions from root `package.json`; keep both footers free of visible versions and repeated header destinations.
 
 ## Usage
 

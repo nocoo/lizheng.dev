@@ -85,8 +85,12 @@ or deployment evidence is claimed for these unpushed changes.
 
 Existing active Caddy routes map both HTTPS previews to 127.0.0.1:7046:
 [Resume](https://lizheng-dev.dev.hexly.ai) and
-[Play](https://lizheng-me.dev.hexly.ai). User acceptance, version changes,
-push/tag/release and production deployment remain pending.
+[Play](https://lizheng-me.dev.hexly.ai). The user subsequently authorizes
+`sys0-release z+1` on 2026-10-08, accepting publication of these changes as
+v3.2.2. [11](11-release-implementation.md) records the release scope and rollback
+reference; final-SHA CI, push/tag/release and deployment verification remain
+pending at release preparation. The separately proposed test-simplification
+plan is not implemented in this release.
 
 ## Release sources
 
