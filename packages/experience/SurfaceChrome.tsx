@@ -114,7 +114,7 @@ export function SurfaceFooter({ content }: { content: PageContent }) {
 					<div className="site-footer-inner">
 						<LocationSignature />
 						<span className="footer-curiosity" lang="en">
-							WEB · MOBILE · AI
+							BUILT WITH CURIOSITY.
 						</span>
 						<a href="#main">
 							{content.locale === "zh" ? "返回顶部" : "Back to top"}

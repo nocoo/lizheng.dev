@@ -31,6 +31,13 @@ for (const surface of ["resume", "landing"]) {
 			await expect(links).toHaveText(destinations);
 			await expect(footerLinks).toHaveCount(0);
 			await expect(page.locator(".site-version")).toHaveCount(0);
+			await expect(page.locator(".site-footer-identity p")).toHaveText(
+				"\u00a9 2026 Zheng Li. All rights reserved.",
+			);
+			if (surface === "resume")
+				await expect(page.locator(".footer-curiosity")).toHaveText(
+					"BUILT WITH CURIOSITY.",
+				);
 			await expect(links.last()).toHaveAttribute("href", "https://hexly.ai");
 			await expect(
 				page.locator(`.site-header [data-surface-link="${surface}"]`),

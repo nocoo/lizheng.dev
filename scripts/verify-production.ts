@@ -26,7 +26,9 @@ async function verifyPage(host: string, locale: string) {
 		!footer ||
 		footer.includes('class="site-version"') ||
 		footer.includes('class="surface-links"') ||
-		!footer.includes('class="public-formats"')
+		!footer.includes('class="public-formats"') ||
+		!footer.includes("All rights reserved.") ||
+		(host.endsWith(".dev") && !footer.includes("BUILT WITH CURIOSITY."))
 	)
 		throw new Error(`Footer regression: ${host}/${locale}`);
 	if (

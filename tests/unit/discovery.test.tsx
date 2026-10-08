@@ -103,7 +103,9 @@ it("keeps identity and sentence boundaries in plain HTML text", async () => {
 		"Software engineering and team leadership. Web, mobile, data and AI.",
 	);
 	expect(text(".lcd-identity h2")).toBe("Zheng Li");
-	expect(text(".site-footer-identity p")).toMatch(/Zheng Li$/);
+	expect(text(".site-footer-identity p")).toMatch(
+		/Zheng Li\. All rights reserved\.$/,
+	);
 	document.documentElement.innerHTML = await renderPage("resume", "en");
 	expect(text(".resume-role")).toBe(
 		"Principal Software Engineering Manager @ Microsoft",

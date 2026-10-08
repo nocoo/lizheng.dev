@@ -10,6 +10,13 @@ The frame is at most 1500px wide. The résumé uses Firefly's 272px sidebar (228
 
 The footer keeps the brand, copyright, reading formats and Beijing signature, using one 11px monospace size. It has no visible version or duplicate surface navigation. Page type is never smaller than 9px; 9px is reserved for micro labels. Play merges these into one compact band, without the second divider, closing caption or back-to-top action; Résumé retains its two-band footer and back-to-top link. Firefly retains its fuller journal directories and closing invitation. Public biography, résumé sections, metadata and content exports are unchanged. Package versions remain in `/api/live` and release metadata; production page verification checks the simplified footer rather than visible version text.
 
+The same-day copy follow-up changes Resume's closing caption to
+`BUILT WITH CURIOSITY.` and Play's copyright to
+`© 2026 Zheng Li. All rights reserved.` Both remain English in Chinese mode.
+The copyright year continues to come from the shared content model, rather than
+being hardcoded in the component; both public Play documents carry the same
+copyright template.
+
 Play uses a 2:3 desktop grid for the introduction and device area, with matching top and bottom padding at every breakpoint. Narrow screens keep the stacked layout. The public CJK font subset includes the shared chrome and current theme guidance, avoiding system-font substitutions in these strings.
 
 The existing HTTPS development origins link to each other, including Firefly. Production builds link to the public domains. No deployment configuration or publishing trigger is changed.

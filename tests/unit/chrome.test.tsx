@@ -72,11 +72,17 @@ for (const surface of ["landing", "resume"] as const)
 			).toBe(surface === "landing");
 			const back = document.querySelector('.site-footer a[href="#main"]');
 			if (surface === "resume") {
+				expect(document.querySelector(".footer-curiosity")?.textContent).toBe(
+					"BUILT WITH CURIOSITY.",
+				);
 				expect(back?.textContent).toMatch(
 					locale === "zh" ? /返回顶部/ : /Back to top/,
 				);
 				expect(document.querySelector(".site-footer-bottom")).not.toBeNull();
 			} else {
+				expect(
+					document.querySelector(".site-footer-identity p")?.textContent,
+				).toBe("\u00a9 2026 Zheng Li. All rights reserved.");
 				expect(back).toBeNull();
 				expect(document.querySelector(".site-footer-bottom")).toBeNull();
 			}

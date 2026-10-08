@@ -12,7 +12,7 @@ role: "Principal Software Engineering Manager @ Microsoft"
 eyebrow: "你好 · 我是"
 canonical: "https://lizheng.me/zh/"
 location: "MADE IN BEIJING"
-copyright: "© {year} Zheng Li"
+copyright: "© {year} Zheng Li. All rights reserved."
 ---
 
 写了 20 年代码，15 年微软。
