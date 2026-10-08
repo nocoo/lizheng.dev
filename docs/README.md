@@ -1,5 +1,10 @@
 # Active documentation
 
+The 2026-10-08 [dependency refresh](20-dependency-refresh.md) records stable
+release selection, the explicitly accepted Miniflare alpha exception, transitive
+security fixes and local verification. Browser/user acceptance and publication
+are still pending.
+
 The 2026-09-30 [CI stability work](19-ci-stability.md) records the measured baseline, mandatory checks, isolated validation path and acceptance protocol. It supersedes the earlier requirement to run performance sampling inside every blocking browser job; development checks remain blocking.
 
 The latest 2026-09-11 résumé work preserves the user's approved Kami layout and rewrites the bilingual copy around engineering depth and AI transformation, without naming specific projects. [18](18-engineering-and-ai-profile.md) records the complete 491-article blog research and collaboration with Gemini through Herdr / pi. [17](17-kami-reading.md) retains the reading design and the preceding original-copy restoration; [16](16-resume-refresh.md) retains the earlier research. These updates remain local and have not been deployed.
@@ -30,6 +35,7 @@ Updated: 2026-09-11. The original rebuild is documented in 11; the six-device de
 | [17 — Kami reading and original résumé copy](17-kami-reading.md) | Approved typography, mobile contents, print, and the preceding original-copy restoration |
 | [18 — Engineering and AI profile](18-engineering-and-ai-profile.md) | Complete blog research, Gemini collaboration, engineering and leadership synthesis, and current bilingual résumé copy |
 | [19 — CI stability](19-ci-stability.md) | Run attribution, timing baseline, retained release safeguards, scheduled checks and final-SHA validation protocol |
+| [20 - Dependency refresh](20-dependency-refresh.md) | Stable dependency selection, runtime exception, security fixes and local acceptance evidence |
 
 ## Authority and status
 
