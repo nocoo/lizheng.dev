@@ -54,23 +54,34 @@ selects Undici 8.11.2 through its own declared range.
 
 ## Verification and acceptance
 
-Atomic dependency commits retain normal check-only hooks. Local evidence so far:
+Atomic dependency commits retain normal check-only hooks. Final product evidence
+at source revision 823f3fb:
 
 - All 287 unit tests pass. Statements, functions and lines are 100%; branches
   are 99.47%, above every existing 95% floor.
 - Strict TypeScript, Biome, generated types, Knip, active-document checks and
   production builds pass.
 - All five HTTP checks pass, including the four complete host/route matrices.
-- The Vite upgrade passes all ten isolated development/HMR checks.
+- All ten isolated development/HMR checks pass on the final layout.
 - Frozen install preserves the lockfile hash; Gitleaks and OSV pass with no
   issues across the upgraded graph.
 - The isolated real-Git hook fixture rejects all 17 injected failures and
   accepts restored commit/push. All four production resource budgets pass.
-- The dependency-only Chromium run passes all 85 cases without baseline changes.
-  The three-engine run is deliberately stopped during Firefox after the user's
-  footer change request; it is not counted as a complete passing run. The final
-  layout requires a new full matrix and development recheck. Thresholds remain
-  unchanged; footer baseline updates belong to the separately requested design.
+- All 255 browser cases pass in Chromium, Firefox and WebKit (10.3 minutes),
+  without retries or skips. Earlier runs stopped for the user's footer feedback
+  are not counted as complete proof. Thresholds remain unchanged; footer-only
+  baseline updates belong to the separately requested design.
+- The additional nonblocking performance lab has three passes and three failures
+  (6.5 minutes). English Play cases time out at the unchanged 90-second limit;
+  Chinese mobile Play measures median LCP 2688ms and interaction 360ms, above the
+  existing 2500ms/200ms limits. During this run the machine's load averages reach
+  163.08 / 140.74 / 103.99 with other repositories testing concurrently. This is
+  not passing performance evidence and does not prove the cause is contention.
+  Retest on an idle machine; no thresholds, tests or unrelated processes change.
+
+Both Caddy pages and `/api/live` respond successfully with trusted HTTPS and
+the updated copy. Chrome is opened to both real preview URLs. No remote CI/CD
+or deployment evidence is claimed for these unpushed changes.
 
 Existing active Caddy routes map both HTTPS previews to 127.0.0.1:7046:
 [Resume](https://lizheng-dev.dev.hexly.ai) and

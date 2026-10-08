@@ -64,7 +64,12 @@ Only the 16 full-page baseline footer regions change, in both local and CI
 variants. Pixel equality above each footer is verified; the mobile Chinese
 Resume CI variant retains its existing 26px content-height difference. Device
 crops, comparison thresholds, content and platform-specific rendering outside
-the footer are unchanged. The complete three-engine recheck remains pending.
+the footer are unchanged. The final copy at 823f3fb passes all 255 browser cases
+across Chromium, Firefox and WebKit, all ten development checks and all five HTTP
+checks. Unit coverage remains 100% statements/functions/lines and 99.47% branches
+over 287 tests. User acceptance and publication remain pending. The independent
+performance lab's three failures under heavy machine load are recorded in
+[20](20-dependency-refresh.md), without claiming passing performance.
 
 The new theme tests failed against the binary implementation before the three-state controller was added. Scene tests initially failed without the document-scoped selector, then passed for all six choices, remount stability and invalid identifiers. Tests cover stored preferences, live system changes, localized actions, denied storage, bootstrap/CSP and listener cleanup.
 

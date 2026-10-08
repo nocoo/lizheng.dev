@@ -8,8 +8,9 @@ The follow-up uses `BUILT WITH CURIOSITY.` on Resume and adds
 
 The 2026-10-08 [dependency refresh](20-dependency-refresh.md) records stable
 release selection, the explicitly accepted Miniflare alpha exception, transitive
-security fixes and local verification. Browser/user acceptance and publication
-are still pending.
+security fixes and local verification. The complete browser matrix passes;
+user acceptance and publication remain pending. The independent performance lab
+has three recorded failures requiring an idle-machine recheck.
 
 The 2026-09-30 [CI stability work](19-ci-stability.md) records the measured baseline, mandatory checks, isolated validation path and acceptance protocol. It supersedes the earlier requirement to run performance sampling inside every blocking browser job; development checks remain blocking.
 
