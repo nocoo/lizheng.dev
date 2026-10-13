@@ -1,9 +1,12 @@
 # Active documentation
 
+The 2026-10-13 dependency patch release is v3.2.3. [11](11-release-implementation.md)
+records the scope and pending final-SHA CI/deployment verification.
+
 The user authorizes the 2026-10-08 dependency and footer follow-up as the explicit
-patch release v3.2.2. [11](11-release-implementation.md) records the scope,
-rollback reference and pending final-SHA CI/deployment verification. The test
-simplification audit remains a plan only and is not part of this release.
+patch release v3.2.2. [11](11-release-implementation.md) records that scope,
+rollback reference and verification history. The test simplification audit remains
+a plan only and is not part of either release.
 
 The 2026-10-08 footer simplification in [14](14-connected-surfaces.md) removes
 visible versions and duplicate header destinations from both surfaces, retaining

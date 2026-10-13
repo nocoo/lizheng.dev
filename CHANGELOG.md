@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.3] - 2026-10-13
+
+- Patch minor and patch direct dependencies: Knip, Miniflare (with Wrangler override), Vite, Wrangler, Source Sans 3, Bun types, Vitest/coverage-v8, and marked.
+
 ## [3.2.2] - 2026-10-08
 
 - Simplify both footers by removing visible versions and repeated header destinations, while retaining copyright, public reading formats and Beijing signatures.
