@@ -46,7 +46,7 @@
 		"husky": "9.1.7",
 		"jsdom": "30.1.2",
 		"knip": "6.41.0",
-		"miniflare": "5.20261006.0-alpha",
+		"miniflare": "5.20261006.1-alpha",
 		"sharp": "0.35.5",
 		"typescript": "7.0.2",
 		"vite": "8.3.3",
@@ -69,7 +69,8 @@
 		"bun": ">=1.4.0"
 	},
 	"overrides": {
-		"miniflare>sharp": "0.35.5"
+		"miniflare>sharp": "0.35.5",
+		"wrangler>miniflare": "5.20261006.1-alpha"
 	},
 	"packageManager": "bun@1.4.0"
 }
