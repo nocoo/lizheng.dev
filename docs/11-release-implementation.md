@@ -2,6 +2,18 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Dependency patch — v3.2.3
+
+On 2026-10-13 the dependency refresh closes open minor/patch issues #47–#55:
+Knip 6.41.0, Miniflare 5.20261006.1-alpha (with `wrangler>miniflare` override until
+Wrangler aligns), Vite 8.3.4, Wrangler 4.149.0, Source Sans 3 5.3.1, `@types/bun`
+1.4.3, Vitest and `@vitest/coverage-v8` 5.0.4, and marked 18.1.1. No public
+content, layout, route or coverage-floor changes are required. Publication follows
+successful main-push CI and the validated Worker/assets artifact; outcomes will be
+recorded in the [v3.2.3 release](https://github.com/nocoo/lizheng.dev/releases/tag/v3.2.3)
+when published. Before publication both apex `/api/live` endpoints still return
+v3.2.2; that deployment remains the rollback reference until this release ships.
+
 ## Footer simplification - 2026-10-08
 
 The user removes visible footer versions and repeated header destinations from

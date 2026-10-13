@@ -90,7 +90,12 @@ Existing active Caddy routes map both HTTPS previews to 127.0.0.1:7046:
 v3.2.2. [11](11-release-implementation.md) records the release scope and rollback
 reference; final-SHA CI, push/tag/release and deployment verification remain
 pending at release preparation. The separately proposed test-simplification
-plan is not implemented in this release.
+plan is not implemented in that release.
+
+The 2026-10-13 follow-up patch v3.2.3 closes issues #47–#55 with the versions
+listed in [11](11-release-implementation.md#dependency-patch--v323); Miniflare
+still requires a root `wrangler>miniflare` override when Wrangler's exact pin
+lags the accepted alpha.
 
 ## Release sources
 
