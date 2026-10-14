@@ -14,7 +14,7 @@ canonical: "https://lizheng.dev/zh/"
 copyright: "© {year} Zheng Li. All rights reserved."
 ---
 
-李征是微软 Teams 首席软件工程经理，同济大学计算机本硕，深耕产品研发、系统架构与 AI 原生研发，并长期维护个人开源项目。另见 [个人主页 Play](https://lizheng.me/zh/)、[技术博客](https://lizheng.blog/)与[软件作品集 hexly.ai](https://hexly.ai/)。
+李征是微软 Teams 首席软件工程经理，同济大学计算机本硕，深耕产品研发、系统架构与 AI 原生研发，并长期维护个人开源项目。另见 [个人主页 Play](https://lizheng.me/zh/)、[技术博客](https://lizheng.blog/)、[软件作品集 hexly.ai](https://hexly.ai/)与[开源 React 组件库 Basalt UI（basaltui.com）](https://basaltui.com/)。
 
 ## 职业概述
 

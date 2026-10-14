@@ -44,6 +44,7 @@ for (const surface of ["resume", "landing"] as const)
 		expect(llms).toContain("/sitemap-index.xml");
 		if (surface === "resume") expect(llms).toContain("## Page intro");
 		expect(llms).toContain("https://hexly.ai/");
+		expect(llms).toContain("https://basaltui.com/");
 		expect(llms).toContain("[Portfolio]");
 		expect(llms).toContain("[Journal]");
 		const related = llms.split("## Related sites")[1]?.split("## ")[0] ?? "";
@@ -112,6 +113,7 @@ it("keeps identity and sentence boundaries in plain HTML text", async () => {
 	expect(text(".resume-intro")).toContain("lizheng.me");
 	expect(text(".resume-intro")).toContain("lizheng.blog");
 	expect(text(".resume-intro")).toContain("hexly.ai");
+	expect(text(".resume-intro")).toContain("basaltui.com");
 	expect(text(".resume-role")).toBe(
 		"Principal Software Engineering Manager @ Microsoft",
 	);
@@ -200,6 +202,7 @@ for (const surface of ["landing", "resume"] as const)
 					"https://lizheng.dev/",
 					"https://lizheng.blog/",
 					"https://hexly.ai/",
+					"https://basaltui.com/",
 					"https://x.com/zhengli",
 					"https://github.com/nocoo",
 					"https://linkedin.com/in/nocoo",

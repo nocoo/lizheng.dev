@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.6] - 2026-10-14
+
+- Add `https://basaltui.com/` to Person `sameAs`, bilingual résumé hero intro links, and `llms.txt` Related sites.
+
 ## [3.2.5] - 2026-10-14
 
 - Lead bilingual résumé `<title>` and H1 with 李征 / Zheng Li (李征), refresh meta descriptions for the personal-name query, and add a crawlable hero intro linking Play, Journal and hexly.ai.
