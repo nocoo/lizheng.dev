@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Resolve release source
         id: source
-        uses: nocoo/base-ci/.github/actions/release-source@8cbdb970c3a38240289c1e152c40dd550ac62dba
+        uses: nocoo/base-ci/.github/actions/release-source@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
         with:
           github-token: ${{ github.token }}
           expected-workflow-path: ".github/workflows/ci.yml"
@@ -48,7 +48,7 @@ jobs:
           ref: ${{ steps.source.outputs.target-sha }}
           persist-credentials: false
 
-      - uses: nocoo/base-ci/.github/actions/setup-js@081cdf665b9c67f233abfcc9242ce0be76ce2bb4
+      - uses: nocoo/base-ci/.github/actions/setup-js@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -65,7 +65,7 @@ jobs:
         run: bash scripts/unpack-release.sh
 
       - name: Recheck release-source freshness
-        uses: nocoo/base-ci/.github/actions/release-source@8cbdb970c3a38240289c1e152c40dd550ac62dba
+        uses: nocoo/base-ci/.github/actions/release-source@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
         with:
           github-token: ${{ github.token }}
           expected-workflow-path: ".github/workflows/ci.yml"
