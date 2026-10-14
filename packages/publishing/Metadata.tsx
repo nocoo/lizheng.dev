@@ -50,6 +50,7 @@ export function Metadata({
 					"https://lizheng.dev/",
 					"https://lizheng.blog/",
 					"https://hexly.ai/",
+					"https://basaltui.com/",
 					...profile.links.map((link) => link.href),
 				]),
 			],

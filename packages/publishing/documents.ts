@@ -22,6 +22,10 @@ export function llmsDocument(en: PageContent, zh: PageContent) {
 			id: "portfolio",
 			line: "- [Portfolio](https://hexly.ai/): Software projects and product work.",
 		},
+		{
+			id: "basaltui",
+			line: "- [Basalt UI](https://basaltui.com/): Open-source React UI components and dashboard layouts.",
+		},
 	].filter((site) => site.id !== en.surface);
 	const identity =
 		en.intro && zh.intro

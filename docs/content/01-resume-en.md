@@ -14,7 +14,7 @@ canonical: "https://lizheng.dev/en/"
 copyright: "© {year} Zheng Li. All rights reserved."
 ---
 
-Zheng Li (李征) is a Principal Software Engineering Manager in Microsoft Teams and a Tongji University computer science graduate, with deep experience in product engineering, systems architecture and AI-native development. See also [Play on lizheng.me](https://lizheng.me/en/), the [Journal at lizheng.blog](https://lizheng.blog/) and [software portfolio at hexly.ai](https://hexly.ai/).
+Zheng Li (李征) is a Principal Software Engineering Manager in Microsoft Teams and a Tongji University computer science graduate, with deep experience in product engineering, systems architecture and AI-native development. See also [Play on lizheng.me](https://lizheng.me/en/), the [Journal at lizheng.blog](https://lizheng.blog/), [software portfolio at hexly.ai](https://hexly.ai/) and [Basalt UI components at basaltui.com](https://basaltui.com/).
 
 ## Professional Summary
 
