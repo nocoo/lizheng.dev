@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.4] - 2026-10-14
+
+- Emit lowercase `hreflang` alternate links in localized HTML so crawlers and SEO audits recognize reciprocal en, zh-CN and x-default signals on both surfaces.
+- Add matching `xhtml:link` hreflang alternates to the pages sitemap for each localized URL.
+- Redirect bare `/` with `301` instead of `302` while keeping `Vary: Accept-Language` and `Cache-Control: no-store`.
+- Align bilingual Person `alternateName` metadata to the same ordered variants.
+
 ## [3.2.3] - 2026-10-13
 
 - Patch minor and patch direct dependencies: Knip, Miniflare (with Wrangler override), Vite, Wrangler, Source Sans 3, Bun types, Vitest/coverage-v8, and marked.

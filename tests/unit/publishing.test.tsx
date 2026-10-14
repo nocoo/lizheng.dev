@@ -9,6 +9,7 @@ import {
 	metadataFile,
 	selectLocale,
 	selectSurface,
+	sitemapPagesXml,
 } from "../../packages/publishing/routes";
 
 it("limits canonical host redirects to declared aliases and keeps local redirects isolated", () => {
@@ -61,7 +62,10 @@ for (const surface of ["resume", "landing"] as const)
 					surface === "resume" ? "https://lizheng.dev" : "https://lizheng.me";
 				expect(html).toContain(`rel="canonical" href="${origin}/${locale}/"`);
 				expect(html).toContain(`href="/${locale}/content.md"`);
-				expect(html).toMatch(/hreflang="x-default"/i);
+				expect(html).toContain('hreflang="en"');
+				expect(html).toContain('hreflang="zh-CN"');
+				expect(html).toContain('hreflang="x-default"');
+				expect(html.split("</head>")[0]).not.toContain("hrefLang=");
 				expect(html).toContain('"@type":"ProfilePage"');
 				expect(html).not.toContain("docs/archive");
 				if (preview) expect(html).toContain("dev.hexly.ai");
@@ -78,6 +82,16 @@ it("CSP permits exactly the bootstrap script", () => {
 	expect(securityHeaders["Content-Security-Policy"]).toContain(
 		createHash("sha256").update(themeScript).digest("base64"),
 	);
+});
+it("lists reciprocal hreflang alternates in the pages sitemap", () => {
+	const xml = sitemapPagesXml("https://lizheng.dev");
+	expect(xml).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+	for (const locale of ["en", "zh"]) {
+		expect(xml).toContain(`<loc>https://lizheng.dev/${locale}/</loc>`);
+	}
+	expect(xml.match(/hreflang="en"/g)?.length).toBe(2);
+	expect(xml.match(/hreflang="zh-CN"/g)?.length).toBe(2);
+	expect(xml.match(/hreflang="x-default"/g)?.length).toBe(2);
 });
 it("normalizes host and first preferred language", () => {
 	expect(selectSurface("LIZHENG.ME:443")).toBe("landing");

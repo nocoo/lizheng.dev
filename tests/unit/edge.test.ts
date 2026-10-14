@@ -211,6 +211,12 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 						? [`https://${host}/sitemap-pages.xml`]
 						: [`https://${host}/en/`, `https://${host}/zh/`],
 				);
+			if (path === "/sitemap-pages.xml") {
+				expect(body).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+				expect(body.match(/hreflang="en"/g)?.length).toBe(2);
+				expect(body.match(/hreflang="zh-CN"/g)?.length).toBe(2);
+				expect(body.match(/hreflang="x-default"/g)?.length).toBe(2);
+			}
 			expect(f.asset).not.toHaveBeenCalled();
 		});
 	it(`serves ${host} llms from its public build artifact`, async () => {
@@ -235,7 +241,7 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 			const result = await fixture(host).request("/", {
 				headers: { "Accept-Language": accept ?? "" },
 			});
-			expect(result.status).toBe(302);
+			expect(result.status).toBe(301);
 			expect(result.headers.get("location")).toBe(`https://${host}/${locale}/`);
 			expect(result.headers.get("vary")).toBe("Accept-Language");
 		}

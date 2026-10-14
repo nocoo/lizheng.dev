@@ -35,7 +35,7 @@ export function Metadata({
 			"@type": "Person",
 			"@id": "https://lizheng.me/#person",
 			name: profile.meta.name,
-			alternateName: [locale === "zh" ? "Zheng Li" : "李征", "Li Zheng"],
+			alternateName: ["李征", "Zheng Li", "Li Zheng"],
 			url: "https://lizheng.me/",
 			jobTitle,
 			worksFor: { "@type": "Organization", name: employer },
@@ -70,9 +70,18 @@ export function Metadata({
 				content={themeColors.dark}
 			/>
 			<link rel="canonical" href={canonical} />
-			<link rel="alternate" hrefLang="en" href={`${origin}/en/`} />
-			<link rel="alternate" hrefLang="zh-CN" href={`${origin}/zh/`} />
-			<link rel="alternate" hrefLang="x-default" href={`${origin}/en/`} />
+			<link
+				rel="alternate"
+				{...({ hreflang: "en", href: `${origin}/en/` } as const)}
+			/>
+			<link
+				rel="alternate"
+				{...({ hreflang: "zh-CN", href: `${origin}/zh/` } as const)}
+			/>
+			<link
+				rel="alternate"
+				{...({ hreflang: "x-default", href: `${origin}/en/` } as const)}
+			/>
 			<link
 				rel="alternate"
 				type="text/markdown"

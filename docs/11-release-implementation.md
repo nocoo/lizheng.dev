@@ -2,6 +2,18 @@
 
 2026-09-05. Both designs are approved. The user authorized full 6DQ, ≥95% logic coverage, zero lint, versions, /api/live, legacy redirects, main push and Cloudflare deployment. The later instruction explicitly permits publishing v3.0.0 first and continuing hardening. This changes release order, not final quality requirements.
 
+## Multilingual SEO patch — v3.2.4
+
+On 2026-10-14 this patch fixes crawler-visible hreflang signals: React SSR now
+writes lowercase `hreflang` on localized HTML, `sitemap-pages.xml` carries
+matching `xhtml:link` alternates, bare `/` returns `301` with unchanged
+`Vary: Accept-Language` and `no-store`, and Person `alternateName` is aligned
+across languages. Publication follows successful main-push CI and the validated
+Worker/assets artifact; outcomes will be recorded in the
+[v3.2.4 release](https://github.com/nocoo/lizheng.dev/releases/tag/v3.2.4)
+when published. Before publication both apex `/api/live` endpoints still return
+v3.2.3; that deployment remains the rollback reference until this release ships.
+
 ## Dependency patch — v3.2.3
 
 On 2026-10-13 the dependency refresh closes open minor/patch issues #47–#55:
