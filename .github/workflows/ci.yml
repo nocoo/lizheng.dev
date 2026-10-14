@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   quality:
-    uses: nocoo/base-ci/.github/workflows/quality.yml@ad43150de3a2be2fa464b5cd2f921dc4fa9f8f0f
+    uses: nocoo/base-ci/.github/workflows/quality.yml@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
     with:
       runtime-version: "1.4.0"
       node-version: "26.8.1"
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@081cdf665b9c67f233abfcc9242ce0be76ce2bb4
+      - uses: nocoo/base-ci/.github/actions/setup-js@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -71,7 +71,7 @@ jobs:
   artifact:
     name: Verify and package Worker
     needs: [quality, browser]
-    uses: nocoo/base-ci/.github/workflows/test-job.yml@ad43150de3a2be2fa464b5cd2f921dc4fa9f8f0f
+    uses: nocoo/base-ci/.github/workflows/test-job.yml@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
     with:
       runtime-version: "1.4.0"
       node-version: "26.8.1"
