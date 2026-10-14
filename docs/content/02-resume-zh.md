@@ -2,8 +2,8 @@
 id: "resume-zh"
 surface: "resume"
 locale: "zh"
-title: "李征 — 微软首席软件工程经理"
-description: "李征，微软首席软件工程经理，现于 Microsoft Teams。同济大学计算机科学与技术学士、计算机软件与理论硕士，深耕软件开发与系统架构，持续实践 AI 原生研发。"
+title: "李征 — 开发者 / AI 产品"
+description: "李征，Microsoft Teams 首席软件工程经理，专注开发者工具与 AI 产品研发；同济大学计算机本硕，深耕系统架构与 AI 原生研发及开源实践。"
 socialHeading: "李征"
 socialLabel: "微软\n首席软件工程经理"
 socialImageAlt: "李征的肖像及姓名、微软首席软件工程经理职位。"
@@ -13,6 +13,8 @@ tagline: "全球产品研发经验，持续的一线实践\n以工程能力引�
 canonical: "https://lizheng.dev/zh/"
 copyright: "© {year} Zheng Li. All rights reserved."
 ---
+
+李征是微软 Teams 首席软件工程经理，同济大学计算机本硕，深耕产品研发、系统架构与 AI 原生研发，并长期维护个人开源项目。另见 [个人主页 Play](https://lizheng.me/zh/)、[技术博客](https://lizheng.blog/)与[软件作品集 hexly.ai](https://hexly.ai/)。
 
 ## 职业概述
 

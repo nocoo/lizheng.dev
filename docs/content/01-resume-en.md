@@ -2,17 +2,19 @@
 id: "resume-en"
 surface: "resume"
 locale: "en"
-title: "Zheng Li — Principal Engineering Manager at Microsoft"
-description: "Zheng Li, Principal Software Engineering Manager in Microsoft Teams and Tongji University computer science graduate. Deep systems engineering and AI-native practice."
+title: "Zheng Li (李征) — Developer & AI Product Builder"
+description: "Zheng Li (李征), Principal Software Engineering Manager in Microsoft Teams, building developer-facing and AI-native software. Tongji University CS graduate; open-source maintainer."
 socialHeading: "Zheng Li"
 socialLabel: "Principal Software\nEngineering Manager\nat Microsoft"
 socialImageAlt: "Zheng Li, Principal Software Engineering Manager at Microsoft, with a portrait."
-name: "Zheng Li"
+name: "Zheng Li (李征)"
 role: "Principal Software Engineering Manager @ Microsoft"
 tagline: "Engineering depth. Global product experience.\nLeading the shift to AI-native development."
 canonical: "https://lizheng.dev/en/"
 copyright: "© {year} Zheng Li. All rights reserved."
 ---
+
+Zheng Li (李征) is a Principal Software Engineering Manager in Microsoft Teams and a Tongji University computer science graduate, with deep experience in product engineering, systems architecture and AI-native development. See also [Play on lizheng.me](https://lizheng.me/en/), the [Journal at lizheng.blog](https://lizheng.blog/) and [software portfolio at hexly.ai](https://hexly.ai/).
 
 ## Professional Summary
 

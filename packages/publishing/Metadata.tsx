@@ -48,6 +48,7 @@ export function Metadata({
 				...new Set([
 					"https://lizheng.me/",
 					"https://lizheng.dev/",
+					"https://lizheng.blog/",
 					"https://hexly.ai/",
 					...profile.links.map((link) => link.href),
 				]),

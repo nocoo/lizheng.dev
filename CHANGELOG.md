@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.2.5] - 2026-10-14
+
+- Lead bilingual résumé `<title>` and H1 with 李征 / Zheng Li (李征), refresh meta descriptions for the personal-name query, and add a crawlable hero intro linking Play, Journal and hexly.ai.
+- Extend Person `sameAs` with lizheng.blog and surface the new intro in `llms.txt`.
+
 ## [3.2.4] - 2026-10-14
 
 - Emit lowercase `hreflang` alternate links in localized HTML so crawlers and SEO audits recognize reciprocal en, zh-CN and x-default signals on both surfaces.

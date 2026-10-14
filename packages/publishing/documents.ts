@@ -23,11 +23,15 @@ export function llmsDocument(en: PageContent, zh: PageContent) {
 			line: "- [Portfolio](https://hexly.ai/): Software projects and product work.",
 		},
 	].filter((site) => site.id !== en.surface);
+	const identity =
+		en.intro && zh.intro
+			? `\n\n## Page intro\n\n- English: ${en.intro}\n- 中文：${zh.intro}`
+			: "";
 	return `# ${en.meta.title}
 
 > ${en.meta.description}
 >
-> ${zh.meta.description}
+> ${zh.meta.description}${identity}
 
 Public pages welcome search and AI crawlers. The Markdown documents contain the full public content of the corresponding pages; no JavaScript is needed to read them.
 

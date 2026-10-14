@@ -213,7 +213,9 @@ for (const surface of ["resume", "landing"])
 				"Public pages welcome search and AI crawlers.",
 			);
 			expect(await llms.text()).toContain(
-				surface === "resume" ? "微软首席软件工程经理" : "六个可交互的设备界面",
+				surface === "resume"
+					? "李征 — 开发者 / AI 产品"
+					: "六个可交互的设备界面",
 			);
 			for (const path of [
 				"/_sites/landing/en/index.html",

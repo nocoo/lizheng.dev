@@ -37,6 +37,7 @@ interface ContentData {
 	locale: Locale;
 	meta: ContentMeta;
 	intro: string;
+	introTokens: Token[];
 	sections: ContentSection[];
 	links: PublicLink[];
 	markdown: string;
@@ -166,6 +167,7 @@ export async function loadContent(
 	const sections: ContentSection[] = [];
 	const links: PublicLink[] = [];
 	const intro: string[] = [];
+	const introTokens: Token[] = [];
 	let section: ContentSection | undefined;
 	for (const token of tokens) {
 		if (token.type === "heading" && token.depth === 2) {
@@ -182,6 +184,7 @@ export async function loadContent(
 			section.tokens.push(token);
 		} else if (token.type === "paragraph") {
 			intro.push(token.text);
+			introTokens.push(token);
 		}
 	}
 	const linkSection = sections.at(-1);
@@ -222,8 +225,7 @@ export async function loadContent(
 		throw new Error("Missing or reordered content sections");
 	if (links.length !== 4 || new Set(links.map((link) => link.href)).size !== 4)
 		throw new Error("Expected four unique public links");
-	if (surface === "landing" && !intro.join("").trim())
-		throw new Error("Missing introduction");
+	if (!intro.join("").trim()) throw new Error("Missing introduction");
 	if (surface === "resume") {
 		const experience = sections.find((item) => item.id === "experience");
 		const education = sections.find((item) => item.id === "education");
@@ -249,6 +251,7 @@ export async function loadContent(
 		locale,
 		meta: meta as unknown as ContentMeta,
 		intro: intro.join("\n"),
+		introTokens,
 		sections,
 		links,
 		markdown,
