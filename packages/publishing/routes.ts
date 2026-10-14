@@ -83,6 +83,25 @@ export function selectSurface(host: string, landingHost?: string): Surface {
 export function selectLocale(accept = ""): Locale {
 	return accept.split(",")[0]?.toLowerCase().startsWith("zh") ? "zh" : "en";
 }
+
+const localizedPageUrls = (origin: string) =>
+	(["en", "zh"] as const).map((locale) => ({
+		locale,
+		loc: `${origin}/${locale}/`,
+	}));
+
+export function sitemapPagesXml(origin: string) {
+	const pages = localizedPageUrls(origin);
+	const alternateLinks = [
+		`<xhtml:link rel="alternate" hreflang="en" href="${origin}/en/"/>`,
+		`<xhtml:link rel="alternate" hreflang="zh-CN" href="${origin}/zh/"/>`,
+		`<xhtml:link rel="alternate" hreflang="x-default" href="${origin}/en/"/>`,
+	].join("");
+	return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${pages
+		.map(({ loc }) => `<url><loc>${loc}</loc>${alternateLinks}</url>`)
+		.join("")}</urlset>`;
+}
+
 export function metadataFile(
 	surface: Surface,
 	path: string,
@@ -104,7 +123,7 @@ export function metadataFile(
 	)
 		return {
 			type: "application/xml",
-			body: `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${["en", "zh"].map((locale) => `<url><loc>${origin}/${locale}/</loc></url>`).join("")}</urlset>`,
+			body: sitemapPagesXml(origin),
 		};
 	return undefined;
 }

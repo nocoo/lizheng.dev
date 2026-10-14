@@ -51,7 +51,7 @@ me 的英文 H1 为 `A little bit of me.`，保留两行排版和真实空白；
 
 页面介绍为“这里可以找到我的博客、简历、GitHub 和 LinkedIn。六个设备界面分别对应游戏、通信、计算机、音乐、骑行和摩托。”。设备说明、轮播状态、屏幕内提示和分享图采用同样的直接语气；职业身份和同语言 Résumé 入口仍完整保留。
 
-裸域名继续按 Accept-Language 302 到语言页，并返回 `Vary: Accept-Language`。没有语言偏好的请求仍落在 `/en/`。需要中文分享卡片时使用明确的 `/zh/` URL；不按平台名称或 User-Agent 猜语言。
+裸域名继续按 Accept-Language **301** 到语言页，并返回 `Vary: Accept-Language`；响应仍为 `Cache-Control: no-store`，避免跨用户缓存语言选择。没有语言偏好的请求仍落在 `/en/`。需要中文分享卡片时使用明确的 `/zh/` URL；不按平台名称或 User-Agent 猜语言。
 
 ## 3. 配图与预览协议
 

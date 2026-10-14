@@ -166,7 +166,7 @@ server.on("request", async (request, response) => {
 		}
 		if (url.pathname === "/") {
 			response
-				.writeHead(302, {
+				.writeHead(301, {
 					Location: `/${selectLocale(request.headers["accept-language"])}/`,
 					Vary: "Accept-Language",
 				})

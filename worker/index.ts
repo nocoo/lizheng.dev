@@ -152,7 +152,7 @@ export default {
 				`${url.origin}/${selectLocale(request.headers.get("Accept-Language") ?? "")}/`,
 			);
 			headers.set("Vary", "Accept-Language");
-			return respond(null, 302);
+			return respond(null, 301);
 		}
 		return respond("Not Found", 404);
 	},

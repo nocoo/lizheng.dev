@@ -191,7 +191,8 @@ for (const surface of ["landing", "resume"] as const)
 				]),
 			);
 			expect(graph.mainEntity.alternateName).toEqual([
-				locale === "zh" ? "Zheng Li" : "李征",
+				"李征",
+				"Zheng Li",
 				"Li Zheng",
 			]);
 			expect(graph.mainEntity.worksFor.name).toBe("Microsoft");

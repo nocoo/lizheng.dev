@@ -70,7 +70,7 @@ for (const surface of ["resume", "landing"])
 				["en-US", "en"],
 			]) {
 				const root = await get("/", { "Accept-Language": accept ?? "" });
-				expect(root.status()).toBe(302);
+				expect(root.status()).toBe(301);
 				expect(root.headers().location).toBe(`http://${apex}/${locale}/`);
 			}
 			for (const locale of ["en", "zh"]) {
@@ -115,6 +115,10 @@ for (const surface of ["resume", "landing"])
 				expect(html).toContain(
 					`<link rel="canonical" href="${origin}/${locale}/"/>`,
 				);
+				expect(html).toContain(`hreflang="en" href="${origin}/en/"`);
+				expect(html).toContain(`hreflang="zh-CN" href="${origin}/zh/"`);
+				expect(html).toContain(`hreflang="x-default" href="${origin}/en/"`);
+				expect(html.split("</head>")[0]).not.toContain("hrefLang=");
 				const person = JSON.parse(
 					/<script type="application\/ld\+json">([^<]+)<\/script>/.exec(
 						html,

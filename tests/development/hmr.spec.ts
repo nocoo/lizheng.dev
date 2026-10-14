@@ -118,7 +118,7 @@ for (const surface of ["resume", "landing"])
 			headers: { ...headers, "accept-language": "zh" },
 			maxRedirects: 0,
 		});
-		expect(root.status()).toBe(302);
+		expect(root.status()).toBe(301);
 		expect(root.headers().location).toBe("/zh/");
 		expect(root.headers().vary).toBe("Accept-Language");
 	});

@@ -45,7 +45,7 @@
 5. .me 未知路径目前 302 到 /en/ 或 /zh/；首选 Accept-Language 为中文则 zh，否则 en。
 6. .dev 当前全部交给资产服务，未知资源由真实资产服务返回 404。现有 mock 返回 200 仅表示“转发成功”，不是生产状态契约。
 
-新实现保留 301 和语言页面；静态文件启发式改为明确的公开资产/内容路由，避免新 sitemap、robots 和 Markdown 端点被吞掉。2026-09-07 的 SEO 优化将真正未知的 .me 路径改为 404，根路径语言 302 不变，见 [15](15-seo-agent-social.md)。上面的兼容层清单记录重建前的基线。
+新实现保留 301 和语言页面；静态文件启发式改为明确的公开资产/内容路由，避免新 sitemap、robots 和 Markdown 端点被吞掉。2026-09-07 的 SEO 优化将真正未知的 .me 路径改为 404；v3.2.4 将根路径语言跳转改为 301，见 [15](15-seo-agent-social.md)。上面的兼容层清单记录重建前的基线。
 
 ## 重构后的处理顺序
 
@@ -56,12 +56,12 @@
 | 3 | 三个已声明的 www 别名 | 301 到对应 HTTPS 主域名，路径和 query 保留 |
 | 4 | 内部资产前缀 /_sites/、/cover/* 等 | 404，禁止公开访问内部 HTML |
 | 5 | /robots.txt、/llms.txt、内容与新 sitemap 端点 | 按访问域名选择显式资源，200 与正确 Content-Type |
-| 6 | / | 302 到对应语言首页；客户端无需先执行语言跳转脚本 |
+| 6 | / | 301 到对应语言首页；客户端无需先执行语言跳转脚本 |
 | 7 | /en、/zh 及带斜杠形式 | 对应访问面的语言 HTML，200；canonical 为带斜杠 URL |
 | 8 | /assets/*、favicon、touch icon、OG 图片 | 只读取新构建的公开资产 |
 | 9 | 未知路径 | 主域名返回真实 404；www 先归一化后得到同一 404 |
 
-根路径语言响应必须包含 Vary: Accept-Language，并避免把一个用户的语言 302 长期缓存给其他用户。显式语言 URL 不按浏览器偏好再跳转。
+根路径语言响应必须包含 Vary: Accept-Language，并保持 `Cache-Control: no-store`，避免把一个用户的语言 301 长期缓存给其他用户。显式语言 URL 不按浏览器偏好再跳转。
 
 公开图标包括 `/favicon.svg`、多尺寸 `/favicon.ico` 和 180px `/apple-touch-icon.png`。`/apple-touch-icon` 与 `/apple-touch-icon-precomposed.png` 直接读取同一 PNG。仅允许这些精确图标路径，不开放任意文件透传。
 
