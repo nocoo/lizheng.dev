@@ -16,7 +16,7 @@ function SectionLinks({ sections }: Pick<PageContent, "sections">) {
 }
 
 export function ResumePage({ content }: { content: PageContent }) {
-	const { locale, meta, sections, links } = content;
+	const { locale, meta, sections, links, introTokens } = content;
 	const zh = locale === "zh";
 	return (
 		<>
@@ -87,6 +87,11 @@ export function ResumePage({ content }: { content: PageContent }) {
 							</div>
 						</div>
 						<p className="resume-tagline">{meta.tagline}</p>
+						{introTokens.length > 0 && (
+							<div className="resume-intro">
+								<Markdown tokens={introTokens} />
+							</div>
+						)}
 						<div className="resume-socials">
 							{links.map((link) => (
 								<a key={link.href} href={link.href}>

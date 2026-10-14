@@ -42,6 +42,7 @@ for (const surface of ["resume", "landing"] as const)
 			expect(llms).toContain(`${page.meta.canonical}content.md`);
 		}
 		expect(llms).toContain("/sitemap-index.xml");
+		if (surface === "resume") expect(llms).toContain("## Page intro");
 		expect(llms).toContain("https://hexly.ai/");
 		expect(llms).toContain("[Portfolio]");
 		expect(llms).toContain("[Journal]");
@@ -107,12 +108,23 @@ it("keeps identity and sentence boundaries in plain HTML text", async () => {
 		/Zheng Li\. All rights reserved\.$/,
 	);
 	document.documentElement.innerHTML = await renderPage("resume", "en");
+	expect(text("h1")).toBe("Zheng Li (李征).");
+	expect(text(".resume-intro")).toContain("lizheng.me");
+	expect(text(".resume-intro")).toContain("lizheng.blog");
+	expect(text(".resume-intro")).toContain("hexly.ai");
 	expect(text(".resume-role")).toBe(
 		"Principal Software Engineering Manager @ Microsoft",
 	);
 	expect(text(".resume-sidebar nav a")).toBe("01 Professional Summary");
 	expect(text(".sidebar-location")).toContain("BEIJING 39.90°");
 	expect(text(".site-footer-identity p")).toMatch(/reserved\.$/);
+	document.documentElement.innerHTML = await renderPage("resume", "zh");
+	expect(text("h1")).toBe("李征.");
+	expect(text(".resume-intro")).toContain("李征");
+	expect(
+		document.querySelector('.resume-intro a[href="https://lizheng.me/zh/"]')
+			?.textContent,
+	).toContain("个人主页");
 });
 
 for (const surface of ["landing", "resume"] as const)
@@ -186,8 +198,11 @@ for (const surface of ["landing", "resume"] as const)
 				expect.arrayContaining([
 					"https://lizheng.me/",
 					"https://lizheng.dev/",
+					"https://lizheng.blog/",
 					"https://hexly.ai/",
 					"https://x.com/zhengli",
+					"https://github.com/nocoo",
+					"https://linkedin.com/in/nocoo",
 				]),
 			);
 			expect(graph.mainEntity.alternateName).toEqual([
