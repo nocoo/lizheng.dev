@@ -1,10 +1,26 @@
 @font-face {
+	font-family: "Geist Mono Fallback";
+	src: local("Courier New"), local("Liberation Mono");
+	size-adjust: 99.9837%;
+	ascent-override: 100.5%;
+	descent-override: 29.5%;
+	line-gap-override: 0%;
+}
+@font-face {
 	font-family: "Geist Mono Variable";
 	font-style: normal;
 	font-weight: 100 900;
 	font-display: swap;
 	src: url("@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2")
 		format("woff2");
+}
+@font-face {
+	font-family: "Space Grotesk Fallback";
+	src: local("Arial"), local("Liberation Sans");
+	size-adjust: 96.4475%;
+	ascent-override: 102.4%;
+	descent-override: 40%;
+	line-gap-override: 0%;
 }
 @font-face {
 	font-family: "Space Grotesk Variable";
@@ -38,7 +54,8 @@ html {
 	--site-muted: #5f6b56;
 	--site-line: #d4d8cb;
 	--site-orange: #bf5c3c;
-	--site-mono: "Geist Mono Variable", "PingFang SC", monospace;
+	--site-mono:
+		"Geist Mono Variable", "Geist Mono Fallback", "PingFang SC", monospace;
 }
 [data-theme="dark"] {
 	--site-background: #1e2824;
@@ -91,7 +108,7 @@ button {
 	display: flex;
 	align-items: center;
 	flex-shrink: 0;
-	font-family: "Space Grotesk Variable", sans-serif;
+	font-family: "Space Grotesk Variable", "Space Grotesk Fallback", sans-serif;
 	font-size: 23px;
 	font-weight: 600;
 	letter-spacing: -1px;
