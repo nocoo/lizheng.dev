@@ -1,10 +1,26 @@
 @font-face {
+	font-family: "Newsreader Fallback";
+	src: local("Times New Roman"), local("Liberation Serif");
+	size-adjust: 96.2961%;
+	ascent-override: 73.5%;
+	descent-override: 26.5%;
+	line-gap-override: 0%;
+}
+@font-face {
 	font-family: "Newsreader Variable";
 	font-style: normal;
 	font-weight: 100 900;
 	font-display: swap;
 	src: url("@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2")
 		format("woff2");
+}
+@font-face {
+	font-family: "Source Sans 3 Fallback";
+	src: local("Arial"), local("Liberation Sans");
+	size-adjust: 85.0602%;
+	ascent-override: 102.4%;
+	descent-override: 40%;
+	line-gap-override: 0%;
 }
 @font-face {
 	font-family: "Source Sans 3 Variable";
@@ -21,9 +37,11 @@
 	--accent: #60704d;
 	--line: #d4d8cb;
 	--serif:
-		"Newsreader Variable", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+		"Newsreader Variable", "Newsreader Fallback", "Songti SC",
+		"Noto Serif CJK SC", "SimSun", serif;
 	--sans:
-		"Source Sans 3 Variable", "PingFang SC", "Microsoft YaHei", sans-serif;
+		"Source Sans 3 Variable", "Source Sans 3 Fallback", "PingFang SC",
+		"Microsoft YaHei", sans-serif;
 	--mono: "Geist Mono Variable", "PingFang SC", monospace;
 }
 html[lang="zh-CN"] {
@@ -46,9 +64,11 @@ body {
 		color 0.25s;
 }
 .resume-layout {
-	--resume-measure: 64ch;
+	--resume-measure: 40rem;
 	display: grid;
-	grid-template-columns: 192px minmax(0, var(--resume-measure)) 192px;
+	/* Keep the grid track width stable while webfonts load; ch-based measure
+	   belongs on the document column, not the grid template. */
+	grid-template-columns: 192px minmax(0, 1fr) 192px;
 	column-gap: 48px;
 	justify-content: center;
 	max-width: var(--site-layout-max);
@@ -65,8 +85,8 @@ html[lang="zh-CN"] .resume-layout {
 }
 .resume-document {
 	min-width: 0;
-	width: 100%;
-	margin-inline: auto;
+	width: min(100%, var(--resume-measure));
+	justify-self: start;
 }
 .sidebar-inner {
 	position: sticky;
@@ -462,7 +482,9 @@ html[lang="zh-CN"] .identity-row h1 {
 		padding-top: 40px;
 	}
 	.resume-document {
+		width: 100%;
 		max-width: var(--resume-measure);
+		margin-inline: auto;
 	}
 	.resume-sidebar {
 		display: none;

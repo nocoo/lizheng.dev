@@ -1,5 +1,5 @@
 import { cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { join, resolve } from "node:path";
 import react from "@vitejs/plugin-react";
 import { build, type Manifest } from "vite";
 import { loadContent, type Surface } from "../packages/content/model";
@@ -30,6 +30,20 @@ await cp("design-public", output, { recursive: true });
 const manifest: Manifest = JSON.parse(
 	await readFile(`${output}/.vite/manifest.json`, "utf8"),
 );
+const fontUrlsFromCss = async (css: string[]) => {
+	const fonts = new Set<string>();
+	for (const href of css) {
+		const text = await readFile(join(output, href.replace(/^\//, "")), "utf8");
+		for (const match of text.matchAll(
+			/url\(["']?(\/?assets\/[^"')]+\.woff2)["']?\)/g,
+		)) {
+			const href = match[1];
+			if (!href) continue;
+			fonts.add(`/${href.replace(/^\//, "")}`);
+		}
+	}
+	return [...fonts];
+};
 for (const surface of ["resume", "landing"] as Surface[]) {
 	const entry =
 		manifest[`apps/${surface}/client.${surface === "resume" ? "ts" : "tsx"}`];
@@ -40,11 +54,13 @@ for (const surface of ["resume", "landing"] as Surface[]) {
 	for (const locale of ["en", "zh"] as const) {
 		const directory = `${output}/_sites/${surface}/${locale}`;
 		await mkdir(directory, { recursive: true });
+		const cssFiles = [...css].map((file) => `/${file}`);
 		await writeFile(
 			`${directory}/index.html`,
 			await renderPage(surface, locale, {
 				script: `/${entry.file}`,
-				css: [...css].map((file) => `/${file}`),
+				css: cssFiles,
+				fonts: await fontUrlsFromCss(cssFiles),
 			}),
 		);
 		await writeFile(
