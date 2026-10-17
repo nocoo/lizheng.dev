@@ -106,6 +106,7 @@
 	/* Prepare layout during idle mounting, before a chapter click needs it. */
 	visibility: hidden;
 	pointer-events: none;
+	contain: style paint;
 }
 @supports not (-moz-appearance: none) {
 	.device-layer.is-cached[data-layer-layout-ready] {
@@ -205,7 +206,7 @@
 	bottom: -4px;
 	--prop-angle: 0deg;
 }
-[data-theme="dark"] .journey-prop {
+[data-theme="dark"] .device-layer:not(.is-cached) .journey-prop {
 	filter: brightness(0.83) saturate(0.83) drop-shadow(3px 7px 6px #07120d55);
 }
 .hardware-position {
@@ -2412,12 +2413,14 @@
 
 /* Lighting stays consistent while the materials retain their identity. */
 [data-theme="dark"] .device-gallery {
-	--object-shadow: #050e0955;
-	--deep-shadow: #000a0877;
 	--muted: #a0aa9a;
 	--chapter-active: var(--accent);
 }
-[data-theme="dark"] .nokia-front {
+[data-theme="dark"] .device-layer:not(.is-cached) {
+	--object-shadow: #050e0955;
+	--deep-shadow: #000a0877;
+}
+[data-theme="dark"] .device-layer:not(.is-cached) .nokia-front {
 	background: linear-gradient(
 		96deg,
 		#7e3936,
@@ -2427,11 +2430,11 @@
 		#57302b
 	);
 }
-[data-theme="dark"] .nokia-front::before {
+[data-theme="dark"] .device-layer:not(.is-cached) .nokia-front::before {
 	background: linear-gradient(105deg, #d6d7c7, #b7bead 80%, #899a87);
 	border-color: #d2d7c2;
 }
-[data-theme="dark"] .mac-case {
+[data-theme="dark"] .device-layer:not(.is-cached) .mac-case {
 	background: linear-gradient(115deg, #c2c2a8, #aaaf95 65%, #7b8a73);
 	border-color: #d3d1b5;
 	box-shadow:
@@ -2444,7 +2447,7 @@
 		13px 18px 18px var(--deep-shadow),
 		28px 37px 37px var(--object-shadow);
 }
-[data-theme="dark"] .mac-crt-recess {
+[data-theme="dark"] .device-layer:not(.is-cached) .mac-crt-recess {
 	background: linear-gradient(
 		135deg,
 		#66735d,
@@ -2453,17 +2456,17 @@
 		#c8d0b0
 	);
 }
-[data-theme="dark"] .mac-screen {
+[data-theme="dark"] .device-layer:not(.is-cached) .mac-screen {
 	box-shadow:
 		0 0 0 0.5cqw #0c1b1266,
 		0 0 4cqw #c2eaa11c,
 		inset 0 0 4cqw #12291b70;
 }
-[data-theme="dark"] .ipod-device {
+[data-theme="dark"] .device-layer:not(.is-cached) .ipod-device {
 	background: linear-gradient(115deg, #dce1d5, #b6c3b7 56%, #98ac9c);
 	border-color: #d2dccb;
 }
-[data-theme="dark"] .ipod-wheel {
+[data-theme="dark"] .device-layer:not(.is-cached) .ipod-wheel {
 	background: linear-gradient(145deg, #dce5d4, #b2c3ae);
 	border-color: #7d947c;
 }

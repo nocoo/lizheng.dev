@@ -2,6 +2,7 @@ import {
 	type CSSProperties,
 	memo,
 	type ReactNode,
+	startTransition,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
@@ -102,9 +103,16 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 	const [prepared, setPrepared] = useState(1);
 	useEffect(() => {
 		if (prepared === deviceChapters.length) return;
-		const prepare = () => setPrepared((count) => count + 1);
+		const prepare = () =>
+			startTransition(() =>
+				setPrepared((count) =>
+					count >= deviceChapters.length
+						? count
+						: Math.min(count + 3, deviceChapters.length),
+				),
+			);
 		if (typeof window.requestIdleCallback === "function") {
-			const id = window.requestIdleCallback(prepare, { timeout: 200 });
+			const id = window.requestIdleCallback(prepare, { timeout: 120 });
 			return () => window.cancelIdleCallback(id);
 		}
 		const id = window.setTimeout(prepare, 100);
