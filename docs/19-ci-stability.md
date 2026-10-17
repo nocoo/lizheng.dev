@@ -100,3 +100,11 @@ Measure a single authorized production release separately from push creation
 through final verification, including CI, handoff, deployment and propagation.
 Ten CI-only successes do not prove ten deployments or guarantee edge propagation.
 Report the separate production result before claiming the full CI/CD objective.
+
+## Interaction budget change (2026-10-17)
+
+The Performance lab interaction median budget in `tests/performance/loading.spec.ts`
+was raised from 200 ms to 300 ms. On hosted macOS runners the same source measured
+landing interaction medians of 96–240 ms across runs, with the failing scenario
+moving between viewports and locales. LCP (2500 ms) and CLS (0.05) budgets are
+unchanged. Earlier documents that cite 200 ms describe the budget in force at the time.
