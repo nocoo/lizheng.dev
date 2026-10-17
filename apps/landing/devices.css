@@ -108,7 +108,7 @@
 	pointer-events: none;
 }
 @supports not (-moz-appearance: none) {
-	.device-gallery[data-layout-ready] .device-layer.is-cached {
+	.device-layer.is-cached[data-layer-layout-ready] {
 		/* Keep prepared geometry; resolve the current palette when a scene returns. */
 		content-visibility: hidden;
 	}
