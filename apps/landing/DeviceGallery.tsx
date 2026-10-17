@@ -1,8 +1,10 @@
 import {
 	type CSSProperties,
 	memo,
+	type ReactNode,
 	useCallback,
 	useEffect,
+	useLayoutEffect,
 	useRef,
 	useState,
 	useSyncExternalStore,
@@ -45,6 +47,48 @@ const devices = {
 	honda: memo(Honda, sameScene),
 };
 
+const DeviceSceneLayer = memo(function DeviceSceneLayer({
+	cached,
+	className,
+	deviceId,
+	active,
+	children,
+}: {
+	cached: boolean;
+	className: string;
+	deviceId: string;
+	active: boolean;
+	children: ReactNode;
+}) {
+	const ref = useRef<HTMLDivElement>(null);
+	useLayoutEffect(() => {
+		const node = ref.current;
+		if (!node) return;
+		if (!cached) {
+			node.removeAttribute("data-layer-layout-ready");
+			return;
+		}
+		if (node.hasAttribute("data-layer-layout-ready")) return;
+		let frame = window.requestAnimationFrame(() => {
+			frame = window.requestAnimationFrame(() => {
+				node.setAttribute("data-layer-layout-ready", "");
+			});
+		});
+		return () => window.cancelAnimationFrame(frame);
+	}, [cached]);
+	return (
+		<div
+			ref={ref}
+			className={className}
+			data-device-active={active ? deviceId : undefined}
+			inert={!active}
+			aria-hidden={!active}
+		>
+			{children}
+		</div>
+	);
+});
+
 export function DeviceGallery({ content }: { content: LandingContent }) {
 	const zh = content.locale === "zh";
 	const root = useRef<HTMLElement>(null);
@@ -57,18 +101,10 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 	const [state, setState] = useState(initialHandheld);
 	const [prepared, setPrepared] = useState(1);
 	useEffect(() => {
-		if (prepared === deviceChapters.length) {
-			// Let the last hidden scene receive layout before suspending its rendering.
-			let frame = window.requestAnimationFrame(() => {
-				frame = window.requestAnimationFrame(() => {
-					root.current?.setAttribute("data-layout-ready", "");
-				});
-			});
-			return () => window.cancelAnimationFrame(frame);
-		}
+		if (prepared === deviceChapters.length) return;
 		const prepare = () => setPrepared((count) => count + 1);
 		if (typeof window.requestIdleCallback === "function") {
-			const id = window.requestIdleCallback(prepare);
+			const id = window.requestIdleCallback(prepare, { timeout: 200 });
 			return () => window.cancelIdleCallback(id);
 		}
 		const id = window.setTimeout(prepare, 100);
@@ -147,13 +183,14 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 							] as (typeof deviceChapters)[number];
 							const Device = devices[chapter.id];
 							const active = index === snapshot.index;
+							const cached = !active && index !== snapshot.previous;
 							return (
-								<div
+								<DeviceSceneLayer
 									key={chapter.id}
+									cached={cached}
+									active={active}
+									deviceId={chapter.id}
 									className={`device-layer layer-${chapter.id} ${active ? (snapshot.previous === null ? "is-current" : "is-entering") : index === snapshot.previous ? "is-exiting" : "is-cached"}`}
-									data-device-active={active ? chapter.id : undefined}
-									inert={!active}
-									aria-hidden={!active}
 								>
 									<Accessories device={chapter.id} />
 									<Device
@@ -163,7 +200,7 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 										openSelected={openSelected}
 										active={active}
 									/>
-								</div>
+								</DeviceSceneLayer>
 							);
 						})}
 					</div>
