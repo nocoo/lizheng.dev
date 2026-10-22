@@ -12,10 +12,10 @@ permissions:
 
 jobs:
   quality:
-    uses: nocoo/base-ci/.github/workflows/quality.yml@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
+    uses: nocoo/base-ci/.github/workflows/quality.yml@ac635753a869cb85fad1f52aae4ccbd6119f3cae # main 2026-10-22
     with:
       runtime-version: "1.4.0"
-      node-version: "26.8.1"
+      node-version: "26.12.1"
       install-policy: "blocked"
       coverage-path: "coverage"
       prepare-command: |
@@ -45,11 +45,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
+      - uses: nocoo/base-ci/.github/actions/setup-js@ac635753a869cb85fad1f52aae4ccbd6119f3cae # main 2026-10-22
         with:
           package-manager: bun
           runtime-version: "1.4.0"
-          node-version: "26.8.1"
+          node-version: "26.12.1"
           install-policy: "blocked"
       - run: bunx playwright install --with-deps ${{ matrix.browser }}
       - name: Resolve test hosts only to IPv4 loopback
@@ -71,10 +71,10 @@ jobs:
   artifact:
     name: Verify and package Worker
     needs: [quality, browser]
-    uses: nocoo/base-ci/.github/workflows/test-job.yml@0394178ebcff0418c442d84a84119220f31f8987 # v2026.9
+    uses: nocoo/base-ci/.github/workflows/test-job.yml@ac635753a869cb85fad1f52aae4ccbd6119f3cae # main 2026-10-22
     with:
       runtime-version: "1.4.0"
-      node-version: "26.8.1"
+      node-version: "26.12.1"
       install-policy: "blocked"
       timeout-minutes: 10
       command: |
