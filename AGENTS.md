@@ -8,13 +8,13 @@ Human overview: [README.md](README.md). Direction: [active docs](docs/README.md)
 
 This file is the contract; hooks, CI and config enforce it. Raise weaker enforcement instead of lowering the contract.
 
-| Fact | Where |
-|---|---|
-| Human entry / architecture | [README.md](README.md), [architecture](docs/06-architecture.md) |
-| Public content | [four allowlisted documents](docs/content/README.md) |
-| Version / dependencies | `package.json`, frozen `bun.lock`; bare SemVer, display `v` prefix |
-| Enforcement | `.husky/`, `scripts/gates.ts`, `vitest.config.ts`, `.github/workflows/ci.yml` |
-| Machine rules / accidents | Global `AGENTS.md` and `rules/`; [Retrospective.md](Retrospective.md) |
+| Fact                       | Where                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| Human entry / architecture | [README.md](README.md), [architecture](docs/06-architecture.md)               |
+| Public content             | [four allowlisted documents](docs/content/README.md)                          |
+| Version / dependencies     | `package.json`, frozen `bun.lock`; bare SemVer, display `v` prefix            |
+| Enforcement                | `.husky/`, `scripts/gates.ts`, `vitest.config.ts`, `.github/workflows/ci.yml` |
+| Machine rules / accidents  | Global `AGENTS.md` and `rules/`; [Retrospective.md](Retrospective.md)         |
 
 ## Project Invariants
 
@@ -28,12 +28,12 @@ This file is the contract; hooks, CI and config enforce it. Raise weaker enforce
 
 ## Stack / Layout
 
-| Component | Location / choice |
-|---|---|
-| Résumé / portfolio | `apps/resume/`, `apps/landing/`; React publishing and browser interactions |
-| Content / rendering / quality | `packages/`, `scripts/`; Bun build and Vite development |
-| Delivery | `worker/`, `wrangler.jsonc`; static assets, routing and `/api/live` |
-| Tests / analysis | Vitest L1, Playwright HTTP L2/browser L3, Biome and TypeScript |
+| Component                     | Location / choice                                                          |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| Résumé / portfolio            | `apps/resume/`, `apps/landing/`; React publishing and browser interactions |
+| Content / rendering / quality | `packages/`, `scripts/`; Bun build and Vite development                    |
+| Delivery                      | `worker/`, `wrangler.jsonc`; static assets, routing and `/api/live`        |
+| Tests / analysis              | Vitest L1, Playwright HTTP L2/browser L3, Biome and TypeScript             |
 
 Keep content, publishing, browser behavior and Worker routing separate; no database is required.
 
@@ -65,20 +65,20 @@ Loopback browser host mappings and trusted Caddy previews: [development](docs/12
 
 6DQ = L1/L2/L3 + G2 + D1 isolation; the former G1 dimension was merged into L1 on 2026-09-21. Status: `enforced`, `planned`, `manual`, `N/A`. No skipped/focused tests.
 
-| Piece | Required proof and current reality | Status | Evidence |
-|---|---|---|---|
-| L1 (incl. former G1 static) | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic; strict types and lint/format with zero errors/warnings; generated types and docs/dependency consistency | planned | Achieved subchecks run today: `vitest.config.ts` coverage plus `check:static` (types, lint, docs/dependency consistency) in pre-commit and CI. Full unified L1 stays planned: checks run on working files rather than the index snapshot, and <30s timing plus isolated rejection proof are unverified |
-| L2 | Real HTTP for public routes/methods and both hosts; keep the full route matrix current | enforced | `tests/http/`, `playwright.http.config.ts`; pre-push and CI |
-| L3 | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines | enforced | `tests/browser/`, `playwright.config.ts`; complete CI matrix, WebKit split across three isolated runners |
-| G2 | Required dependency and secret scanners; missing binary fails | enforced | `check:security`, gitleaks + OSV; push-ref gap below |
-| D1 | Local runtime, per-run temporary state, loopback requests and forbidden production bindings; SQLite marker N/A for stateless site | enforced | `scripts/test-server.ts`, `packages/quality/isolation.ts` |
-| Build | Publishable assets and fixed Worker artifact | enforced | Pre-commit build; CI packaging and budgets |
-| Docs | Update active index and numbered documents with behavior changes | manual | [Documentation index](docs/README.md), diff review |
+| Piece                       | Required proof and current reality                                                                                                                                                                     | Status   | Evidence                                                                                                                                                                                                                                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| L1 (incl. former G1 static) | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic; strict types and lint/format with zero errors/warnings; generated types and docs/dependency consistency | planned  | Achieved subchecks run today: `vitest.config.ts` coverage plus `check:static` (types, lint, docs/dependency consistency) in pre-commit and CI. Full unified L1 stays planned: checks run on working files rather than the index snapshot, and <30s timing plus isolated rejection proof are unverified |
+| L2                          | Real HTTP for public routes/methods and both hosts; keep the full route matrix current                                                                                                                 | enforced | `tests/http/`, `playwright.http.config.ts`; pre-push and CI                                                                                                                                                                                                                                            |
+| L3                          | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines                                                                                                          | enforced | `tests/browser/`, `playwright.config.ts`; complete CI matrix, WebKit split across three isolated runners                                                                                                                                                                                               |
+| G2                          | Required dependency and secret scanners; missing binary fails                                                                                                                                          | enforced | `check:security`, gitleaks + OSV; push-ref gap below                                                                                                                                                                                                                                                   |
+| D1                          | Local runtime, per-run temporary state, loopback requests and forbidden production bindings; SQLite marker N/A for stateless site                                                                      | enforced | `scripts/test-server.ts`, `packages/quality/isolation.ts`                                                                                                                                                                                                                                              |
+| Build                       | Publishable assets and fixed Worker artifact                                                                                                                                                           | enforced | Pre-commit build; CI packaging and budgets                                                                                                                                                                                                                                                             |
+| Docs                        | Update active index and numbered documents with behavior changes                                                                                                                                       | manual   | [Documentation index](docs/README.md), diff review                                                                                                                                                                                                                                                     |
 
-| Hook | Actual behavior | Required follow-up |
-|---|---|---|
-| pre-commit | Parallel staged-secret scan, static checks, L1 and build on working files | Index snapshot for every check; target <30s |
-| pre-push | Parallel L2, G2 and budgets; secrets scanned over `origin/main..HEAD` | Read stdin push refs for every pushed commit; target <3min |
+| Hook       | Actual behavior                                                           | Required follow-up                                         |
+| ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| pre-commit | Parallel staged-secret scan, static checks, L1 and build on working files | Index snapshot for every check; target <30s                |
+| pre-push   | Parallel L2, G2 and budgets; secrets scanned over `origin/main..HEAD`     | Read stdin push refs for every pushed commit; target <3min |
 
 Hooks are check-only. No `--no-verify`, disabled checks, hidden failures or autofix gates; commit tests and implementation together in a green atomic commit.
 
