@@ -50,11 +50,11 @@ Vitest 检查内容、发布与 Worker 逻辑；HTTP 与浏览器测试使用隔
 
 ## 技术栈
 
-| 技术 | 用途 |
-| --- | --- |
-| React、TypeScript | 内容渲染与交互 |
-| Vite、Bun | 本地开发与 HTML 发布 |
-| Cloudflare Workers | 双站路由、静态资源和历史跳转 |
+| 技术                      | 用途                          |
+| ------------------------- | ----------------------------- |
+| React、TypeScript         | 内容渲染与交互                |
+| Vite、Bun                 | 本地开发与 HTML 发布          |
+| Cloudflare Workers        | 双站路由、静态资源和历史跳转  |
 | Biome、Vitest、Playwright | 静态、逻辑、HTTP 与浏览器检查 |
 
 ## 文档
