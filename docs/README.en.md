@@ -20,7 +20,7 @@ Open the [résumé](https://lizheng.dev) or [personal page](https://lizheng.me),
 
 ## Development
 
-Requires Bun 1.4.0 and Node.js 26+ (CI uses 26.8.1).
+Requires Bun 1.4.0 and Node.js 26+ (CI uses 26.12.1).
 
 ```sh
 bun install --frozen-lockfile

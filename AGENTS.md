@@ -39,7 +39,7 @@ Keep content, publishing, browser behavior and Worker routing separate; no datab
 
 ## Commands
 
-Run from root with Bun 1.4.0 and Node ≥26 (CI: 26.8.1). Tests need no production credentials.
+Run from root with Bun 1.4.0 and Node ≥26 (CI: 26.12.1). Tests need no production credentials.
 
 ```bash
 bun install --frozen-lockfile
