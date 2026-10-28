@@ -11,6 +11,10 @@ import {
 	selectSurface,
 	sitemapPagesXml,
 } from "../../packages/publishing/routes";
+import {
+	TRAKS_COLLECT_ORIGIN,
+	traksStubScript,
+} from "../../packages/publishing/traks-collect";
 
 it("limits canonical host redirects to declared aliases and keeps local redirects isolated", () => {
 	for (const host of [
@@ -73,15 +77,34 @@ for (const surface of ["resume", "landing"] as const)
 				if (surface === "resume") {
 					expect(html).toContain("CN103248610");
 					expect(html).toContain('id="beyond"');
+					expect(html).toContain(
+						'data-site="pb_live_zq1jbvt6hrll2zx01fk36hp7"',
+					);
+					expect(html).not.toContain(
+						'data-site="pb_live_ahl78eqd9kzx8sqgww66oag9"',
+					);
 				} else {
 					expect(html).toContain('id="page-data"');
 					expect(html).toContain('"markdown":""');
+					expect(html).toContain(
+						'data-site="pb_live_ahl78eqd9kzx8sqgww66oag9"',
+					);
+					expect(html).not.toContain(
+						'data-site="pb_live_zq1jbvt6hrll2zx01fk36hp7"',
+					);
 				}
+				expect(html).toContain(`<script>${traksStubScript}</script>`);
+				expect(html).toContain(`${TRAKS_COLLECT_ORIGIN}/t.js`);
 			});
-it("CSP permits exactly the bootstrap script", () => {
-	expect(securityHeaders["Content-Security-Policy"]).toContain(
+it("CSP permits bootstrap and Traks collect scripts", () => {
+	const policy = securityHeaders["Content-Security-Policy"];
+	expect(policy).toContain(
 		createHash("sha256").update(themeScript).digest("base64"),
 	);
+	expect(policy).toContain(
+		createHash("sha256").update(traksStubScript).digest("base64"),
+	);
+	expect(policy).toContain(TRAKS_COLLECT_ORIGIN);
 });
 it("lists reciprocal hreflang alternates in the pages sitemap", () => {
 	const xml = sitemapPagesXml("https://lizheng.dev");
