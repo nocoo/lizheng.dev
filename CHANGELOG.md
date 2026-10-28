@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.2.9] - 2026-10-28
+
+- Add self-hosted Traks collect snippets to public HTML on each surface, with separate site keys for lizheng.dev and lizheng.me, and extend CSP to authorize the bootstrap stub and `track-collect.nocoo.cloud`.
+
+## [3.2.8] - 2026-10-25
+
+- Patch dependency updates (Biome, Bun types, Knip, Wrangler, Miniflare/Undici security override).
+
+## [3.2.7] - 2026-10-22
+
+- Patch dependency updates (Vite, Wrangler).
+
 ## [3.2.6] - 2026-10-14
 
 - Add `https://basaltui.com/` to Person `sameAs`, bilingual résumé hero intro links, and `llms.txt` Related sites.

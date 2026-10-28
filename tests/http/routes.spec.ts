@@ -65,6 +65,7 @@ for (const surface of ["resume", "landing"])
 				status: "ok",
 			});
 			expect(live.headers()["cache-control"]).toBe("no-store");
+			expect(await live.text()).not.toContain("track-collect.nocoo.cloud");
 			for (const [accept, locale] of [
 				["zh-CN", "zh"],
 				["en-US", "en"],
@@ -84,6 +85,17 @@ for (const surface of ["resume", "landing"])
 					`/${locale}/content.md>; rel="alternate"`,
 				);
 				const html = await page.text();
+				const traksSiteKey =
+					surface === "resume"
+						? "pb_live_zq1jbvt6hrll2zx01fk36hp7"
+						: "pb_live_ahl78eqd9kzx8sqgww66oag9";
+				const otherSiteKey =
+					surface === "resume"
+						? "pb_live_ahl78eqd9kzx8sqgww66oag9"
+						: "pb_live_zq1jbvt6hrll2zx01fk36hp7";
+				expect(html).toContain(`data-site="${traksSiteKey}"`);
+				expect(html).toContain("https://track-collect.nocoo.cloud/t.js");
+				expect(html).not.toContain(`data-site="${otherSiteKey}"`);
 				const imageUrl = /<meta property="og:image" content="([^"]+)"/.exec(
 					html,
 				)?.[1];

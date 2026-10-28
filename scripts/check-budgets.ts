@@ -40,6 +40,7 @@ for (const surface of ["resume", "landing"])
 		let fonts = 0;
 		let images = 0;
 		for (const path of scripts) {
+			if (/^https?:\/\//.test(path)) continue;
 			const content = await read(path);
 			js += gzipSync(content).byteLength;
 			for (const match of content

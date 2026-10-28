@@ -1,19 +1,15 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { assertLocalRequest } from "../../packages/quality/isolation";
+import {
+	routeIsolatedRequest,
+	routeIsolatedRequestWithoutMedia,
+} from "./isolated-route";
 import { chooseKeepsake } from "./keepsake-fixture";
 
 const origin = (surface: string) =>
 	`http://${surface}.lizheng-test.localhost:27046`;
 test.beforeEach(async ({ context }) => {
-	await context.route("**/*", (route) => {
-		try {
-			assertLocalRequest(route.request().url());
-			return route.continue();
-		} catch {
-			return route.abort();
-		}
-	});
+	await context.route("**/*", routeIsolatedRequest);
 });
 for (const surface of ["resume", "landing"])
 	for (const locale of ["en", "zh"])
@@ -201,16 +197,7 @@ for (const surface of ["resume", "landing"])
 			javaScriptEnabled: false,
 			viewport: { width: 320, height: 568 },
 		});
-		await context.route("**/*", (route) => {
-			try {
-				assertLocalRequest(route.request().url());
-				return ["image", "font"].includes(route.request().resourceType())
-					? route.abort()
-					: route.continue();
-			} catch {
-				return route.abort();
-			}
-		});
+		await context.route("**/*", routeIsolatedRequestWithoutMedia);
 		const page = await context.newPage();
 		await page.goto(`${origin(surface)}/zh/`);
 		await expect(page.locator("h1")).toBeVisible();
@@ -265,14 +252,7 @@ test("handheld responds to touch on a narrow screen", async ({ browser }) => {
 		hasTouch: true,
 		viewport: { width: 390, height: 844 },
 	});
-	await context.route("**/*", (route) => {
-		try {
-			assertLocalRequest(route.request().url());
-			return route.continue();
-		} catch {
-			return route.abort();
-		}
-	});
+	await context.route("**/*", routeIsolatedRequest);
 	const page = await context.newPage();
 	await page.goto(`${origin("landing")}/zh/`);
 	// The introduction can put only the bottom-edge sliver of a key above the fold.
