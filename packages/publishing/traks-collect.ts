@@ -10,7 +10,21 @@ const traksSiteKeys: Record<Surface, string> = {
 	landing: "pb_live_ahl78eqd9kzx8sqgww66oag9",
 };
 
+const traksCollectScriptPath = "/t.js";
+
+export function isTraksCollectScriptUrl(url: string): boolean {
+	try {
+		const target = new URL(url);
+		return (
+			target.origin === TRAKS_COLLECT_ORIGIN &&
+			target.pathname === traksCollectScriptPath
+		);
+	} catch {
+		return false;
+	}
+}
+
 export function traksCollectHeadMarkup(surface: Surface): string {
 	const siteKey = traksSiteKeys[surface];
-	return `<script>${traksStubScript}</script><script defer data-site="${siteKey}" src="${TRAKS_COLLECT_ORIGIN}/t.js"></script>`;
+	return `<script>${traksStubScript}</script><script defer data-site="${siteKey}" src="${TRAKS_COLLECT_ORIGIN}${traksCollectScriptPath}"></script>`;
 }

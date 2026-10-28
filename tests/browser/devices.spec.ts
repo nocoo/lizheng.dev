@@ -1,18 +1,11 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
-import { assertLocalRequest } from "../../packages/quality/isolation";
+import { routeIsolatedRequest } from "./isolated-route";
 
 const origin = "http://landing.lizheng-test.localhost:27046";
 const models = ["gameboy", "nokia", "macintosh", "ipod", "garmin", "honda"];
 test.beforeEach(async ({ context }) => {
-	await context.route("**/*", (route) => {
-		try {
-			assertLocalRequest(route.request().url());
-			return route.continue();
-		} catch {
-			return route.abort();
-		}
-	});
+	await context.route("**/*", routeIsolatedRequest);
 });
 
 async function settle(page: Page) {
@@ -686,14 +679,7 @@ test("all six devices remain usable with touch at 320px and in landscape", async
 		viewport: { width: 320, height: 568 },
 		reducedMotion: "reduce",
 	});
-	await context.route("**/*", (route) => {
-		try {
-			assertLocalRequest(route.request().url());
-			return route.continue();
-		} catch {
-			return route.abort();
-		}
-	});
+	await context.route("**/*", routeIsolatedRequest);
 	const page = await context.newPage();
 	await page.goto(`${origin}/zh/`);
 	await page.evaluate(() =>

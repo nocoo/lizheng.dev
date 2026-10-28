@@ -1,17 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { keepsakeIds } from "../../packages/experience/keepsakes";
-import { assertLocalRequest } from "../../packages/quality/isolation";
+import { routeIsolatedRequest } from "./isolated-route";
 import { chooseKeepsake } from "./keepsake-fixture";
 
 test.beforeEach(async ({ context }) => {
-	await context.route("**/*", (route) => {
-		try {
-			assertLocalRequest(route.request().url());
-			return route.continue();
-		} catch {
-			return route.abort();
-		}
-	});
+	await context.route("**/*", routeIsolatedRequest);
 });
 
 for (const surface of ["resume", "landing"]) {

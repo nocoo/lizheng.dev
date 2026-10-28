@@ -12,6 +12,7 @@ import {
 	sitemapPagesXml,
 } from "../../packages/publishing/routes";
 import {
+	isTraksCollectScriptUrl,
 	TRAKS_COLLECT_ORIGIN,
 	traksStubScript,
 } from "../../packages/publishing/traks-collect";
@@ -96,6 +97,12 @@ for (const surface of ["resume", "landing"] as const)
 				expect(html).toContain(`<script>${traksStubScript}</script>`);
 				expect(html).toContain(`${TRAKS_COLLECT_ORIGIN}/t.js`);
 			});
+it("recognizes the Traks collect script URL for isolated stubs", () => {
+	expect(isTraksCollectScriptUrl(`${TRAKS_COLLECT_ORIGIN}/t.js`)).toBe(true);
+	expect(isTraksCollectScriptUrl(`${TRAKS_COLLECT_ORIGIN}/other`)).toBe(false);
+	expect(isTraksCollectScriptUrl("https://evil.test/t.js")).toBe(false);
+	expect(isTraksCollectScriptUrl("")).toBe(false);
+});
 it("CSP permits bootstrap and Traks collect scripts", () => {
 	const policy = securityHeaders["Content-Security-Policy"];
 	expect(policy).toContain(
