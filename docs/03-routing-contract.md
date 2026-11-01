@@ -26,7 +26,6 @@
 | ^/feed$ | /feed | 301 |
 | ^/page/ | /page/2 | 301 |
 | ^/preview/ | /preview/secret | 301 |
-| ^/sitemap\.xml$ | /sitemap.xml | 301 |
 | ^/admin(/\|$) | /admin、/admin/posts | 301 |
 | ^/login$ | /login | 301 |
 
@@ -52,7 +51,7 @@
 | 优先级 | 请求 | 行为 |
 | --- | --- | --- |
 | 1 | GET / HEAD 之外的方法 | 405；公开站点不接收写入 |
-| 2 | .me 旧博客模式 | 原样 301 到博客，包括 /sitemap.xml |
+| 2 | .me 旧博客模式 | 原样 301 到博客（不含 `/sitemap.xml`） |
 | 3 | 三个已声明的 www 别名 | 301 到对应 HTTPS 主域名，路径和 query 保留 |
 | 4 | 内部资产前缀 /_sites/、/cover/* 等 | 404，禁止公开访问内部 HTML |
 | 5 | /robots.txt、/llms.txt、内容与新 sitemap 端点 | 按访问域名选择显式资源，200 与正确 Content-Type |
@@ -72,7 +71,7 @@
 | 路径 | .dev | .me |
 | --- | --- | --- |
 | /robots.txt | 指向本站 sitemap | 指向本站新 sitemap |
-| /sitemap.xml | 本站简历 sitemap | **保持旧 301**，不可改成个人入口 sitemap |
+| /sitemap.xml | 本站简历 sitemap | 本站页面 sitemap（与 sitemap-pages.xml 相同） |
 | /sitemap-index.xml | 可选 sitemap index | 本站 sitemap index |
 | /sitemap-pages.xml | 可选 | 本站 en/zh 页面列表 |
 | /llms.txt | 本站说明及两种简历 Markdown 链接 | 本站说明及两种入口 Markdown 链接 |
@@ -82,7 +81,7 @@ HTML 公开链接到对应 Markdown，并使用 rel=alternate / type=text/markdo
 
 ## 必须先写的回归用例
 
-- 12 类旧模式 × 两个 .me 主机；验证状态、完整 Location、资产服务未调用。
+- 11 类旧模式 × 两个 .me 主机；验证状态、完整 Location、资产服务未调用。
 - 查询参数、中文百分号编码路径、边界非匹配、大小写；不自动跟随跳转。
 - .dev 相同路径不被博客 301 捕获。
 - 四个语言页面、两个根路由、两个 www 别名、无斜杠路径。

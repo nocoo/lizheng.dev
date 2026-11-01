@@ -26,6 +26,10 @@ export function llmsDocument(en: PageContent, zh: PageContent) {
 			id: "basaltui",
 			line: "- [Basalt UI](https://basaltui.com/): Open-source React UI components and dashboard layouts.",
 		},
+		{
+			id: "podcast",
+			line: "- [his.fm](https://his.fm/): Chinese-language podcast.",
+		},
 	].filter((site) => site.id !== en.surface);
 	const identity =
 		en.intro && zh.intro

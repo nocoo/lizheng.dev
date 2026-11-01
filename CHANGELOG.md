@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.11] - 2026-11-04
+
+- Enrich lizheng.me `/zh/` landing copy for the personal-name entity query, using only existing public facts.
+- Serve lizheng.me `/sitemap.xml` as the localized pages sitemap instead of redirecting to the blog; keep `/sitemap-index.xml` and robots on the Play origin.
+- Add `https://his.fm/` to Person `sameAs`, bilingual résumé hero intro links, and `llms.txt` Related sites.
+
 ## [3.2.10] - 2026-11-03
 
 - Patch dependency updates (marked, Wrangler, Biome).

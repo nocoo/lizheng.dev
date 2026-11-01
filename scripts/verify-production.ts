@@ -42,7 +42,8 @@ async function verifyPage(host: string, locale: string) {
 	const person = schema ? JSON.parse(schema).mainEntity : undefined;
 	if (
 		!person?.sameAs.includes("https://hexly.ai/") ||
-		!person?.sameAs.includes("https://basaltui.com/")
+		!person?.sameAs.includes("https://basaltui.com/") ||
+		!person?.sameAs.includes("https://his.fm/")
 	)
 		throw new Error(`Missing portfolio identity: ${host}/${locale}`);
 	const school = locale === "zh" ? "同济大学" : "Tongji University";

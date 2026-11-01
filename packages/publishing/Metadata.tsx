@@ -51,6 +51,7 @@ export function Metadata({
 					"https://lizheng.blog/",
 					"https://hexly.ai/",
 					"https://basaltui.com/",
+					"https://his.fm/",
 					...profile.links.map((link) => link.href),
 				]),
 			],

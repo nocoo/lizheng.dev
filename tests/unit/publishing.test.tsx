@@ -128,7 +128,11 @@ it("normalizes host and first preferred language", () => {
 	expect(selectSurface("")).toBe("resume");
 	expect(selectLocale()).toBe("en");
 	expect(selectLocale("ZH-cn,en")).toBe("zh");
-	expect(metadataFile("landing", "/sitemap.xml")).toBeUndefined();
+	const landingSitemap = metadataFile("landing", "/sitemap.xml");
+	expect(landingSitemap?.body).toContain("https://lizheng.me/zh/");
+	expect(metadataFile("resume", "/sitemap.xml")?.body).toContain(
+		"https://lizheng.dev/en/",
+	);
 });
 it("renders supported inline Markdown as semantic escaped HTML", () => {
 	const html = renderToStaticMarkup(

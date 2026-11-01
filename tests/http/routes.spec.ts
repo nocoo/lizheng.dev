@@ -190,6 +190,7 @@ for (const surface of ["resume", "landing"])
 				"/llms.txt",
 				"/sitemap-index.xml",
 				"/sitemap-pages.xml",
+				"/sitemap.xml",
 				"/favicon.svg",
 				"/favicon.ico",
 				"/apple-touch-icon.png",
@@ -225,10 +226,9 @@ for (const surface of ["resume", "landing"])
 				"Public pages welcome search and AI crawlers.",
 			);
 			expect(await llms.text()).toContain(
-				surface === "resume"
-					? "李征 — 开发者 / AI 产品"
-					: "六个可交互的设备界面",
+				surface === "resume" ? "李征 — 开发者 / AI 产品" : "his.fm",
 			);
+			expect(await llms.text()).toContain("https://his.fm/");
 			for (const path of [
 				"/_sites/landing/en/index.html",
 				"/docs/content/03-landing-en.md",
@@ -248,7 +248,6 @@ for (const surface of ["resume", "landing"])
 				"/feed",
 				"/page/2",
 				"/preview/secret",
-				"/sitemap.xml",
 				"/admin",
 				"/login",
 			]) {
@@ -259,6 +258,20 @@ for (const surface of ["resume", "landing"])
 						`https://lizheng.blog${path}?a=%20&b=1&b=2`,
 					);
 				} else expect(result.status()).not.toBe(301);
+			}
+			if (surface === "landing") {
+				const sitemap = await get("/sitemap.xml");
+				expect(sitemap.status()).toBe(200);
+				expect(sitemap.headers()["content-type"]).toContain("application/xml");
+				expect(await sitemap.text()).toContain(
+					"<loc>https://lizheng.me/en/</loc>",
+				);
+			} else {
+				const sitemap = await get("/sitemap.xml");
+				expect(sitemap.status()).toBe(200);
+				expect(await sitemap.text()).toContain(
+					"<loc>https://lizheng.dev/en/</loc>",
+				);
 			}
 		});
 	}

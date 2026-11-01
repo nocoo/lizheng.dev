@@ -151,7 +151,6 @@ try {
 		"/feed",
 		"/page/2",
 		"/preview/article",
-		"/sitemap.xml",
 		"/admin",
 		"/login",
 	]) {
@@ -159,6 +158,12 @@ try {
 		assert.equal(response.status(), 301);
 		assert.equal(response.headers().location, `https://lizheng.blog${path}`);
 	}
+	const playSitemap = await localGet("landing", "/sitemap.xml");
+	assert.equal(playSitemap.status(), 200);
+	assert.match(
+		await playSitemap.text(),
+		/<loc>https:\/\/lizheng\.me\/zh\/<\/loc>/,
+	);
 	assert.equal((await localGet("landing", "/sitemap-index.xml")).status(), 200);
 	assert.equal((await localGet("resume", "/missing-page")).status(), 404);
 	assert.equal((await localGet("landing", "/docs/README.md")).status(), 404);
