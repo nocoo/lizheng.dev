@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.10] - 2026-11-03
+
+- Patch dependency updates (marked, Wrangler, Biome).
+
 ## [3.2.9] - 2026-10-28
 
 - Add self-hosted Traks collect snippets to public HTML on each surface, with separate site keys for lizheng.dev and lizheng.me, and extend CSP to authorize the bootstrap stub and `track-collect.nocoo.cloud`.
