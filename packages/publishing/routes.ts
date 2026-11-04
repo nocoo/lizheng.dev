@@ -60,6 +60,22 @@ const legacyBlogPaths = [
 	/^\/admin(\/|$)/,
 	/^\/login$/,
 ];
+
+/** Representative paths checked by scripts/verify-production.ts after each release. */
+export const legacyBlogVerificationPaths = [
+	"/2024/01/post",
+	"/category/tech",
+	"/tag/js",
+	"/archive",
+	"/search",
+	"/feed.xml",
+	"/feed",
+	"/page/2",
+	"/preview/secret",
+	"/admin",
+	"/login",
+] as const;
+
 export function legacyRedirect(surface: Surface, url: URL): string | undefined {
 	if (
 		surface === "landing" &&

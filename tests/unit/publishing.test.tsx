@@ -6,6 +6,8 @@ import { Markdown } from "../../apps/resume/Markdown";
 import { renderPage, themeScript } from "../../packages/publishing/render";
 import {
 	canonicalHostRedirect,
+	legacyBlogVerificationPaths,
+	legacyRedirect,
 	metadataFile,
 	selectLocale,
 	selectSurface,
@@ -122,6 +124,19 @@ it("lists reciprocal hreflang alternates in the pages sitemap", () => {
 	expect(xml.match(/hreflang="en"/g)?.length).toBe(2);
 	expect(xml.match(/hreflang="zh-CN"/g)?.length).toBe(2);
 	expect(xml.match(/hreflang="x-default"/g)?.length).toBe(2);
+});
+it("keeps release legacy redirect checks aligned with legacy blog patterns", () => {
+	for (const path of legacyBlogVerificationPaths) {
+		expect(
+			legacyRedirect(
+				"landing",
+				new URL(`https://lizheng.me${path}?ref=release`),
+			),
+		).toBe(`https://lizheng.blog${path}?ref=release`);
+	}
+	expect(
+		legacyRedirect("landing", new URL("https://lizheng.me/sitemap.xml")),
+	).toBeUndefined();
 });
 it("normalizes host and first preferred language", () => {
 	expect(selectSurface("LIZHENG.ME:443")).toBe("landing");

@@ -1,4 +1,8 @@
 import manifest from "../package.json" with { type: "json" };
+import {
+	legacyBlogVerificationPaths,
+	sitemapPagesXml,
+} from "../packages/publishing/routes";
 
 async function fetchCanonical(host: string, path: string) {
 	let response = await fetch(`https://${host}${path}`, {
@@ -61,6 +65,21 @@ async function verifyPage(host: string, locale: string) {
 		throw new Error(`Missing touch icon link: ${host}/${locale}`);
 }
 
+async function verifyPlaySitemap(host: string) {
+	const response = await fetchCanonical(host, "/sitemap.xml");
+	if (!response.ok)
+		throw new Error(`Play sitemap regression: ${host}/sitemap.xml`);
+	const contentType = response.headers.get("Content-Type") ?? "";
+	if (!contentType.includes("application/xml"))
+		throw new Error(
+			`Play sitemap content-type regression: ${host}/sitemap.xml`,
+		);
+	const body = await response.text();
+	const expected = sitemapPagesXml("https://lizheng.me");
+	if (body !== expected)
+		throw new Error(`Play sitemap content regression: ${host}/sitemap.xml`);
+}
+
 for (const host of [
 	"lizheng.dev",
 	"www.lizheng.dev",
@@ -111,20 +130,7 @@ for (const host of [
 			throw new Error(`Missing browser icon: ${host}${path}`);
 	}
 	if (host.endsWith(".me")) {
-		for (const path of [
-			"/2024/01/post",
-			"/category/tech",
-			"/tag/js",
-			"/archive",
-			"/search",
-			"/feed.xml",
-			"/feed",
-			"/page/2",
-			"/preview/secret",
-			"/sitemap.xml",
-			"/admin",
-			"/login",
-		]) {
+		for (const path of legacyBlogVerificationPaths) {
 			const response = await fetch(`https://${host}${path}?ref=release`, {
 				redirect: "manual",
 				signal: AbortSignal.timeout(10000),
@@ -136,9 +142,12 @@ for (const host of [
 			)
 				throw new Error(`301 regression: ${host}${path}`);
 		}
+		await verifyPlaySitemap(host);
 	}
 	console.info(
-		`Verified ${host}: v${manifest.version}, both languages and applicable 301s.`,
+		`Verified ${host}: v${manifest.version}, both languages${
+			host.endsWith(".me") ? ", Play sitemap, and legacy blog 301s" : ""
+		}.`,
 	);
 }
 
