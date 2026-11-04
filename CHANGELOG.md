@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.12] - 2026-11-04
+
+- Stop résumé hero layout shift on mobile cold loads by using `font-display: optional` for self-hosted Newsreader and Source Sans 3.
+
 ## [3.2.11] - 2026-11-04
 
 - Enrich lizheng.me `/zh/` landing copy for the personal-name entity query, using only existing public facts.
