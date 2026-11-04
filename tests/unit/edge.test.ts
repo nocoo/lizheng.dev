@@ -99,7 +99,6 @@ const legacyPaths = [
 	"/feed",
 	"/page/2",
 	"/preview/secret",
-	"/sitemap.xml",
 	"/admin/posts",
 	"/login",
 ];
@@ -193,6 +192,7 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 		"/robots.txt",
 		"/sitemap-index.xml",
 		"/sitemap-pages.xml",
+		"/sitemap.xml",
 	])
 		it(`metadata ${host}${path}`, async () => {
 			const f = fixture(host);
@@ -211,7 +211,7 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 						? [`https://${host}/sitemap-pages.xml`]
 						: [`https://${host}/en/`, `https://${host}/zh/`],
 				);
-			if (path === "/sitemap-pages.xml") {
+			if (path === "/sitemap-pages.xml" || path === "/sitemap.xml") {
 				expect(body).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
 				expect(body.match(/hreflang="en"/g)?.length).toBe(2);
 				expect(body.match(/hreflang="zh-CN"/g)?.length).toBe(2);

@@ -57,7 +57,6 @@ const legacyBlogPaths = [
 	/^\/feed$/,
 	/^\/page\//,
 	/^\/preview\//,
-	/^\/sitemap\.xml$/,
 	/^\/admin(\/|$)/,
 	/^\/login$/,
 ];
@@ -117,10 +116,7 @@ export function metadataFile(
 			type: "application/xml",
 			body: `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>${origin}/sitemap-pages.xml</loc></sitemap></sitemapindex>`,
 		};
-	if (
-		path === "/sitemap-pages.xml" ||
-		(surface === "resume" && path === "/sitemap.xml")
-	)
+	if (path === "/sitemap-pages.xml" || path === "/sitemap.xml")
 		return {
 			type: "application/xml",
 			body: sitemapPagesXml(origin),

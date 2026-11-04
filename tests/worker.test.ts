@@ -48,7 +48,6 @@ describe("cover host — 301 legacy blog redirects", () => {
 		"/feed",
 		"/page/2",
 		"/preview/secret",
-		"/sitemap.xml",
 		"/admin",
 		"/admin/posts",
 		"/login",
@@ -68,6 +67,19 @@ describe("cover host — 301 legacy blog redirects", () => {
 		expect(res.headers.get("location")).toBe(
 			"https://lizheng.blog/tag/js?ref=feed",
 		);
+	});
+});
+
+describe("cover host — Play sitemap", () => {
+	test("/sitemap.xml serves localized pages without redirecting to the blog", async () => {
+		const { res, calls } = await call("https://lizheng.me/sitemap.xml");
+		expect(res.status).toBe(200);
+		expect(res.headers.get("location")).toBeNull();
+		expect(calls).toHaveLength(0);
+		const body = await res.text();
+		expect(body).toContain("<loc>https://lizheng.me/en/</loc>");
+		expect(body).toContain("<loc>https://lizheng.me/zh/</loc>");
+		expect(body).toContain('hreflang="zh-CN"');
 	});
 });
 

@@ -45,6 +45,7 @@ for (const surface of ["resume", "landing"] as const)
 		if (surface === "resume") expect(llms).toContain("## Page intro");
 		expect(llms).toContain("https://hexly.ai/");
 		expect(llms).toContain("https://basaltui.com/");
+		expect(llms).toContain("https://his.fm/");
 		expect(llms).toContain("[Portfolio]");
 		expect(llms).toContain("[Journal]");
 		const related = llms.split("## Related sites")[1]?.split("## ")[0] ?? "";
@@ -85,7 +86,7 @@ for (const locale of ["en", "zh"] as const) {
 		expect(content.markdown).toContain(
 			locale === "en"
 				? "Here you can find my blog, résumé, GitHub and LinkedIn."
-				: "这里可以找到我的博客、简历、GitHub 和 LinkedIn。",
+				: "本页是李征的个人入口",
 		);
 		document.documentElement.innerHTML = await renderPage("landing", locale);
 		expect(document.querySelectorAll(".journey-directory h3")).toHaveLength(6);
@@ -114,6 +115,7 @@ it("keeps identity and sentence boundaries in plain HTML text", async () => {
 	expect(text(".resume-intro")).toContain("lizheng.blog");
 	expect(text(".resume-intro")).toContain("hexly.ai");
 	expect(text(".resume-intro")).toContain("basaltui.com");
+	expect(text(".resume-intro")).toContain("his.fm");
 	expect(text(".resume-role")).toBe(
 		"Principal Software Engineering Manager @ Microsoft",
 	);
@@ -203,6 +205,7 @@ for (const surface of ["landing", "resume"] as const)
 					"https://lizheng.blog/",
 					"https://hexly.ai/",
 					"https://basaltui.com/",
+					"https://his.fm/",
 					"https://x.com/zhengli",
 					"https://github.com/nocoo",
 					"https://linkedin.com/in/nocoo",
