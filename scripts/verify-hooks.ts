@@ -76,27 +76,25 @@ try {
 	await writeFile(
 		join(bin, "bun"),
 		`#!/bin/sh
-fail() { [ -n "$FAIL_GATE" ] && return 0; exit 1; }
 should_fail() { [ "$FAIL_GATE" = "$1" ]; }
-if should_fail "test:coverage" && [ "$2" = "run" ] && [ "$3" = "test:coverage" ]; then exit 1; fi
-if should_fail "build" && [ "$2" = "run" ] && [ "$3" = "build" ]; then exit 1; fi
-if should_fail "lint" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
-if should_fail "typecheck" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
-if should_fail "types:check" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
-if should_fail "check:deps" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
-if should_fail "check:docs" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
-if should_fail "check:static" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
-case "$2" in
-  scripts/gates.ts) exec "$REAL_BUN" "$REAL_GATE" "$3" ;;
+case "$1" in
+  *gates.ts)
+    if should_fail "check:static" && [ "$2" = "static" ]; then exit 1; fi
+    exec "$REAL_BUN" "$@"
+    ;;
   run)
-    case "$3" in
-      test:coverage|build) exec "$REAL_BUN" "$@" ;;
-    esac
+    for gate in lint typecheck types:check check:deps check:docs test:coverage build test:http; do
+      if should_fail "$gate" && [ "$2" = "$gate" ]; then exit 1; fi
+    done
+    exec "$REAL_BUN" "$@"
     ;;
   check:security) exec "$REAL_BUN" "$REAL_GATE" security ;;
+esac
+case "$2" in
   test:http) exec "$REAL_BUN" "$FIXTURE_ISOLATION" ;;
 esac
-exit 0
+echo "Hook fixture bun stub rejected: $*" >&2
+exit 127
 `,
 		{ mode: 0o755 },
 	);
