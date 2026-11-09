@@ -6,12 +6,6 @@ const command = (name: string, script: string): Gate => ({
 	command: ["bun", "run", script],
 });
 const groups: Record<string, Gate[]> = {
-	"pre-commit": [
-		command("staged secrets", "check:staged"),
-		command("G1", "check:static"),
-		command("L1", "test:coverage"),
-		command("build", "build"),
-	],
 	"pre-push": [
 		command("L2", "test:http"),
 		command("G2", "check:security"),

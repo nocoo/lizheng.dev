@@ -1,10 +1,12 @@
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { symlinkSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 // Real Git hooks in an isolated fixture: inject each failed gate through stub
 // binaries, then verify that Git refuses the operation. No source edits or bypass.
+const source = resolve(".");
 const root = await mkdtemp(join(tmpdir(), "lizheng-hook-test-"));
 const bin = join(root, "bin");
 await mkdir(bin);
@@ -36,6 +38,11 @@ function git(
 		);
 }
 try {
+	const archive = join(root, ".hook-fixture-archive.tar");
+	execFileSync("git", ["archive", "-o", archive, "HEAD"], { cwd: source });
+	execFileSync("tar", ["-xf", archive], { cwd: root });
+	await rm(archive);
+	symlinkSync(resolve("node_modules"), join(root, "node_modules"));
 	git(["init", "--quiet"]);
 	git(["config", "user.email", "fixture@example.invalid"]);
 	git(["config", "user.name", "Hook Fixture"]);
@@ -48,20 +55,44 @@ try {
 		throw new Error(`Husky fixture setup failed: ${install.stderr}`);
 	for (const hook of ["pre-commit", "pre-push"]) {
 		const original = await readFile(`.husky/${hook}`, "utf8");
-		if (!original.includes(`bun scripts/gates.ts ${hook}`))
-			throw new Error(`Hook is not wired: ${hook}`);
-		await writeFile(
-			join(root, ".husky", hook),
-			`#!/bin/sh\n"${bun}" "${gate}" ${hook}\n`,
-			{ mode: 0o755 },
-		);
+		if (hook === "pre-commit") {
+			if (!original.includes("scripts/pre-commit-l1.sh"))
+				throw new Error("Hook is not wired: pre-commit");
+			await writeFile(
+				join(root, ".husky", hook),
+				`#!/bin/sh\nsh scripts/pre-commit-l1.sh\n`,
+				{ mode: 0o755 },
+			);
+		} else {
+			if (!original.includes(`bun scripts/gates.ts ${hook}`))
+				throw new Error(`Hook is not wired: ${hook}`);
+			await writeFile(
+				join(root, ".husky", hook),
+				`#!/bin/sh\n"${bun}" "${gate}" ${hook}\n`,
+				{ mode: 0o755 },
+			);
+		}
 	}
 	await writeFile(
 		join(bin, "bun"),
 		`#!/bin/sh
-if [ "$2" = "$FAIL_GATE" ]; then exit 1; fi
+fail() { [ -n "$FAIL_GATE" ] && return 0; exit 1; }
+should_fail() { [ "$FAIL_GATE" = "$1" ]; }
+if should_fail "test:coverage" && [ "$2" = "run" ] && [ "$3" = "test:coverage" ]; then exit 1; fi
+if should_fail "build" && [ "$2" = "run" ] && [ "$3" = "build" ]; then exit 1; fi
+if should_fail "lint" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
+if should_fail "typecheck" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
+if should_fail "types:check" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
+if should_fail "check:deps" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
+if should_fail "check:docs" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
+if should_fail "check:static" && [ "$2" = "scripts/gates.ts" ] && [ "$3" = "static" ]; then exit 1; fi
 case "$2" in
-  check:static) exec "$REAL_BUN" "$REAL_GATE" static ;;
+  scripts/gates.ts) exec "$REAL_BUN" "$REAL_GATE" "$3" ;;
+  run)
+    case "$3" in
+      test:coverage|build) exec "$REAL_BUN" "$@" ;;
+    esac
+    ;;
   check:security) exec "$REAL_BUN" "$REAL_GATE" security ;;
   test:http) exec "$REAL_BUN" "$FIXTURE_ISOLATION" ;;
 esac
@@ -88,10 +119,9 @@ if (process.env.FAIL_GATE === "isolation") config.name = "lizheng-dev";
 assertIsolation(config, "l2", 17046);
 `,
 	);
-	await writeFile(join(root, "fixture.txt"), "fixture\n");
-	git(["add", "."]);
+	git(["add", "-A"]);
 	for (const failure of [
-		"check:staged",
+		"gitleaks",
 		"check:static",
 		"lint",
 		"typecheck",
