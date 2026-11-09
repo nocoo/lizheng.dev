@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { symlinkSync } from "node:fs";
+import { symlinkSync, writeFileSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -22,14 +22,13 @@ const env = {
 	REAL_GATE: gate,
 	FIXTURE_ISOLATION: join(root, "isolation.ts"),
 };
-function git(
-	args: string[],
-	expected = 0,
-	additions: Record<string, string> = {},
-) {
+const failGateFile = join(root, ".fixture-fail-gate");
+function git(args: string[], expected = 0, failGate = "") {
+	if (failGate) writeFileSync(failGateFile, failGate);
+	else rm(failGateFile, { force: true });
 	const result = spawnSync("git", args, {
 		cwd: root,
-		env: { ...env, ...additions },
+		env,
 		encoding: "utf8",
 	});
 	if ((result.status === 0) !== (expected === 0))
@@ -76,10 +75,16 @@ try {
 	await writeFile(
 		join(bin, "bun"),
 		`#!/bin/sh
+FAIL_GATE=$(cat .fixture-fail-gate 2>/dev/null || true)
 should_fail() { [ "$FAIL_GATE" = "$1" ]; }
 case "$1" in
-  *gates.ts)
+  scripts/*gates.ts)
     if should_fail "check:static" && [ "$2" = "static" ]; then exit 1; fi
+    exec "$REAL_BUN" "$@"
+    ;;
+  scripts/*)
+    base=$(basename "$1" .ts)
+    if should_fail "check:docs" && [ "$base" = "check-docs" ]; then exit 1; fi
     exec "$REAL_BUN" "$@"
     ;;
   run)
@@ -102,6 +107,7 @@ exit 127
 		await writeFile(
 			join(bin, scanner),
 			`#!/bin/sh
+FAIL_GATE=$(cat .fixture-fail-gate 2>/dev/null || true)
 if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
 if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
 exit 0
@@ -109,13 +115,8 @@ exit 0
 			{ mode: 0o755 },
 		);
 	await writeFile(
-		join(root, "isolation.ts"),
-		`
-import { assertIsolation } from ${JSON.stringify(resolve("packages/quality/isolation.ts"))};
-const config = ${await readFile("wrangler.test.jsonc", "utf8")};
-if (process.env.FAIL_GATE === "isolation") config.name = "lizheng-dev";
-assertIsolation(config, "l2", 17046);
-`,
+		join(root, ".gitignore"),
+		`${await readFile(join(root, ".gitignore"), "utf8")}\n/isolation.ts\n.fixture-fail-gate\n`,
 	);
 	git(["add", "-A"]);
 	spawnSync(
@@ -138,8 +139,23 @@ assertIsolation(config, "l2", 17046);
 		"test:coverage",
 		"build",
 	])
-		git(["commit", "-m", "must fail"], 1, { FAIL_GATE: failure });
+		git(["commit", "-m", "must fail"], 1, failure);
 	git(["commit", "-m", "all gates pass"]);
+	await writeFile(
+		join(root, "isolation.ts"),
+		`
+import { readFileSync } from "node:fs";
+import { assertIsolation } from ${JSON.stringify(resolve("packages/quality/isolation.ts"))};
+
+const config = ${await readFile("wrangler.test.jsonc", "utf8")};
+let failGate = "";
+try {
+  failGate = readFileSync(".fixture-fail-gate", "utf8").trim();
+} catch {}
+if (failGate === "isolation") config.name = "lizheng-dev";
+assertIsolation(config, "l2", 17046);
+`,
+	);
 	const remote = join(root, "remote.git");
 	git(["init", "--bare", "--quiet", remote]);
 	git(["remote", "add", "origin", remote]);
@@ -153,7 +169,7 @@ assertIsolation(config, "l2", 17046);
 		"osv-scanner",
 		"osv-scanner-missing",
 	])
-		git(["push", "origin", "HEAD"], 1, { FAIL_GATE: failure });
+		git(["push", "origin", "HEAD"], 1, failure);
 	git(["push", "origin", "HEAD"]);
 	console.info(
 		"Real Git fixture blocked all 17 injected failures, including nested static/security gates and production-resource isolation, and accepted restored commit/push.",
