@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { symlinkSync, writeFileSync } from "node:fs";
+import { symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -25,7 +25,13 @@ const env = {
 const failGateFile = join(root, ".fixture-fail-gate");
 function git(args: string[], expected = 0, failGate = "") {
 	if (failGate) writeFileSync(failGateFile, failGate);
-	else rm(failGateFile, { force: true });
+	else {
+		try {
+			unlinkSync(failGateFile);
+		} catch {
+			/* absent */
+		}
+	}
 	const result = spawnSync("git", args, {
 		cwd: root,
 		env,
@@ -75,7 +81,8 @@ try {
 	await writeFile(
 		join(bin, "bun"),
 		`#!/bin/sh
-FAIL_GATE=$(cat .fixture-fail-gate 2>/dev/null || true)
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+FAIL_GATE=$(cat "$repo_root/.fixture-fail-gate" 2>/dev/null || true)
 should_fail() { [ "$FAIL_GATE" = "$1" ]; }
 case "$1" in
   scripts/*gates.ts)
@@ -88,6 +95,7 @@ case "$1" in
     exec "$REAL_BUN" "$@"
     ;;
   run)
+    if should_fail "isolation" && [ "$2" = "test:http" ]; then exec "$REAL_BUN" "$FIXTURE_ISOLATION"; fi
     for gate in lint typecheck types:check check:deps check:docs test:coverage build test:http; do
       if should_fail "$gate" && [ "$2" = "$gate" ]; then exit 1; fi
     done
@@ -95,11 +103,7 @@ case "$1" in
     ;;
   check:security) exec "$REAL_BUN" "$REAL_GATE" security ;;
 esac
-case "$2" in
-  test:http) exec "$REAL_BUN" "$FIXTURE_ISOLATION" ;;
-esac
-echo "Hook fixture bun stub rejected: $*" >&2
-exit 127
+exec "$REAL_BUN" "$@"
 `,
 		{ mode: 0o755 },
 	);
@@ -107,7 +111,8 @@ exit 127
 		await writeFile(
 			join(bin, scanner),
 			`#!/bin/sh
-FAIL_GATE=$(cat .fixture-fail-gate 2>/dev/null || true)
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+FAIL_GATE=$(cat "$repo_root/.fixture-fail-gate" 2>/dev/null || true)
 if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
 if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
 exit 0
