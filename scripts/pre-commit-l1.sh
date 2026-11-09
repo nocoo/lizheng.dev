@@ -46,12 +46,22 @@ if ! cmp -s "$snapshot/package.json" "$repo/package.json" || ! cmp -s "$snapshot
 	exit 1
 fi
 
-mkdir "$snapshot/node_modules"
-for entry in "$repo/node_modules"/*; do
-	[ -e "$entry" ] || continue
-	ln -s "$entry" "$snapshot/node_modules/${entry##*/}"
-done
-ln -s "$repo/node_modules/.bin" "$snapshot/node_modules/.bin"
+if [ -L "$snapshot/node_modules" ] || [ -f "$snapshot/node_modules" ]; then
+	rm -f "$snapshot/node_modules"
+fi
+if [ -d "$snapshot/node_modules" ] && [ ! -e "$snapshot/node_modules/.bin" ]; then
+	rm -rf "$snapshot/node_modules"
+fi
+if [ ! -d "$snapshot/node_modules" ]; then
+	mkdir "$snapshot/node_modules"
+	for entry in "$repo/node_modules"/*; do
+		[ -e "$entry" ] || continue
+		ln -s "$entry" "$snapshot/node_modules/${entry##*/}"
+	done
+fi
+if [ ! -e "$snapshot/node_modules/.bin" ]; then
+	ln -s "$repo/node_modules/.bin" "$snapshot/node_modules/.bin"
+fi
 mkdir -p "$snapshot/node_modules/.vite" "$snapshot/node_modules/.vitest" "$snapshot/.cache"
 unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
 unset GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES

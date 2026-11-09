@@ -120,6 +120,15 @@ assertIsolation(config, "l2", 17046);
 `,
 	);
 	git(["add", "-A"]);
+	spawnSync(
+		"git",
+		["rm", "-r", "--cached", "-f", "--ignore-unmatch", "node_modules"],
+		{
+			cwd: root,
+			stdio: "ignore",
+		},
+	);
+	git(["add", "-A"]);
 	for (const failure of [
 		"gitleaks",
 		"check:static",

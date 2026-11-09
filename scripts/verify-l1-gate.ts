@@ -60,6 +60,14 @@ function materializeArchive(target: string) {
 		`${readFileSync(join(repo, ".gitignore"), "utf8")}\n.tmp/\n`,
 	);
 	execFileSync("git", ["add", "-A"], { cwd: target });
+	execFileSync(
+		"git",
+		["rm", "-r", "--cached", "-f", "--ignore-unmatch", "node_modules"],
+		{
+			cwd: target,
+			stdio: "ignore",
+		},
+	);
 }
 
 function runHook(
