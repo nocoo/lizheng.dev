@@ -1,3 +1,5 @@
+# CI slot standard v1 (nocoo/base-ci docs/slots.md): impl S1, S2, S3, G1, G2, B1, L1, L2, Z1 via quality.yml;
+# na L1.5, P1; L3 浏览器矩阵在 macOS 独立作业（darwin-ci 快照，quality.yml L3 仅 ubuntu）。nocoo/base-ci v2026.12.
 name: CI
 
 on:
@@ -12,24 +14,46 @@ permissions:
 
 jobs:
   quality:
-    uses: nocoo/base-ci/.github/workflows/quality.yml@633a5545fcfec91b688840650d4edf3e9cc1abbd # v2026.10
+    uses: nocoo/base-ci/.github/workflows/quality.yml@1ea10ecab22b72512399485391603fe03a161016 # v2026.12
     with:
       runtime-version: "1.4.0"
       node-version: "26.12.1"
-      install-policy: "blocked"
-      coverage-path: "coverage"
+      install-policy: blocked
+      coverage-path: coverage
       prepare-command: |
         bun run check:docs
         bun run check:deps
         bun run types:check
-      test-command: "bun run test:coverage"
-      lint-command: "bun run lint"
-      typecheck-command: "bun run typecheck"
+      test-command: bun run test:coverage
+      lint-command: bun run lint
+      typecheck-command: bun run typecheck
+      osv-config: osv-scanner.toml
+      gitleaks-config: .gitleaks.toml
+      build: true
+      build-command: bun run build
+      workflow-lint: true
+      workflow-lint-yamllint: true
       l2: true
-      l2-command: "bun run test:http"
+      l2-command: bun run test:http
+      env-json: '{"WRANGLER_SEND_METRICS": "false", "CI": "true"}'
+      slot-status: >-
+        {"S1": {"status": "impl"},
+        "S2": {"status": "impl"},
+        "S3": {"status": "impl"},
+        "G1": {"status": "impl"},
+        "G2": {"status": "impl"},
+        "B1": {"status": "impl"},
+        "L1": {"status": "impl"},
+        "L1.5": {"status": "na", "reason": "无 @cloudflare/vitest-pool-workers / miniflare 专属 Worker 运行时套件；Worker 逻辑在 L1 vitest 与 L2/L3 隔离服务中覆盖"},
+        "L2": {"status": "impl"},
+        "L3": {"status": "todo", "reason": "quality.yml 的 L3 作业固定在 ubuntu-latest，无法承载 darwin-ci 视觉回归、/etc/hosts 准备与 WebKit 三分片；完整实现见同工作流 macOS「L3: Browser E2E」矩阵作业"},
+        "P1": {"status": "na", "reason": "package.json 为 private，不发布 npm 包"},
+        "Z1": {"status": "impl"}}
 
-  browser:
-    name: L3 ${{ matrix.browser }} ${{ matrix.shard }}/${{ matrix.shards }}
+  # L3: Browser E2E — macOS 矩阵（槽外承载项与 slot-status L3 todo 原因对应）
+  l3-browser:
+    name: L3: Browser E2E (${{ matrix.browser }} ${{ matrix.shard }}/${{ matrix.shards }})
+    needs: quality
     strategy:
       fail-fast: false
       matrix:
@@ -45,12 +69,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@633a5545fcfec91b688840650d4edf3e9cc1abbd # v2026.10
+      - uses: nocoo/base-ci/.github/actions/setup-js@1ea10ecab22b72512399485391603fe03a161016 # v2026.12
         with:
           package-manager: bun
           runtime-version: "1.4.0"
           node-version: "26.12.1"
-          install-policy: "blocked"
+          install-policy: blocked
       - run: bunx playwright install --with-deps ${{ matrix.browser }}
       - name: Resolve test hosts only to IPv4 loopback
         run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
@@ -68,14 +92,15 @@ jobs:
           retention-days: 14
           include-hidden-files: true
 
-  artifact:
-    name: Verify and package Worker
-    needs: [quality, browser]
-    uses: nocoo/base-ci/.github/workflows/test-job.yml@633a5545fcfec91b688840650d4edf3e9cc1abbd # v2026.10
+  # 槽外：Release 产物校验与 worker-{sha} 归档（Release workflow 下载此制品）
+  release-package:
+    name: Release package verify
+    needs: [quality, l3-browser]
+    uses: nocoo/base-ci/.github/workflows/test-job.yml@1ea10ecab22b72512399485391603fe03a161016 # v2026.12
     with:
       runtime-version: "1.4.0"
       node-version: "26.12.1"
-      install-policy: "blocked"
+      install-policy: blocked
       timeout-minutes: 10
       command: |
         bun run check:hooks
