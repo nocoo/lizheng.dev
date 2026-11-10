@@ -96,4 +96,5 @@ Authorized releases follow [the runbook](docs/11-release-implementation.md): gre
 ## Retrospective
 
 Narratives belong in [Retrospective.md](Retrospective.md), brief recurring rules here, cross-project lessons in global rules/nmem, deterministic checks in tests/hooks.
+
 - Preserve archive exclusion and the public-content allowlist in every tooling path.
