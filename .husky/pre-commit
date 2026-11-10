@@ -1,1 +1,1 @@
-bun scripts/gates.ts pre-commit
+sh scripts/pre-commit-l1.sh

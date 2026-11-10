@@ -1,10 +1,12 @@
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 // Real Git hooks in an isolated fixture: inject each failed gate through stub
 // binaries, then verify that Git refuses the operation. No source edits or bypass.
+const source = resolve(".");
 const root = await mkdtemp(join(tmpdir(), "lizheng-hook-test-"));
 const bin = join(root, "bin");
 await mkdir(bin);
@@ -20,14 +22,19 @@ const env = {
 	REAL_GATE: gate,
 	FIXTURE_ISOLATION: join(root, "isolation.ts"),
 };
-function git(
-	args: string[],
-	expected = 0,
-	additions: Record<string, string> = {},
-) {
+const failGateFile = join(root, ".fixture-fail-gate");
+function git(args: string[], expected = 0, failGate = "") {
+	if (failGate) writeFileSync(failGateFile, failGate);
+	else {
+		try {
+			unlinkSync(failGateFile);
+		} catch {
+			/* absent */
+		}
+	}
 	const result = spawnSync("git", args, {
 		cwd: root,
-		env: { ...env, ...additions },
+		env,
 		encoding: "utf8",
 	});
 	if ((result.status === 0) !== (expected === 0))
@@ -36,6 +43,11 @@ function git(
 		);
 }
 try {
+	const archive = join(root, ".hook-fixture-archive.tar");
+	execFileSync("git", ["archive", "-o", archive, "HEAD"], { cwd: source });
+	execFileSync("tar", ["-xf", archive], { cwd: root });
+	await rm(archive);
+	symlinkSync(resolve("node_modules"), join(root, "node_modules"));
 	git(["init", "--quiet"]);
 	git(["config", "user.email", "fixture@example.invalid"]);
 	git(["config", "user.name", "Hook Fixture"]);
@@ -48,24 +60,50 @@ try {
 		throw new Error(`Husky fixture setup failed: ${install.stderr}`);
 	for (const hook of ["pre-commit", "pre-push"]) {
 		const original = await readFile(`.husky/${hook}`, "utf8");
-		if (!original.includes(`bun scripts/gates.ts ${hook}`))
-			throw new Error(`Hook is not wired: ${hook}`);
-		await writeFile(
-			join(root, ".husky", hook),
-			`#!/bin/sh\n"${bun}" "${gate}" ${hook}\n`,
-			{ mode: 0o755 },
-		);
+		if (hook === "pre-commit") {
+			if (!original.includes("scripts/pre-commit-l1.sh"))
+				throw new Error("Hook is not wired: pre-commit");
+			await writeFile(
+				join(root, ".husky", hook),
+				`#!/bin/sh\nsh scripts/pre-commit-l1.sh\n`,
+				{ mode: 0o755 },
+			);
+		} else {
+			if (!original.includes(`bun scripts/gates.ts ${hook}`))
+				throw new Error(`Hook is not wired: ${hook}`);
+			await writeFile(
+				join(root, ".husky", hook),
+				`#!/bin/sh\n"${bun}" "${gate}" ${hook}\n`,
+				{ mode: 0o755 },
+			);
+		}
 	}
 	await writeFile(
 		join(bin, "bun"),
 		`#!/bin/sh
-if [ "$2" = "$FAIL_GATE" ]; then exit 1; fi
-case "$2" in
-  check:static) exec "$REAL_BUN" "$REAL_GATE" static ;;
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+FAIL_GATE=$(cat "$repo_root/.fixture-fail-gate" 2>/dev/null || true)
+should_fail() { [ "$FAIL_GATE" = "$1" ]; }
+case "$1" in
+  scripts/*gates.ts)
+    if should_fail "check:static" && [ "$2" = "static" ]; then exit 1; fi
+    exec "$REAL_BUN" "$@"
+    ;;
+  scripts/*)
+    base=$(basename "$1" .ts)
+    if should_fail "check:docs" && [ "$base" = "check-docs" ]; then exit 1; fi
+    exec "$REAL_BUN" "$@"
+    ;;
+  run)
+    if should_fail "isolation" && [ "$2" = "test:http" ]; then exec "$REAL_BUN" "$FIXTURE_ISOLATION"; fi
+    for gate in lint typecheck types:check check:deps check:docs test:coverage build test:http; do
+      if should_fail "$gate" && [ "$2" = "$gate" ]; then exit 1; fi
+    done
+    exec "$REAL_BUN" "$@"
+    ;;
   check:security) exec "$REAL_BUN" "$REAL_GATE" security ;;
-  test:http) exec "$REAL_BUN" "$FIXTURE_ISOLATION" ;;
 esac
-exit 0
+exec "$REAL_BUN" "$@"
 `,
 		{ mode: 0o755 },
 	);
@@ -73,6 +111,8 @@ exit 0
 		await writeFile(
 			join(bin, scanner),
 			`#!/bin/sh
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+FAIL_GATE=$(cat "$repo_root/.fixture-fail-gate" 2>/dev/null || true)
 if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
 if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
 exit 0
@@ -80,18 +120,21 @@ exit 0
 			{ mode: 0o755 },
 		);
 	await writeFile(
-		join(root, "isolation.ts"),
-		`
-import { assertIsolation } from ${JSON.stringify(resolve("packages/quality/isolation.ts"))};
-const config = ${await readFile("wrangler.test.jsonc", "utf8")};
-if (process.env.FAIL_GATE === "isolation") config.name = "lizheng-dev";
-assertIsolation(config, "l2", 17046);
-`,
+		join(root, ".gitignore"),
+		`${await readFile(join(root, ".gitignore"), "utf8")}\n/isolation.ts\n.fixture-fail-gate\n`,
 	);
-	await writeFile(join(root, "fixture.txt"), "fixture\n");
-	git(["add", "."]);
+	git(["add", "-A"]);
+	spawnSync(
+		"git",
+		["rm", "-r", "--cached", "-f", "--ignore-unmatch", "node_modules"],
+		{
+			cwd: root,
+			stdio: "ignore",
+		},
+	);
+	git(["add", "-A"]);
 	for (const failure of [
-		"check:staged",
+		"gitleaks",
 		"check:static",
 		"lint",
 		"typecheck",
@@ -101,8 +144,23 @@ assertIsolation(config, "l2", 17046);
 		"test:coverage",
 		"build",
 	])
-		git(["commit", "-m", "must fail"], 1, { FAIL_GATE: failure });
+		git(["commit", "-m", "must fail"], 1, failure);
 	git(["commit", "-m", "all gates pass"]);
+	await writeFile(
+		join(root, "isolation.ts"),
+		`
+import { readFileSync } from "node:fs";
+import { assertIsolation } from ${JSON.stringify(resolve("packages/quality/isolation.ts"))};
+
+const config = ${await readFile("wrangler.test.jsonc", "utf8")};
+let failGate = "";
+try {
+  failGate = readFileSync(".fixture-fail-gate", "utf8").trim();
+} catch {}
+if (failGate === "isolation") config.name = "lizheng-dev";
+assertIsolation(config, "l2", 17046);
+`,
+	);
 	const remote = join(root, "remote.git");
 	git(["init", "--bare", "--quiet", remote]);
 	git(["remote", "add", "origin", remote]);
@@ -116,7 +174,7 @@ assertIsolation(config, "l2", 17046);
 		"osv-scanner",
 		"osv-scanner-missing",
 	])
-		git(["push", "origin", "HEAD"], 1, { FAIL_GATE: failure });
+		git(["push", "origin", "HEAD"], 1, failure);
 	git(["push", "origin", "HEAD"]);
 	console.info(
 		"Real Git fixture blocked all 17 injected failures, including nested static/security gates and production-resource isolation, and accepted restored commit/push.",
