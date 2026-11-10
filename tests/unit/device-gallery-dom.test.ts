@@ -3,6 +3,7 @@ import { afterEach, beforeEach, expect, it, onTestFinished, vi } from "vitest";
 import {
 	createDeviceGallery,
 	DEVICE_INTERVAL,
+	DEVICE_TRANSITION,
 } from "../../packages/experience/device-gallery";
 import { setupDeviceGallery } from "../../packages/experience/device-gallery-dom";
 
@@ -110,6 +111,9 @@ it("coordinates hover, internal focus and viewport pauses without losing time", 
 	);
 	vi.advanceTimersByTime(9000);
 	expect(gallery.getSnapshot().index).toBe(1);
+	vi.advanceTimersByTime(DEVICE_TRANSITION);
+	// Flush jsdom selectionchange events queued by focus transfers before teardown.
+	vi.advanceTimersByTime(0);
 	cleanup();
 	expect(disconnect).toHaveBeenCalled();
 	expect(vi.getTimerCount()).toBe(0);
