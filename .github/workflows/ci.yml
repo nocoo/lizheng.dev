@@ -52,7 +52,7 @@ jobs:
 
   # L3: Browser E2E — macOS 矩阵（槽外承载项与 slot-status L3 todo 原因对应）
   l3-browser:
-    name: L3: Browser E2E (${{ matrix.browser }} ${{ matrix.shard }}/${{ matrix.shards }})
+    name: "L3: Browser E2E (${{ matrix.browser }} ${{ matrix.shard }}/${{ matrix.shards }})"
     needs: quality
     strategy:
       fail-fast: false
