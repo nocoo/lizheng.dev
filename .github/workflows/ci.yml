@@ -58,11 +58,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { browser: chromium, shard: 1, shards: 1, workers: 3 }
-          - { browser: firefox, shard: 1, shards: 1, workers: 3 }
-          - { browser: webkit, shard: 1, shards: 3, workers: 1 }
-          - { browser: webkit, shard: 2, shards: 3, workers: 1 }
-          - { browser: webkit, shard: 3, shards: 3, workers: 1 }
+          - {browser: chromium, shard: 1, shards: 1, workers: 3}
+          - {browser: firefox, shard: 1, shards: 1, workers: 3}
+          - {browser: webkit, shard: 1, shards: 3, workers: 1}
+          - {browser: webkit, shard: 2, shards: 3, workers: 1}
+          - {browser: webkit, shard: 3, shards: 3, workers: 1}
     runs-on: macos-26
     timeout-minutes: 15
     steps:
