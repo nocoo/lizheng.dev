@@ -172,12 +172,15 @@ Measured on the first native green runs:
 | [43016631668](https://github.com/nocoo/lizheng.dev/actions/runs/43016631668) | success | 393s | Firefox 378s, L4 240s, WebKit shards 135–215s, Z1 10s |
 | [43017665520](https://github.com/nocoo/lizheng.dev/actions/runs/43017665520) | success after splitting Firefox in two | 354s | WebKit 3/4 341s (154s queue), Firefox shards 154s and 291s, L4 243s, Z1 7s |
 | [43022178522](https://github.com/nocoo/lizheng.dev/actions/runs/43022178522) | success with the snapshot gates | 503s | L4 queued 161s then 324s, Firefox 1/2 296s, WebKit 4/4 160s after a 133s queue, Z1 13s |
+| [43026500184](https://github.com/nocoo/lizheng.dev/actions/runs/43026500184) | failure, two infra flakes | 300s | HMR execution context destroyed in `test:development`; WebKit reload lost the connection. Rerunning only the failed jobs passed |
+| [43031289134](https://github.com/nocoo/lizheng.dev/actions/runs/43031289134) | success, first attempt | 369s | L4 287s, Firefox 1/2 204s, WebKit 3/4 168s, Z1 9s |
 
 Slot jobs finish in 7–20s (S1 16s, S2 18s, S3 17s, G1 7s, G2 8s, B1 14s, L1 20s,
 L3 18s, release package 58s, Z1 10s); the browser jobs and their queue are the
-whole critical path. Total time across the three green runs is 354–503s, so the
-5-minute target is not met yet: every recorded green run is above 300 seconds, and
-the queue is the difference. The 10-minute reference holds. Sharing a 3-core macOS runner doubled per-journey durations, so the
+whole critical path. Total time across the green runs is 354–503s, so the 5-minute target is not met
+yet: every recorded green run is above 300 seconds and the queue is the
+difference. The 10-minute reference holds, including the flaky run that had to be
+rerun. Sharing a 3-core macOS runner doubled per-journey durations, so the
 browser timeout now allows 60s in CI while assertions, retries (0) and visual
 thresholds stay unchanged. Firefox moved to two shards because it was the
 critical path; Chromium and Firefox stay on macOS because the visual baselines are
