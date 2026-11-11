@@ -12,6 +12,10 @@ While generating Linux browser baselines in Docker, local unit coverage and a ta
 
 The Linux CI PR initially contained control-character escape text in place of Markdown backticks. The body was corrected and checked on GitHub. Use a quoted heredoc with literal backticks and inspect the submitted body before reporting it.
 
+## 2026-11-12 — Composite action paths inside job containers
+
+The first Linux PR CI failed before browser tests because the shared setup action passed a host-only `github.action_path` into the container. Checkout also left the root-run workspace untrusted for later Git commands. Container jobs now set up Bun directly, verify the image's Node version, use the same frozen install with lifecycle scripts blocked, and trust only the checked-out workspace. Check composite action path translation and Git ownership when moving jobs into containers.
+
 ## 2026-11-12 — Check the package mirror before installation
 
 During the SEO follow-up, the first frozen Bun install ran before checking the machine's registry rule and without an explicit mirror. It succeeded, but the registry used was not established. The install was repeated with the reachable Microsoft mirror and the frozen lockfile remained unchanged. Read the package-install rule and select the permitted mirror before the first install, even when dependencies may already be cached.
