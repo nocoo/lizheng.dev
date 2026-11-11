@@ -1,0 +1,26 @@
+{
+	"S1": { "status": "impl" },
+	"S2": { "status": "impl" },
+	"S3": { "status": "impl" },
+	"G1": { "status": "impl" },
+	"G2": { "status": "impl" },
+	"B1": { "status": "impl" },
+	"L1": { "status": "impl" },
+	"L2": {
+		"status": "na",
+		"reason": "No workerd or vitest-pool-workers suite; Worker behaviour is covered by L1 units and L3 integration against a real wrangler build"
+	},
+	"L3": {
+		"status": "impl",
+		"reason": "tests/http runs the real wrangler artifact on Miniflare and asserts the full route and host matrix"
+	},
+	"L4": {
+		"status": "impl",
+		"reason": "Playwright journeys in three engines; Firefox and WebKit shards run as aggregated blocking jobs"
+	},
+	"P1": {
+		"status": "na",
+		"reason": "package.json is private and no npm package is published"
+	},
+	"Z1": { "status": "impl" }
+}
