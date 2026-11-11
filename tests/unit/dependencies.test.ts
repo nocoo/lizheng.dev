@@ -36,8 +36,14 @@ it("strips trailing commas without touching strings", () => {
 it("parses the real lockfile including nested duplicate versions", () => {
 	const lock = parseLockfile(lockText);
 	expect(lock.workspace.dependencies?.react).toBe("19.3.1");
-	expect(lock.packages.get("react")).toEqual(new Set(["19.3.1"]));
-	expect(lock.packages.get("undici")).toEqual(new Set(["8.12.3", "7.30.1"]));
+	expect(lock.nameVersions.get("react")).toEqual(new Set(["19.3.1"]));
+	expect(lock.nameVersions.get("undici")).toEqual(
+		new Set(["8.12.3", "7.30.1"]),
+	);
+	expect(lock.entries.get("miniflare/undici")).toMatchObject({
+		name: "undici",
+		version: "7.30.1",
+	});
 	expect(lock.overrides.miniflare).toEqual({
 		sharp: "0.35.5",
 		undici: "7.30.1",
@@ -98,6 +104,34 @@ it("accepts an installed tree that matches the manifest and lock", () => {
 	).toEqual([]);
 });
 
+it("rejects an installed tree missing a locked transitive dependency", () => {
+	const lock = parseLockfile(lockText);
+	const problems = auditInstalled(
+		manifest,
+		lock,
+		readInstalledPackages("node_modules").filter(
+			(entry) => entry.name !== "picocolors",
+		),
+	);
+	expect(problems).toContain(
+		"postcss@8.5.30 depends on picocolors@1.1.1, which is not installed",
+	);
+});
+
+it("keeps override parent scopes distinct", () => {
+	const lock = parseLockfile(lockText);
+	const { overrides, ...rest } = manifest;
+	const scoped = Object.fromEntries(
+		Object.entries(overrides ?? {}).map(([key, value]) => [
+			key === "miniflare>undici" ? "other-parent>undici" : key,
+			value,
+		]),
+	);
+	expect(auditManifest({ ...rest, overrides: scoped }, lock)).toContain(
+		"package.json override other-parent>undici is 7.30.1 but bun.lock records nothing",
+	);
+});
+
 it("reports manifest and lock drift", () => {
 	const lock = parseLockfile(lockText);
 	const problems = auditManifest(
@@ -118,7 +152,9 @@ it("reports manifest and lock drift", () => {
 	expect(problems).toContain(
 		"package.json dependencies.extra is 1.0.0 but bun.lock records nothing",
 	);
-	expect(problems).toContain("package.json overrides do not match bun.lock");
+	expect(problems).toContain(
+		"package.json override playwright-core is 1.0.0 but bun.lock records 1.65.0",
+	);
 	expect(
 		auditManifest(
 			{ dependencies: {}, devDependencies: {} },
@@ -129,8 +165,20 @@ it("reports manifest and lock drift", () => {
 
 it("reports installed drift, missing declarations and overrides", () => {
 	const lock: Lockfile = {
-		overrides: { "parent>child": "2.0.0", other: { child: "3.0.0" } },
-		packages: new Map([["child", new Set(["2.0.0"])]]),
+		byNameVersion: new Map([
+			[
+				"child@2.0.0",
+				{ dependencies: { grand: "1.0.0" }, name: "child", version: "2.0.0" },
+			],
+		]),
+		entries: new Map([
+			[
+				"child",
+				{ dependencies: { grand: "1.0.0" }, name: "child", version: "2.0.0" },
+			],
+		]),
+		nameVersions: new Map([["child", new Set(["2.0.0"])]]),
+		overrides: { parent: { child: "2.0.0" }, other: { child: "3.0.0" } },
 		workspace: {},
 	};
 	const problems = auditInstalled(
@@ -153,7 +201,7 @@ it("reports installed drift, missing declarations and overrides", () => {
 		"dependencies.missing@1.0.0 is declared but the installed copy differs",
 	);
 	expect(problems).toContain(
-		"override child@3.0.0 is not installed at that version",
+		"override other>child@3.0.0 is not installed at that version",
 	);
 });
 
@@ -165,8 +213,12 @@ it("compares versions against the ranges the manifest declares", () => {
 	expect(satisfies("26.13.0", "*")).toBe(true);
 	expect(satisfies("26.13.0", "")).toBe(true);
 	expect(satisfies("26.13.0", "26.13.0")).toBe(true);
-	expect(satisfies("26.13", ">=26.0")).toBe(true);
-	expect(satisfies("26", ">26.0.0")).toBe(false);
+	expect(() => satisfies("26.13", ">=26.0")).toThrow(
+		/cannot verify version range/,
+	);
+	expect(() => satisfies("26.13.0", ">=26.0.0 <27.0.0")).toThrow(
+		/cannot verify version range/,
+	);
 	expect(satisfies("26.13.0", ">26.13.0")).toBe(false);
 	expect(satisfies("26.13.0", ">=26.13.1")).toBe(false);
 	expect(satisfies("26.13.0", "<=26.13.0")).toBe(true);
@@ -174,7 +226,9 @@ it("compares versions against the ranges the manifest declares", () => {
 	expect(() => satisfies("26.13.0", "^26.0.0")).toThrow(
 		/cannot verify version range/,
 	);
-	expect(() => satisfies("26.13.0", "26.x")).toThrow(/cannot parse version/);
+	expect(() => satisfies("26.13.0", "26.x")).toThrow(
+		/cannot verify version range/,
+	);
 });
 
 it("accepts the declared toolchain minimum and rejects mismatches", () => {
@@ -206,5 +260,15 @@ it("accepts the declared toolchain minimum and rejects mismatches", () => {
 	).toContain("package.json packageManager 'bun' is not a pinned bun version");
 	expect(
 		auditToolchain({ ...manifest, packageManager: "bun@99.0.0" }, actual),
-	).toContain("bun 1.4.0 is older than the pinned packageManager bun@99.0.0");
+	).toContain(
+		"bun 1.4.0 is not on the pinned line bun@99.0.0 (same major.minor, not older)",
+	);
+	expect(
+		auditToolchain({ ...manifest, packageManager: "bun@1.5.0" }, actual),
+	).toContain(
+		"bun 1.4.0 is not on the pinned line bun@1.5.0 (same major.minor, not older)",
+	);
+	expect(auditToolchain(manifest, { bun: "1.4.4", node: "26.13.0" })).toEqual(
+		[],
+	);
 });

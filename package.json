@@ -28,6 +28,7 @@
 		"check:deps": "knip --no-progress --no-config-hints",
 		"check:docs": "bun scripts/check-docs.ts",
 		"check:workflows": "bun scripts/check-workflows.ts",
+		"check:dependency-snapshot": "bun scripts/verify-dependencies.ts",
 		"gate:commit": "sh scripts/pre-commit-l1.sh",
 		"check:l1-gate": "bun scripts/verify-l1-gate.ts",
 		"gate:push": "bun scripts/gates.ts pre-push",

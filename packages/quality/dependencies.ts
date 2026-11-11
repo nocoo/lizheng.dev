@@ -9,9 +9,17 @@ export interface Manifest {
 	packageManager?: string;
 }
 
+interface LockedEntry {
+	dependencies: Record<string, string>;
+	name: string;
+	version: string;
+}
+
 export interface Lockfile {
+	byNameVersion: Map<string, LockedEntry>;
+	entries: Map<string, LockedEntry>;
+	nameVersions: Map<string, Set<string>>;
 	overrides: Record<string, string | Record<string, string>>;
-	packages: Map<string, Set<string>>;
 	workspace: Manifest;
 }
 
@@ -51,25 +59,43 @@ export function stripTrailingCommas(text: string): string {
 export function parseLockfile(text: string): Lockfile {
 	const parsed = JSON.parse(stripTrailingCommas(text)) as {
 		workspaces?: Record<string, Manifest>;
-		packages?: Record<string, [string, ...unknown[]]>;
+		packages?: Record<string, [string, string, Record<string, unknown>?]>;
 		overrides?: Record<string, string | Record<string, string>>;
 	};
 	const workspace = parsed.workspaces?.[""];
 	if (!workspace) throw new Error("bun.lock has no root workspace entry");
-	const packages = new Map<string, Set<string>>();
+	const entries = new Map<string, LockedEntry>();
+	const byNameVersion = new Map<string, LockedEntry>();
+	const nameVersions = new Map<string, Set<string>>();
 	for (const [key, entry] of Object.entries(parsed.packages ?? {})) {
 		const resolved = entry[0];
 		const at = resolved.lastIndexOf("@");
-		const lockedName = resolved.slice(0, at);
-		if (key !== lockedName && !key.endsWith(`/${lockedName}`))
+		const name = resolved.slice(0, at);
+		const version = resolved.slice(at + 1);
+		if (key !== name && !key.endsWith(`/${name}`))
 			throw new Error(
 				`bun.lock entry ${key} resolves ${resolved}; the lockfile is inconsistent`,
 			);
-		const versions = packages.get(lockedName) ?? new Set<string>();
-		versions.add(resolved.slice(at + 1));
-		packages.set(lockedName, versions);
+		const metadata = entry[2] ?? {};
+		const dependencies = (metadata.dependencies ?? {}) as Record<
+			string,
+			string
+		>;
+		const locked = { dependencies, name, version };
+		entries.set(key, locked);
+		if (!byNameVersion.has(`${name}@${version}`))
+			byNameVersion.set(`${name}@${version}`, locked);
+		const versions = nameVersions.get(name) ?? new Set<string>();
+		versions.add(version);
+		nameVersions.set(name, versions);
 	}
-	return { overrides: parsed.overrides ?? {}, packages, workspace };
+	return {
+		byNameVersion,
+		entries,
+		nameVersions,
+		overrides: parsed.overrides ?? {},
+		workspace,
+	};
 }
 
 export function readInstalledPackages(nodeModules: string): InstalledPackage[] {
@@ -120,11 +146,11 @@ function overridesOf(
 	const flattened = new Map<string, string>();
 	for (const [key, value] of Object.entries(overrides)) {
 		if (typeof value === "string") {
-			flattened.set(key.split(">").pop() ?? key, value);
+			flattened.set(key, value);
 			continue;
 		}
 		for (const [nested, version] of Object.entries(value))
-			flattened.set(nested, version);
+			flattened.set(`${key}>${nested}`, version);
 	}
 	return flattened;
 }
@@ -145,25 +171,19 @@ export function auditManifest(manifest: Manifest, lock: Lockfile): string[] {
 					`bun.lock ${field}.${name} is not declared in package.json`,
 				);
 	}
-	if (!sameOverrides(manifest.overrides ?? {}, lock.overrides))
-		problems.push("package.json overrides do not match bun.lock");
+	const declaredOverrides = overridesOf(manifest.overrides ?? {});
+	const lockedOverrides = overridesOf(lock.overrides);
+	for (const [scope, version] of declaredOverrides)
+		if (lockedOverrides.get(scope) !== version)
+			problems.push(
+				`package.json override ${scope} is ${version} but bun.lock records ${lockedOverrides.get(scope) ?? "nothing"}`,
+			);
+	for (const scope of lockedOverrides.keys())
+		if (!declaredOverrides.has(scope))
+			problems.push(
+				`bun.lock override ${scope} is not declared in package.json`,
+			);
 	return problems;
-}
-
-function sameOverrides(
-	left: Record<string, string | Record<string, string>>,
-	right: Record<string, string | Record<string, string>>,
-): boolean {
-	const normalize = (
-		value: Record<string, string | Record<string, string>>,
-	) => {
-		const flattened = overridesOf(value);
-		return [...flattened.entries()]
-			.map(([name, version]) => `${name}@${version}`)
-			.sort()
-			.join(",");
-	};
-	return normalize(left) === normalize(right);
 }
 
 export function auditInstalled(
@@ -176,7 +196,7 @@ export function auditInstalled(
 		installed.map((entry) => `${entry.name}@${entry.version}`),
 	);
 	for (const entry of installed) {
-		const locked = lock.packages.get(entry.name);
+		const locked = lock.nameVersions.get(entry.name);
 		if (!locked)
 			problems.push(
 				`${entry.name}@${entry.version} is installed but not locked`,
@@ -192,11 +212,31 @@ export function auditInstalled(
 				problems.push(
 					`${field}.${name}@${spec} is declared but the installed copy differs`,
 				);
-	for (const [name, version] of overridesOf(manifest.overrides ?? {}))
-		if (!present.has(`${name}@${version}`))
+	for (const [scope, version] of overridesOf(manifest.overrides ?? {}))
+		if (!present.has(`${scope.split(">").pop()}@${version}`))
 			problems.push(
-				`override ${name}@${version} is not installed at that version`,
+				`override ${scope}@${version} is not installed at that version`,
 			);
+	for (const entry of installed) {
+		const key = `${entry.name}@${entry.version}`;
+		const locked = lock.byNameVersion.get(key);
+		if (!locked) continue;
+		for (const dependency of Object.keys(locked.dependencies)) {
+			const nested =
+				lock.entries.get(`${entry.name}/${dependency}`) ??
+				lock.entries.get(dependency);
+			if (!nested) {
+				problems.push(
+					`${key} depends on ${dependency}, which bun.lock does not record`,
+				);
+				continue;
+			}
+			if (!present.has(`${nested.name}@${nested.version}`))
+				problems.push(
+					`${key} depends on ${nested.name}@${nested.version}, which is not installed`,
+				);
+		}
+	}
 	return problems;
 }
 
@@ -210,25 +250,32 @@ export function parseVersion(version: string): number[] {
 	});
 }
 
+const RANGE = /^(>=|>|<=|<)?(\d+)\.(\d+)\.(\d+)$/;
+
+function compare(left: number[], right: number[]): number {
+	for (let index = 0; index < 3; index += 1) {
+		const a = left[index] ?? 0;
+		const b = right[index] ?? 0;
+		if (a !== b) return a < b ? -1 : 1;
+	}
+	return 0;
+}
+
 export function satisfies(version: string, range: string): boolean {
-	const target = parseVersion(version);
-	const compare = (candidate: number[]) => {
-		for (let index = 0; index < 3; index += 1) {
-			const left = target[index] ?? 0;
-			const right = candidate[index] ?? 0;
-			if (left !== right) return left < right ? -1 : 1;
-		}
-		return 0;
-	};
-	const at = (candidate: string) => compare(parseVersion(candidate));
 	const trimmed = range.trim();
-	if (trimmed === "" || trimmed === "*" || trimmed === "x") return true;
-	if (trimmed.startsWith(">=")) return at(trimmed.slice(2)) >= 0;
-	if (trimmed.startsWith(">")) return at(trimmed.slice(1)) > 0;
-	if (trimmed.startsWith("<=")) return at(trimmed.slice(2)) <= 0;
-	if (trimmed.startsWith("<")) return at(trimmed.slice(1)) < 0;
-	if (/^[0-9]/.test(trimmed)) return at(trimmed) === 0;
-	throw new Error(`cannot verify version range '${range}'`);
+	if (trimmed === "" || trimmed === "*") return true;
+	const match = RANGE.exec(trimmed);
+	if (!match) throw new Error(`cannot verify version range '${range}'`);
+	const operator = match[1] ?? "";
+	const bound = [match[2], match[3], match[4]].map((part) =>
+		Number.parseInt(part as string, 10),
+	);
+	const order = compare(parseVersion(version), bound);
+	if (operator === ">=") return order >= 0;
+	if (operator === ">") return order > 0;
+	if (operator === "<=") return order <= 0;
+	if (operator === "<") return order < 0;
+	return order === 0;
 }
 
 export function auditToolchain(
@@ -262,9 +309,14 @@ export function auditToolchain(
 		);
 		return problems;
 	}
-	if (!satisfies(actual.bun, `>=${version}`))
+	const pinned = parseVersion(version);
+	const running = parseVersion(actual.bun);
+	const sameLine =
+		(running[0] ?? 0) === (pinned[0] ?? 0) &&
+		(running[1] ?? 0) === (pinned[1] ?? 0);
+	if (!sameLine || compare(running, pinned) < 0)
 		problems.push(
-			`bun ${actual.bun} is older than the pinned packageManager bun@${version}`,
+			`bun ${actual.bun} is not on the pinned line bun@${version} (same major.minor, not older)`,
 		);
 	return problems;
 }

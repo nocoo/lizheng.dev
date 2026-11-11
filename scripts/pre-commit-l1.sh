@@ -17,15 +17,6 @@ command -v actionlint >/dev/null 2>&1 || {
 	exit 1
 }
 repo=$(git rev-parse --show-toplevel)
-if [ -f "$repo/.fixture-fail-gate" ]; then
-	fail_gate=$(tr -d '\n' <"$repo/.fixture-fail-gate")
-	case "$fail_gate" in
-		gitleaks | check:static | lint | typecheck | types:check | check:deps | check:docs | check:workflows | dependencies | test:coverage | build)
-			echo "pre-commit: fixture rejected $fail_gate" >&2
-			exit 1
-			;;
-	esac
-fi
 
 snapshot=
 cleanup() {
@@ -78,9 +69,6 @@ fi
 mkdir -p "$snapshot/node_modules/.vite" "$snapshot/node_modules/.vitest" "$snapshot/.cache"
 unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_PREFIX
 unset GIT_OBJECT_DIRECTORY GIT_ALTERNATE_OBJECT_DIRECTORIES
-if [ -f "$repo/.fixture-fail-gate" ]; then
-	cp "$repo/.fixture-fail-gate" "$snapshot/.fixture-fail-gate"
-fi
 export XDG_CACHE_HOME="$snapshot/.cache"
 export XDG_STATE_HOME="$snapshot/.cache"
 PATH="$snapshot/node_modules/.bin:$PATH"
@@ -91,7 +79,7 @@ if ! grep -Fq -- '--coverage' package.json; then
 	exit 1
 fi
 
-bun "$snapshot/scripts/verify-dependencies.ts" "$repo/node_modules"
+bun run check:dependency-snapshot
 bun scripts/gates.ts static
 bun run test:coverage
 if [ ! -d coverage ]; then

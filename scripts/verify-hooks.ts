@@ -253,6 +253,38 @@ assertIsolation(config, "l2", 17046);
 		throw new Error(
 			`Missing-object rejection did not explain the cause: ${missing.stdout}${missing.stderr}`,
 		);
+	// The pushed commit is what counts: a clean worktree must not rescue a bad HEAD.
+	const manifestPath = join(root, "package.json");
+	const goodManifest = await readFile(manifestPath, "utf8");
+	await writeFile(
+		manifestPath,
+		goodManifest.replace(
+			'"yaml": "2.9.1"',
+			'"yaml": "2.9.1",\n\t\t"unlocked-package": "1.0.0"',
+		),
+	);
+	git(["add", "-A"]);
+	const badTree = execFileSync("git", ["write-tree"], {
+		cwd: root,
+		encoding: "utf8",
+	}).trim();
+	const badCommit = execFileSync(
+		"git",
+		["commit-tree", badTree, "-p", "HEAD", "-m", "unpushed bad manifest"],
+		{ cwd: root, encoding: "utf8" },
+	).trim();
+	execFileSync("git", ["update-ref", `refs/heads/${branch}`, badCommit], {
+		cwd: root,
+	});
+	await writeFile(manifestPath, goodManifest);
+	git(
+		["push", "origin", "HEAD"],
+		1,
+		"",
+		/dependencies: .*unlocked-package.*bun\.lock records nothing/,
+	);
+	git(["reset", "--hard", "--quiet", "HEAD~1"]);
+
 	const rejections = commitGates.length + pushGates.length + 3;
 	git(["push", "origin", "HEAD"]);
 	execFileSync("git", [
@@ -265,9 +297,10 @@ assertIsolation(config, "l2", 17046);
 			encoding: "utf8",
 		}).trim(),
 	]);
-	git(["push", "origin", "--delete", "stale"]);
+	// A deletion must not run source checks: the injected failure would block it.
+	git(["push", "origin", "--delete", "stale"], 0, "test:http");
 	console.info(
-		`Real Git fixture blocked ${rejections} failures, including nested static/security gates, dependency and toolchain drift, non-HEAD refs and absent commits, and accepted 3 healthy operations.`,
+		`Real Git fixture blocked ${rejections} failures, including nested static/security gates, dependency and toolchain drift, a bad pushed commit behind a clean worktree, non-HEAD refs and absent commits, and accepted a commit, a push and a deletion that skipped source checks.`,
 	);
 } finally {
 	await rm(root, { recursive: true, force: true });

@@ -171,7 +171,9 @@ export function verifySlots(input: {
 			throw new Error(
 				`blocking job ${extra.name} finished with '${extra.result}'`,
 			);
-		if (extra.sha !== "" && extra.sha !== first.sha)
+		if (extra.sha === "")
+			throw new Error(`blocking job ${extra.name} reported no tested sha`);
+		if (extra.sha !== first.sha)
 			throw new Error(
 				`blocking job ${extra.name} verified ${extra.sha} but slots verified ${first.sha}`,
 			);

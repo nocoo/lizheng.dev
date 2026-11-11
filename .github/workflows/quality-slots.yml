@@ -37,7 +37,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   s2-lint:
     name: "S2: Lint"
@@ -60,7 +63,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   s3-workflow:
     name: "S3: Workflow"
@@ -95,7 +101,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   g1-secrets:
     name: "G1: Secrets"
@@ -113,7 +122,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   g2-dependencies:
     name: "G2: Dependencies"
@@ -131,7 +143,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   b1-build:
     name: "B1: Build"
@@ -154,7 +169,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   l1-unit:
     name: "L1: Unit"
@@ -177,7 +195,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   l2-runtime:
     name: "L2: Runtime"
@@ -208,7 +229,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   l4-e2e:
     name: "L4: E2E"
@@ -244,7 +268,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   p1-package:
     name: "P1: Package"
@@ -329,7 +356,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   # Outside the slot list: publishable artifact and gate self-checks, aggregated by Z1.
   release-package:
@@ -348,6 +378,7 @@ jobs:
           runtime-version: "1.4.0"
           node-version: "26.12.1"
           install-policy: blocked
+      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
       - name: Install verified actionlint
         run: |
           curl --fail --silent --show-error --location --retry 3 \
@@ -359,6 +390,7 @@ jobs:
       - name: Verify hooks, budgets and the release archive
         run: |
           bun run check:hooks
+          bun run check:l1-gate
           bun run check:budgets
           test -d dist
           ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
@@ -373,7 +405,10 @@ jobs:
       - name: Record tested sha
         id: record-sha
         if: always()
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   z1-gate:
     name: "Z1: Gate"
