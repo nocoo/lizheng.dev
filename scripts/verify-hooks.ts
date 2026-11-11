@@ -8,6 +8,8 @@ import { join, resolve } from "node:path";
 // staged manifests, then verify that Git refuses the operation. No source edits or bypass.
 const source = resolve(".");
 const root = await mkdtemp(join(tmpdir(), "lizheng-hook-test-"));
+// The bare remote lives outside the fixture worktree: a checkout must not treat it as content.
+const remoteRoot = await mkdtemp(join(tmpdir(), "lizheng-hook-remote-"));
 const bin = join(root, "bin");
 await mkdir(bin);
 await mkdir(join(root, ".husky"));
@@ -199,7 +201,7 @@ if (failGate === "isolation") config.name = "lizheng-dev";
 assertIsolation(config, "l2", 17046);
 `,
 	);
-	const remote = join(root, "remote.git");
+	const remote = join(remoteRoot, "remote.git");
 	git(["init", "--bare", "--quiet", remote]);
 	git(["remote", "add", "origin", remote]);
 	const branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
@@ -230,17 +232,8 @@ assertIsolation(config, "l2", 17046);
 		["push", "origin", `refs/heads/side:refs/heads/side`],
 		1,
 		"",
-		/is not HEAD/,
+		new RegExp(`${sideSha} is not HEAD`),
 	);
-
-	execFileSync("git", [
-		"--git-dir",
-		remote,
-		"update-ref",
-		"refs/heads/side",
-		sideSha,
-	]);
-	git(["push", "origin", "--delete", "side"]);
 
 	const missing = spawnSync(
 		"sh",
@@ -262,9 +255,21 @@ assertIsolation(config, "l2", 17046);
 		);
 	const rejections = commitGates.length + pushGates.length + 3;
 	git(["push", "origin", "HEAD"]);
+	execFileSync("git", [
+		"--git-dir",
+		remote,
+		"update-ref",
+		"refs/heads/stale",
+		execFileSync("git", ["rev-parse", "HEAD"], {
+			cwd: root,
+			encoding: "utf8",
+		}).trim(),
+	]);
+	git(["push", "origin", "--delete", "stale"]);
 	console.info(
 		`Real Git fixture blocked ${rejections} failures, including nested static/security gates, dependency and toolchain drift, non-HEAD refs and absent commits, and accepted 3 healthy operations.`,
 	);
 } finally {
 	await rm(root, { recursive: true, force: true });
+	await rm(remoteRoot, { recursive: true, force: true });
 }
