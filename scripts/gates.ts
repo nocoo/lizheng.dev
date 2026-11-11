@@ -86,7 +86,9 @@ function materialize(oid: string, repository: string): string {
 	git(["archive", "-o", archive, oid], repository);
 	execFileSync("tar", ["-xf", archive, "-C", snapshot]);
 	rmSync(archive);
-	mkdirSync(join(snapshot, "node_modules"));
+	// The dependency tree must come from the verified install, never from the tree.
+	rmSync(join(snapshot, "node_modules"), { recursive: true, force: true });
+	mkdirSync(join(snapshot, "node_modules"), { recursive: true });
 	for (const entry of readdirSync(join(repository, "node_modules"))) {
 		if (entry.startsWith(".") && entry !== ".bin") continue;
 		symlinkSync(
