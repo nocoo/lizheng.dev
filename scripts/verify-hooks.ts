@@ -17,6 +17,8 @@ const source = resolve(".");
 const root = await mkdtemp(join(tmpdir(), "lizheng-hook-test-"));
 // The bare remote lives outside the fixture worktree: a checkout must not treat it as content.
 const remoteRoot = await mkdtemp(join(tmpdir(), "lizheng-hook-remote-"));
+// Every temporary tree the hooks own lives here, so leftovers are attributable.
+const fixtureTmp = await mkdtemp(join(tmpdir(), "lizheng-hook-tmp-"));
 const bin = join(root, "bin");
 await mkdir(bin);
 await mkdir(join(root, ".husky"));
@@ -38,6 +40,7 @@ const env = {
 	NO_COLOR: undefined,
 	REAL_BUN: bun,
 	REAL_GATE: gate,
+	TMPDIR: fixtureTmp,
 	FIXTURE_FAIL_GATE: join(root, ".fixture-fail-gate"),
 	FIXTURE_ISOLATION: join(root, "isolation.ts"),
 };
@@ -120,7 +123,7 @@ case "$1" in
     ;;
   run)
     case "$2" in
-      test:http|check:budgets) echo "$2" >> "$FIXTURE_INVOCATIONS" ;;
+      test:http|check:budgets) echo "run $2" >> "$FIXTURE_INVOCATIONS" ;;
     esac
     if should_fail "isolation" && [ "$2" = "test:http" ]; then exec "$REAL_BUN" "$FIXTURE_ISOLATION"; fi
     for gate in lint typecheck types:check check:deps check:docs check:workflows test:coverage build test:http check:budgets; do
@@ -138,6 +141,7 @@ exec "$REAL_BUN" "$@"
 			join(bin, scanner),
 			`#!/bin/sh
 FAIL_GATE=$(cat "\${FIXTURE_FAIL_GATE:-/nonexistent}" 2>/dev/null || true)
+echo "scanner ${scanner} $*" >> "$FIXTURE_INVOCATIONS"
 if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
 if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
 exec "$REAL_${scanner === "gitleaks" ? "GITLEAKS" : "OSV"}" "$@"
@@ -146,7 +150,7 @@ exec "$REAL_${scanner === "gitleaks" ? "GITLEAKS" : "OSV"}" "$@"
 		);
 	await writeFile(
 		join(root, ".gitignore"),
-		`${await readFile(join(root, ".gitignore"), "utf8")}\n/isolation.ts\n.fixture-fail-gate\n`,
+		`${await readFile(join(root, ".gitignore"), "utf8")}\n/isolation.ts\n.fixture-fail-gate\n/invocations\n`,
 	);
 	git(["add", "-A"]);
 	spawnSync(
@@ -365,4 +369,5 @@ assertIsolation(config, "l2", 17046);
 } finally {
 	await rm(root, { recursive: true, force: true });
 	await rm(remoteRoot, { recursive: true, force: true });
+	await rm(fixtureTmp, { recursive: true, force: true });
 }

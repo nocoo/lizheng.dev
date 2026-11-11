@@ -24,6 +24,8 @@ export interface Lockfile {
 }
 
 export interface InstalledPackage {
+	/** Lockfile key: the install path below the root with `node_modules` removed. */
+	key: string;
 	name: string;
 	path: string;
 	version: string;
@@ -112,11 +114,11 @@ export function readInstalledPackages(nodeModules: string): InstalledPackage[] {
 				for (const scoped of readdirSync(path)) {
 					const scopedPath = join(path, scoped);
 					if (statSync(scopedPath).isDirectory())
-						collect(scopedPath, installed, visit);
+						collect(scopedPath, installed, visit, nodeModules);
 				}
 				continue;
 			}
-			collect(path, installed, visit);
+			collect(path, installed, visit, nodeModules);
 		}
 	};
 	visit(nodeModules);
@@ -127,6 +129,7 @@ function collect(
 	path: string,
 	installed: InstalledPackage[],
 	visit: (directory: string) => void,
+	nodeModules: string,
 ): void {
 	const manifestPath = join(path, "package.json");
 	if (existsSync(manifestPath)) {
@@ -135,7 +138,14 @@ function collect(
 			version?: string;
 		};
 		if (manifest.name && manifest.version)
-			installed.push({ name: manifest.name, path, version: manifest.version });
+			installed.push({
+				key: path
+					.slice(nodeModules.length + 1)
+					.replaceAll("/node_modules/", "/"),
+				name: manifest.name,
+				path,
+				version: manifest.version,
+			});
 	}
 	const nested = join(path, "node_modules");
 	if (existsSync(nested)) visit(nested);
@@ -207,30 +217,34 @@ export function auditInstalled(
 				`${entry.name}@${entry.version} is installed but bun.lock records ${[...locked].join(", ")}`,
 			);
 	}
+	const byPath = new Map(installed.map((entry) => [entry.path, entry]));
+	const byKey = new Map(installed.map((entry) => [entry.key, entry]));
 	for (const field of ["dependencies", "devDependencies"] as const)
-		for (const [name, spec] of Object.entries(manifest[field] ?? {}))
-			if (!present.has(`${name}@${spec}`))
+		for (const [name, spec] of Object.entries(manifest[field] ?? {})) {
+			const resolved = byKey.get(name);
+			if (!resolved || resolved.version !== spec)
 				problems.push(
-					`${field}.${name}@${spec} is declared but the installed copy differs`,
+					`${field}.${name}@${spec} is declared but the root copy is ${resolved ? `${resolved.name}@${resolved.version}` : "missing"}`,
 				);
+		}
 	for (const [scope, version] of overridesOf(manifest.overrides ?? {}))
 		if (!present.has(`${scope.split(">").pop()}@${version}`))
 			problems.push(
 				`override ${scope}@${version} is not installed at that version`,
 			);
-	const byPath = new Map(installed.map((entry) => [entry.path, entry]));
 	for (const entry of installed) {
 		const key = `${entry.name}@${entry.version}`;
-		const locked = lock.byNameVersion.get(key);
-		if (!locked) continue;
-		for (const dependency of Object.keys(locked.dependencies)) {
-			const expected = edgeVersion(lock, entry.name, dependency);
-			if (expected === "ambiguous") {
-				problems.push(
-					`cannot verify ${key} -> ${dependency}: bun.lock records several resolutions`,
-				);
-				continue;
-			}
+		const located = lock.entries.get(entry.key);
+		if (
+			!located ||
+			located.name !== entry.name ||
+			located.version !== entry.version
+		)
+			problems.push(
+				`${key} is installed at ${entry.key} but bun.lock records ${located ? `${located.name}@${located.version}` : "nothing there"}`,
+			);
+		for (const dependency of Object.keys(located?.dependencies ?? {})) {
+			const expected = edgeVersion(lock, entry.key, dependency);
 			if (expected === undefined) {
 				problems.push(
 					`${key} depends on ${dependency}, which bun.lock does not record`,
@@ -268,17 +282,11 @@ export function parseVersion(version: string): number[] {
 
 function edgeVersion(
 	lock: Lockfile,
-	parent: string,
+	parentKey: string,
 	dependency: string,
-): string | "ambiguous" | undefined {
-	const exact = lock.entries.get(`${parent}/${dependency}`);
-	if (exact) return exact.version;
-	const nested = new Set<string>();
-	for (const [key, entry] of lock.entries)
-		if (entry.name === dependency && key.endsWith(`/${parent}/${dependency}`))
-			nested.add(entry.version);
-	if (nested.size > 1) return "ambiguous";
-	if (nested.size === 1) return [...nested][0];
+): string | undefined {
+	const nested = lock.entries.get(`${parentKey}/${dependency}`);
+	if (nested) return nested.version;
 	return lock.entries.get(dependency)?.version;
 }
 
@@ -309,15 +317,16 @@ function compare(left: number[], right: number[]): number {
 }
 
 export function satisfies(version: string, range: string): boolean {
+	const actual = parseVersion(version);
 	const trimmed = range.trim();
-	if (trimmed === "" || trimmed === "*") return true;
+	if (trimmed === "*") return true;
 	const match = RANGE.exec(trimmed);
 	if (!match) throw new Error(`cannot verify version range '${range}'`);
 	const operator = match[1] ?? "";
 	const bound = [match[2], match[3], match[4]].map((part) =>
 		Number.parseInt(part as string, 10),
 	);
-	const order = compare(parseVersion(version), bound);
+	const order = compare(actual, bound);
 	if (operator === ">=") return order >= 0;
 	if (operator === ">") return order > 0;
 	if (operator === "<=") return order <= 0;

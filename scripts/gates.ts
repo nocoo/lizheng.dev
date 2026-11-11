@@ -19,7 +19,12 @@ const command = (name: string, script: string): Gate => ({
 	command: ["bun", "run", script],
 });
 
-const gitleaks = (scope: string, logOpts: string, config: string): Gate => ({
+const gitleaks = (
+	scope: string,
+	logOpts: string,
+	config: string,
+	ignoreDirectory: string,
+): Gate => ({
 	name: `G1 secrets ${scope}`,
 	command: [
 		"gitleaks",
@@ -28,6 +33,8 @@ const gitleaks = (scope: string, logOpts: string, config: string): Gate => ({
 		"--redact",
 		"--config",
 		config,
+		"--gitleaks-ignore-path",
+		ignoreDirectory,
 		"--log-opts",
 		logOpts,
 	],
@@ -149,6 +156,7 @@ async function prePushGates(): Promise<PlannedGate[]> {
 				item.remoteRef,
 				`${item.oid} --not --remotes`,
 				join(snapshot ?? ".", ".gitleaks.toml"),
+				snapshot ?? ".",
 			),
 		})),
 		{ cwd: snapshot, gate: osv },
@@ -169,7 +177,7 @@ function plannedGates(mode: string): PlannedGate[] {
 		].map((gate) => ({ cwd: ".", gate }));
 	if (mode === "security")
 		return [
-			gitleaks("pushed commits", "HEAD --not --remotes", ".gitleaks.toml"),
+			gitleaks("pushed commits", "HEAD --not --remotes", ".gitleaks.toml", "."),
 			osv,
 		].map((gate) => ({ cwd: ".", gate }));
 	throw new Error("Unknown gate group");

@@ -88,7 +88,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 | 外链 | 验证 href/新窗口意图并拦截外网请求，不对 LinkedIn/GitHub/博客做业务操作 |
 | 视觉 | 字体、光影、机壳比例、像素头像、中文断行、主题材质人工签查 |
 
-自动视觉快照固定浏览器、字体、主题与视口，按平台保存基线，遮罩页脚动态版本号；稳定画面快照可冻结装饰动画，但必须另有正常动画的行为检查和录屏。不能只测 reduced-motion 后宣布真实动画通过。WebKit 分四片、单片一个 worker；Chromium 与 Firefox 各一片。
+自动视觉快照固定浏览器、字体、主题与视口，按平台保存基线，遮罩页脚动态版本号；稳定画面快照可冻结装饰动画，但必须另有正常动画的行为检查和录屏。不能只测 reduced-motion 后宣布真实动画通过。WebKit 分四片、单片一个 worker；Firefox 分两片、单片两个 worker；Chromium 与 development 回归在同一个槽位作业内，三个 worker。
 
 ## 静态检查与工作流检查
 
@@ -99,7 +99,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 ## 依赖、安全与性能
 
 - G1：提交阶段扫 staged 变更；推送阶段读 Git 的 stdin ref，按 local OID 固定待验证版本（非 HEAD 或缺失对象直接阻断，删除 ref 跳过），用 `oid --not --remotes` 逐个扫；CI 独立扫检出内容。工具缺失、命令失败、结果无法解析都阻断。
-- 依赖快照：复用 `node_modules` 之前核对——`package.json` 与 `bun.lock` 的依赖及 override（保留 `parent>target` 作用域）完全一致；每个已安装包都锁定在同名同版本；每个直接依赖与 override 目标按锁定版本安装；每个已安装包的每条锁定依赖边都按 Node 解析顺序（逐级上溯 `node_modules`）落到锁文件记录的那个版本，锁文件里同一条边出现多个不同解析时直接失败而不是猜。工具链核对 `engines`（只接受 `>=X.Y.Z` 一类单比较符稳定版本范围，复合范围、prerelease 与非数字段一律拒绝）与 `packageManager`（必须是 `bun@X.Y.Z`，且运行的 bun 同 major.minor 且不比 pin 老；CI 精确钉 1.4.0）以及真实 `node --version`。任何不一致或无法确认都失败，并提示 `bun install --frozen-lockfile`。
+- 依赖快照：复用 `node_modules` 之前核对——`package.json` 与 `bun.lock` 的依赖及 override（保留 `parent>target` 作用域）完全一致；每个已安装包都坐在锁文件为它记录的路径上（安装路径去掉 `node_modules` 就是锁文件 key），同名多版本互不通用；每个直接依赖都必须能从根 `node_modules` 解析到锁定版本；每个已安装包的每条锁定依赖边按 Node 解析顺序（逐级上溯）落到锁文件记录的那个版本，找不到记录即失败。工具链核对 `engines`（只接受 `>=X.Y.Z` 一类单比较符稳定版本范围，复合范围、prerelease 与非数字段一律拒绝）与 `packageManager`（必须是 `bun@X.Y.Z`，且运行的 bun 同 major.minor 且不比 pin 老；CI 精确钉 1.4.0）以及真实 `node --version`。任何不一致或无法确认都失败，并提示 `bun install --frozen-lockfile`。
 - G2：固定版本 OSV Scanner 扫 `bun.lock`；漏洞处理优先升级/移除，精确、说明理由且有失效时间的例外才可使用。
 - 性能：对真实产物测 gzip 体积并执行 06 的预算；交互与加载预算在独立的 Performance lab 工作流运行，失败可见但不阻塞发布。
 
@@ -121,7 +121,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 | 入口 | 行为 |
 | --- | --- |
 | pre-commit | `scripts/pre-commit-l1.sh` 导出 Git index 快照：staged gitleaks → 依赖与工具链快照校验 → 静态槽位（S1/S2/S3 与文档、依赖） → L1 覆盖 → B1 构建；全部在快照内运行，未暂存的修复无法掩盖问题 |
-| pre-push | `scripts/gates.ts pre-push` 读 stdin 的每个 ref 并固定待验证 OID：非 HEAD 或仓库中不存在的对象直接阻断，纯删除跳过全部源码检查；随后把该 OID 导出到临时快照（`git archive`），先单独跑依赖快照校验，通过后才在快照内并行跑 G2、L3 与预算（B1 重构建）；逐 ref gitleaks 在原仓库跑（需要 Git 元数据），但配置取自快照，因此既不会空跑也不会读工作区配置 |
+| pre-push | `scripts/gates.ts pre-push` 读 stdin 的每个 ref 并固定待验证 OID：非 HEAD 或仓库中不存在的对象直接阻断，纯删除跳过全部源码检查；随后把该 OID 导出到临时快照（`git archive`），先单独跑依赖快照校验，通过后才在快照内并行跑 G2、L3 与预算（B1 重构建）；逐 ref gitleaks 在原仓库跑（需要 Git 元数据），但 `--config` 与 `--gitleaks-ignore-path` 都指向快照，因此既不空跑、也不受工作区配置或未提交 ignore 影响 |
 | CI | `.github/workflows/quality-slots.yml`（`on: workflow_call`）承载 12 个槽位作业、槽位外阻塞作业与本地 Z1；`ci.yml` 只有一个 `quality` 调用作业 |
 
 每个 hook 调用一个等待所有子任务的 gate runner，保留每项退出码，不使用后台命令后直接退出。两个 hook 都只读，不修改源码或暂存区。

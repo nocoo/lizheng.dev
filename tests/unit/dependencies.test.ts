@@ -52,6 +52,7 @@ const lockFrom = (entries: Map<string, Entry>, overrides = {}): Lockfile => ({
 	workspace: {},
 });
 const at = (path: string, name: string, version: string): InstalledPackage => ({
+	key: path.replace(/^node_modules\//, "").replaceAll("/node_modules/", "/"),
 	name,
 	path: join(root, path),
 	version,
@@ -121,7 +122,9 @@ it("reads installed packages across scopes and nested trees", () => {
 			{ name: "child", version: "2.0.0" },
 		])
 			expect(installed).toContainEqual(expect.objectContaining(expected));
-		expect(installed.find((item) => item.name === "child")?.path).toBe(
+		const nested = installed.find((item) => item.name === "child");
+		expect(nested?.key).toBe("parent/child");
+		expect(nested?.path).toBe(
 			join(directory, "node_modules/parent/node_modules/child"),
 		);
 		expect(() => readInstalledPackages(join(directory, "missing"))).toThrow(
@@ -227,25 +230,62 @@ it("accepts the nested resolution the lockfile records", () => {
 	).toEqual([]);
 });
 
-it("fails closed when a dependency edge is ambiguous in the lockfile", () => {
+it("keeps nested duplicate resolutions apart", () => {
 	const lock = lockFrom(
 		new Map<string, Entry>([
 			[
 				"consumer",
 				{ dependencies: { leaf: "1.0.0" }, name: "consumer", version: "1.0.0" },
 			],
-			["x/consumer/leaf", { dependencies: {}, name: "leaf", version: "1.0.0" }],
-			["y/consumer/leaf", { dependencies: {}, name: "leaf", version: "3.0.0" }],
-			["leaf", { dependencies: {}, name: "leaf", version: "2.0.0" }],
+			["consumer/leaf", { dependencies: {}, name: "leaf", version: "1.0.0" }],
+			[
+				"outer",
+				{
+					dependencies: { consumer: "2.0.0" },
+					name: "outer",
+					version: "1.0.0",
+				},
+			],
+			[
+				"outer/consumer",
+				{ dependencies: { leaf: "2.0.0" }, name: "consumer", version: "2.0.0" },
+			],
+			[
+				"outer/consumer/leaf",
+				{ dependencies: {}, name: "leaf", version: "2.0.0" },
+			],
 		]),
 	);
-	expect(
-		auditInstalled({}, lock, [
-			at("node_modules/consumer", "consumer", "1.0.0"),
-			at("node_modules/leaf", "leaf", "2.0.0"),
+	const problems = auditInstalled({}, lock, [
+		at("node_modules/consumer", "consumer", "1.0.0"),
+		at("node_modules/consumer/node_modules/leaf", "leaf", "1.0.0"),
+		at("node_modules/outer", "outer", "1.0.0"),
+		at("node_modules/outer/node_modules/consumer", "consumer", "2.0.0"),
+		at(
+			"node_modules/outer/node_modules/consumer/node_modules/leaf",
+			"leaf",
+			"1.0.0",
+		),
+	]);
+	expect(problems).toContain(
+		"consumer@2.0.0 resolves leaf@1.0.0 but bun.lock records 2.0.0",
+	);
+});
+
+it("requires the root copy of a direct dependency", () => {
+	const lock = lockFrom(
+		new Map<string, Entry>([
+			["foo", { dependencies: {}, name: "foo", version: "1.0.0" }],
 		]),
-	).toContain(
-		"cannot verify consumer@1.0.0 -> leaf: bun.lock records several resolutions",
+	);
+	const problems = auditInstalled({ dependencies: { foo: "1.0.0" } }, lock, [
+		at("node_modules/stale/node_modules/foo", "foo", "1.0.0"),
+	]);
+	expect(problems).toContain(
+		"dependencies.foo@1.0.0 is declared but the root copy is missing",
+	);
+	expect(problems).toContain(
+		"foo@1.0.0 is installed at stale/foo but bun.lock records nothing there",
 	);
 });
 
@@ -308,7 +348,7 @@ it("reports installed drift, missing declarations and overrides", () => {
 		"child@1.0.0 is installed but bun.lock records 2.0.0",
 	);
 	expect(problems).toContain(
-		"dependencies.missing@1.0.0 is declared but the installed copy differs",
+		"dependencies.missing@1.0.0 is declared but the root copy is missing",
 	);
 	expect(problems).toContain(
 		"override other>child@3.0.0 is not installed at that version",
@@ -324,7 +364,10 @@ it("compares versions against the ranges the manifest declares", () => {
 	expect(() => parseVersion("26.0.0-rc.1")).toThrow(/non-stable or malformed/);
 	expect(satisfies("26.13.0", ">=26.0.0")).toBe(true);
 	expect(satisfies("26.13.0", "*")).toBe(true);
-	expect(satisfies("26.13.0", "")).toBe(true);
+	expect(() => satisfies("26.13.0", "")).toThrow(/cannot verify version range/);
+	expect(() => satisfies("26.0.0-rc.1", "*")).toThrow(
+		/non-stable or malformed/,
+	);
 	expect(satisfies("26.13.0", "26.13.0")).toBe(true);
 	expect(satisfies("26.13.0", ">26.13.0")).toBe(false);
 	expect(satisfies("26.13.0", ">=26.13.1")).toBe(false);

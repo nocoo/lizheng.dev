@@ -190,7 +190,9 @@ with each release in 11.
 An independent review of `51d4fd3..0720a3b` found three P1 and four P2 gaps and no
 P0. All were accepted; the fixes are listed here and were re-reviewed. A second
 round accepted three of them as fixed, found four partially fixed and raised one
-new P1 plus two P2, all fixed in the same pass:
+new P1 plus two P2. The third round accepted N1–N3 and still rejected the
+dependency-path, gitleaks-ignore, toolchain-edge and documentation items, which
+were then fixed:
 
 - pre-push proved only `local sha == HEAD` and then ran OSV, L3 and budgets in the
   working tree, so unstaged work could mask a broken commit, and the `.gitleaks.toml`
@@ -211,15 +213,21 @@ new P1 plus two P2, all fixed in the same pass:
   checks. `check:l1-gate` (staged failing test behind a corrected worktree) now
   runs in the release package job.
 
+gitleaks also takes `--gitleaks-ignore-path` from the pushed snapshot, so an
+uncommitted `.gitleaksignore` cannot hide findings, and the hook fixture owns its
+own `TMPDIR` so leftover detection only sees its own trees.
+
 Round two found that gitleaks, run inside the exported tree, had no Git metadata
 and reported "0 commits scanned" as success; it now runs in the repository with
 the pushed commit's config, and the fixture proves detection with a real secret
 and the real scanner. The dependency snapshot ran in parallel with the suites it
 was supposed to gate, so it now runs alone and the fixture fails if a mismatch
 still starts L3 or budgets. The snapshot also leaked its temporary tree whenever
-preparation threw, which the fixture now watches for. Dependency checking resolves
-each edge the way Node does and fails closed on ambiguous lockfile resolutions;
-toolchain parsing rejects composite ranges and prerelease versions.
+preparation threw, which the fixture now watches for. Dependency checking now requires every installed package to sit at the path the
+lockfile records for it (same-name duplicates stay distinct), resolves each edge
+the way Node does and rejects a direct dependency that only exists deeper in the
+tree; toolchain parsing validates the running version before the range, rejects
+composite ranges, prerelease versions and malformed pins.
 
 Branch protection: the `main quality gate` ruleset (id 27029540) requires only
 `quality / Z1: Gate` and lets the admin repository role bypass it, because this
