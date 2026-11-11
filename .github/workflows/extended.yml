@@ -22,12 +22,14 @@ jobs:
           persist-credentials: false
       - name: Trust checked-out workspace
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: "1.4.0"
+      - name: Install Bun
+        run: |
+          npm install --prefix /tmp/bun --no-save --ignore-scripts @oven/bun-linux-x64@1.4.0
+          echo "/tmp/bun/node_modules/@oven/bun-linux-x64/bin" >> "$GITHUB_PATH"
       - name: Install frozen dependencies without lifecycle scripts
         run: |
           test "$(node --version)" = "v26.13.1"
+          test "$(bun --version)" = "1.4.0"
           bun install --frozen-lockfile --ignore-scripts
       - name: Resolve test hosts only to IPv4 loopback
         run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | tee -a /etc/hosts

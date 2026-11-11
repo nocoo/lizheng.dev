@@ -97,10 +97,12 @@ it("runs browser jobs in the same pinned Linux image as visual updates", () => {
 	]) {
 		expect(job?.["runs-on"]).toBe("ubuntu-latest");
 		expect(job?.container).toEqual({ image, options: "--ipc=host" });
-		const setup = job?.steps?.find((step) => step.uses?.includes("setup-bun"));
-		expect(setup?.with?.["bun-version"]).toBe("1.4.0");
 		const commands = job?.steps?.map((step) => step.run ?? "").join("\n");
 		expect(commands).toContain('test "$(node --version)" = "v26.13.1"');
+		expect(commands).toContain('test "$(bun --version)" = "1.4.0"');
+		expect(commands).toContain(
+			"npm install --prefix /tmp/bun --no-save --ignore-scripts @oven/bun-linux-x64@1.4.0",
+		);
 		expect(commands).toContain(
 			"bun install --frozen-lockfile --ignore-scripts",
 		);
