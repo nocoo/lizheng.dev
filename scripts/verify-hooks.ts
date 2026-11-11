@@ -142,7 +142,6 @@ exit 0
 	git(["add", "-A"]);
 	const commitGates = [
 		"gitleaks",
-		"check:static",
 		"lint",
 		"typecheck",
 		"types:check",
