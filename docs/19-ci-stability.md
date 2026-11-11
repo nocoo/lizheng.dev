@@ -131,7 +131,7 @@ Z1's `needs`.
 | L4 | `l4-e2e` | macOS | Playwright Chromium plus `test:development` |
 | P1 | `p1-package` | — | skipped, declared `na` |
 | Z1 | `z1-gate` | ubuntu | `bun scripts/slot-gate.ts` over `toJSON(needs)` |
-| — | `browser-e2e` | macOS | Firefox and WebKit 1/4–4/4, no slot id in the name |
+| — | `browser-e2e` | macOS | Firefox 1/2–2/2 and WebKit 1/4–4/4, no slot id in the name |
 | — | `release-package` | ubuntu | `check:hooks`, `check:budgets`, wrangler dry run, archive extraction |
 
 Release proof is fail-closed on the deployed sha: both `release-source` steps now
@@ -159,9 +159,23 @@ gate pins the pushed OID from Git's stdin and scans each ref with
 
 The previous shape (shared slot workflow plus a sibling macOS browser matrix)
 finished a green main push in 666s: slots 23s, Z1 7s, browser shards 3–6min, and a
-300s queue wait for one WebKit shard. The 10-minute reference in this document
-covers queueing, so the queue dominates once the browser work is parallel.
-WebKit now runs in four shards; Chromium and Firefox stay on macOS because the
-visual baselines are platform-specific and regenerating Linux baselines is not
-verifiable from this machine. Per-run numbers for the new shape are recorded with
-each release in 11.
+300s queue wait for one WebKit shard. The 10-minute reference covers queueing, so
+the browser jobs dominate once the slots are parallel.
+
+Measured on the first native green runs:
+
+| Run | Result | Total | Critical path |
+| --- | --- | --- | --- |
+| [43015367140](https://github.com/nocoo/lizheng.dev/actions/runs/43015367140) | failure, Firefox journey timed out at 38s against a 30s limit | 469s | Firefox 453s |
+| [43016631668](https://github.com/nocoo/lizheng.dev/actions/runs/43016631668) | success | 393s | Firefox 378s, L4 240s, WebKit shards 135–215s, Z1 10s |
+
+Slot jobs finish in 7–20s (S1 16s, S2 18s, S3 17s, G1 7s, G2 8s, B1 14s, L1 20s,
+L3 18s, L4 240s, release package 58s, Z1 10s). The run is therefore 6.5 minutes of
+mostly runner wall time: still above the 5-minute target, inside the 10-minute
+reference. Sharing a 3-core macOS runner doubled per-journey durations, so the
+browser timeout now allows 60s in CI while assertions, retries (0) and visual
+thresholds stay unchanged. Firefox moved to two shards because it was the
+critical path; Chromium and Firefox stay on macOS because the visual baselines are
+platform-specific and regenerating Linux baselines is not verifiable from this
+machine. WebKit keeps four shards. Per-run numbers for later changes are recorded
+with each release in 11.

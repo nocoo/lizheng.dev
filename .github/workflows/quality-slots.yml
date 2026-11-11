@@ -262,12 +262,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: firefox
+          - label: firefox 1/2
             browser: firefox
-            slug: firefox
+            slug: firefox-1
             shard: 1
-            shards: 1
-            workers: 3
+            shards: 2
+            workers: 2
+          - label: firefox 2/2
+            browser: firefox
+            slug: firefox-2
+            shard: 2
+            shards: 2
+            workers: 2
           - label: webkit 1/4
             browser: webkit
             slug: webkit-1
