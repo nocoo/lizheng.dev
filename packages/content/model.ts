@@ -43,7 +43,7 @@ interface ContentData {
 	markdown: string;
 }
 interface LandingJourney {
-	story: string;
+	story: Token[];
 	title: string;
 	chapters: ((typeof deviceChapters)[number] & { description: string })[];
 }
@@ -263,6 +263,16 @@ export async function loadContent(
 		const chapters = journey.tokens.filter((token) => token.type !== "space");
 		if (prose.length !== 1 || chapters.length !== deviceChapters.length * 2)
 			throw new Error("Incomplete journey story or chapters");
+		const storyParagraph = prose[0];
+		if (
+			storyParagraph?.type !== "paragraph" ||
+			!storyParagraph.text.trim() ||
+			!storyParagraph.tokens ||
+			storyParagraph.tokens.some(
+				(item) => !["text", "link"].includes(item.type),
+			)
+		)
+			throw new Error("Expected journey paragraph with public links");
 		const paragraph = (token: Token | undefined) => {
 			if (
 				token?.type !== "paragraph" ||
@@ -277,7 +287,7 @@ export async function loadContent(
 			surface,
 			sections: [],
 			journey: {
-				story: paragraph(prose[0]),
+				story: storyParagraph.tokens,
 				title: journey.title,
 				chapters: deviceChapters.map((chapter, index) => {
 					const heading = chapters[index * 2];

@@ -88,6 +88,9 @@ for (const surface of ["resume", "landing"] as const)
 					);
 				} else {
 					expect(html).toContain('id="page-data"');
+					expect(html).toContain('<a href="https://his.fm/">his.fm</a>');
+					if (locale === "en")
+						expect(html).toContain("Chinese-language podcast");
 					expect(html).toContain('"markdown":""');
 					expect(html).toContain(
 						'data-site="pb_live_ahl78eqd9kzx8sqgww66oag9"',

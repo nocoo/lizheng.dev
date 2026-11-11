@@ -3,6 +3,7 @@ import {
 	SurfaceFooter,
 	SurfaceHeader,
 } from "../../packages/experience/SurfaceChrome";
+import { Markdown } from "../resume/Markdown";
 import { DeviceGallery } from "./DeviceGallery";
 
 export function LandingPage({ content }: { content: LandingContent }) {
@@ -51,7 +52,9 @@ export function LandingPage({ content }: { content: LandingContent }) {
 							</>
 						)}
 					</p>
-					<p className="intro-story">{content.journey.story}</p>
+					<p className="intro-story">
+						<Markdown tokens={content.journey.story} />
+					</p>
 					<div className="intro-invitation">
 						<span className="invitation-line" />
 						<span>

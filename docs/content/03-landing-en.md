@@ -3,7 +3,7 @@ id: "landing-en"
 surface: "landing"
 locale: "en"
 title: "Zheng Li — Personal Website"
-description: "Zheng Li’s personal website, with links to his blog, résumé, GitHub and LinkedIn. Six interactive devices cover games, computing, music and riding."
+description: "Zheng Li’s personal website, with links to his blog, résumé, GitHub, LinkedIn and Chinese-language podcast his.fm. Six interactive devices cover games, computing, music and riding."
 socialHeading: "A little bit\nof me."
 socialLabel: "Zheng Li"
 socialImageAlt: "A Game Boy beside Zheng Li’s name and ‘A little bit of me.’"
@@ -20,7 +20,7 @@ Now focused on AI applications.
 
 ## About
 
-Here you can find my blog, résumé, GitHub and LinkedIn. The six devices below cover games, communication, computing, music, cycling and motorcycling.
+Here you can find my blog, résumé, GitHub and LinkedIn. My Chinese-language podcast is [his.fm](https://his.fm/). The six devices below cover games, communication, computing, music, cycling and motorcycling.
 
 ## Devices
 
