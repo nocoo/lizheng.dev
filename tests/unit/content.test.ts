@@ -217,6 +217,16 @@ for (const [label, mutate, error] of [
 		/paragraph/,
 	],
 	[
+		"formatted story",
+		(s: string) => s.replace("Here you can find", "Here **you** can find"),
+		/paragraph/,
+	],
+	[
+		"unsafe story link",
+		(s: string) => s.replace("https://his.fm/", "https://user:pass@his.fm/"),
+		/HTTPS/,
+	],
+	[
 		"non-paragraph caption",
 		(s: string) =>
 			s.replace(

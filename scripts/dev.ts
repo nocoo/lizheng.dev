@@ -6,6 +6,7 @@ import { createServer as createViteServer } from "vite";
 import manifest from "../package.json" with { type: "json" };
 import { loadContent } from "../packages/content/model";
 import { llmsDocument } from "../packages/publishing/documents";
+import { notFoundPage } from "../packages/publishing/not-found";
 import {
 	canonicalHostRedirect,
 	iconAssetPath,
@@ -110,9 +111,8 @@ server.on("request", async (request, response) => {
 			return;
 		}
 		if (
-			url.pathname.startsWith("/_sites/") ||
-			url.pathname.startsWith("/cover/") ||
-			url.pathname.startsWith("/docs/")
+			/^\/(?:_sites|cover|docs|\.git)(?:\/|$)/.test(url.pathname) ||
+			/%2f|%5c/i.test(url.pathname)
 		) {
 			response.writeHead(404).end("Not Found");
 			return;
@@ -206,7 +206,18 @@ server.on("request", async (request, response) => {
 		const icon = iconAssetPath(url.pathname);
 		if (icon) request.url = `${icon}${url.search}`;
 		vite.middlewares(request, response, () => {
-			response.writeHead(404).end("Not Found");
+			response
+				.writeHead(404, {
+					"Content-Type": "text/html; charset=utf-8",
+					Vary: "Accept-Language",
+				})
+				.end(
+					notFoundPage(
+						surface,
+						url.pathname,
+						request.headers["accept-language"],
+					),
+				);
 		});
 	} catch (error) {
 		if (error instanceof Error) vite.ssrFixStacktrace(error);

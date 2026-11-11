@@ -114,6 +114,19 @@ for (const surface of ["resume", "landing"])
 			maxRedirects: 0,
 		});
 		expect(missing.status()).toBe(404);
+		expect(missing.headers()["content-type"]).toContain("text/html");
+		expect(missing.headers()["x-robots-tag"]).toBe("noindex");
+		expect(await missing.text()).toContain(">Play</a>");
+		for (const path of [
+			"/docs",
+			"/.git",
+			"/_sites",
+			"/cover/",
+			"/_sites%2fresume",
+		]) {
+			const blocked = await request.get(`${origin}${path}`, { headers });
+			expect(blocked.status(), path).toBe(404);
+		}
 		const root = await request.get(origin, {
 			headers: { ...headers, "accept-language": "zh" },
 			maxRedirects: 0,

@@ -448,6 +448,12 @@
 	outline: 1px solid currentColor;
 	outline-offset: -2px;
 }
+.native-links a,
+.lcd-links a {
+	box-sizing: border-box;
+	min-width: 24px;
+	min-height: 24px;
+}
 .lcd-links a:focus-visible {
 	outline-style: dashed;
 }
@@ -737,6 +743,7 @@
 }
 .nokia-screen .native-links {
 	margin-top: auto;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 0.6cqw;
 }
 .nokia-screen .native-links a {
@@ -1516,6 +1523,7 @@
 	color: #526858;
 }
 .ipod-screen .native-links {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 0.5cqw;
 }
 .ipod-screen .native-links a {
@@ -2026,7 +2034,7 @@
 	top: 8.5cqw;
 	left: 8cqw;
 	width: 82.5cqw;
-	height: 49.5cqw;
+	height: 53.5cqw;
 	border: 0.7cqw solid #09150d;
 	border-radius: 1.5cqw;
 	background: #17241e;
@@ -2202,7 +2210,7 @@
 	font-weight: 500;
 	line-height: 1.1;
 	letter-spacing: -0.2cqw;
-	margin: 0.8cqw 0;
+	margin: 0;
 }
 .honda-profile .native-role {
 	font-size: 1.7cqw;
@@ -2210,7 +2218,7 @@
 }
 .honda-profile .native-bio {
 	font-size: 1.7cqw;
-	margin: 1.5cqw 0;
+	margin: 0;
 	color: #d6e1c7;
 }
 .honda-profile .native-links {

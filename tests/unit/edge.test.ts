@@ -146,6 +146,35 @@ for (const host of ["lizheng.dev", "www.lizheng.dev"])
 			} else expect(result.status).not.toBe(301);
 		});
 for (const host of ["lizheng.dev", "lizheng.me"]) {
+	for (const [path, accept, locale] of [
+		["/missing", "en-US", "en"],
+		["/missing", "zh-CN", "zh"],
+		["/zh/missing", "en", "zh"],
+		["/en/missing", "zh", "en"],
+	])
+		it(`serves localized HTML 404 for ${host}${path} (${accept})`, async () => {
+			const result = await fixture(host).request(path as string, {
+				headers: { "Accept-Language": accept as string },
+			});
+			const html = await result.text();
+			expect(result.status).toBe(404);
+			expect(result.headers.get("content-type")).toContain("text/html");
+			expect(result.headers.get("x-robots-tag")).toBe("noindex");
+			expect(result.headers.get("vary")).toBe("Accept-Language");
+			expect(result.headers.get("strict-transport-security")).toContain(
+				"max-age=",
+			);
+			expect(result.headers.get("content-security-policy")).toContain(
+				"frame-ancestors 'none'",
+			);
+			expect(html).toContain('<meta name="robots" content="noindex">');
+			expect(html).toContain(`<meta name="version" content="${version}">`);
+			for (const label of locale === "zh"
+				? ["主页", "博客", "简历", "作品集"]
+				: ["Play", "Journal", "Résumé", "Portfolio"])
+				expect(html).toContain(`>${label}</a>`);
+			expect(html).not.toContain("/_sites/");
+		});
 	for (const path of [
 		"/_sites/resume/en/index.html",
 		"/_sites",
@@ -256,6 +285,10 @@ it("HEAD does not return a body", async () => {
 	const result = await fixture().request("/api/live", { method: "HEAD" });
 	expect(result.status).toBe(200);
 	expect(await result.text()).toBe("");
+	const missing = await fixture().request("/missing", { method: "HEAD" });
+	expect(missing.status).toBe(404);
+	expect(missing.headers.get("content-type")).toContain("text/html");
+	expect(await missing.text()).toBe("");
 });
 it("keeps missing APIs and arbitrary assets at 404", async () => {
 	for (const host of ["lizheng.dev", "lizheng.me", "www.lizheng.me"])

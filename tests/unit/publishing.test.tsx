@@ -3,6 +3,7 @@ import { marked, type Token } from "marked";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it } from "vitest";
 import { Markdown } from "../../apps/resume/Markdown";
+import manifest from "../../package.json" with { type: "json" };
 import { renderPage, themeScript } from "../../packages/publishing/render";
 import {
 	canonicalHostRedirect,
@@ -69,6 +70,9 @@ for (const surface of ["resume", "landing"] as const)
 					surface === "resume" ? "https://lizheng.dev" : "https://lizheng.me";
 				expect(html).toContain(`rel="canonical" href="${origin}/${locale}/"`);
 				expect(html).toContain(`href="/${locale}/content.md"`);
+				expect(html).toContain(
+					`<meta name="version" content="${manifest.version}">`,
+				);
 				expect(html).toContain('hreflang="en"');
 				expect(html).toContain('hreflang="zh-CN"');
 				expect(html).toContain('hreflang="x-default"');
@@ -88,6 +92,9 @@ for (const surface of ["resume", "landing"] as const)
 					);
 				} else {
 					expect(html).toContain('id="page-data"');
+					expect(html).toContain('<a href="https://his.fm/">his.fm</a>');
+					if (locale === "en")
+						expect(html).toContain("Chinese-language podcast");
 					expect(html).toContain('"markdown":""');
 					expect(html).toContain(
 						'data-site="pb_live_ahl78eqd9kzx8sqgww66oag9"',

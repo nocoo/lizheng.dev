@@ -1,6 +1,7 @@
 import { renderToStaticMarkup, renderToString } from "react-dom/server";
 import { LandingPage } from "../../apps/landing/LandingPage";
 import { ResumePage } from "../../apps/resume/ResumePage";
+import manifest from "../../package.json" with { type: "json" };
 import { type Locale, loadContent, type Surface } from "../content/model";
 
 import { themeScript } from "../experience/theme-bootstrap";
@@ -66,5 +67,5 @@ export async function renderPage(
 					`<link rel="preload" href="${escapeHtml(href)}" as="font" type="font/woff2" crossorigin>`,
 			)
 			.join("") ?? "";
-	return `<!doctype html><html lang="${locale === "zh" ? "zh-CN" : "en"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark">${metadata}<script>${themeScript}</script>${traksCollectHeadMarkup(surface)}${fonts}<link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">${styles}</head><body><div id="app">${markup}</div>${surface === "landing" ? `<script type="application/json" id="page-data">${json({ ...content, markdown: "", sections: [] })}</script>` : ""}<script type="module" src="${escapeHtml(script)}"></script></body></html>`;
+	return `<!doctype html><html lang="${locale === "zh" ? "zh-CN" : "en"}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="version" content="${escapeHtml(manifest.version)}">${metadata}<script>${themeScript}</script>${traksCollectHeadMarkup(surface)}${fonts}<link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">${styles}</head><body><div id="app">${markup}</div>${surface === "landing" ? `<script type="application/json" id="page-data">${json({ ...content, markdown: "", sections: [] })}</script>` : ""}<script type="module" src="${escapeHtml(script)}"></script></body></html>`;
 }

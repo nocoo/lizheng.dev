@@ -2,6 +2,7 @@ import manifest from "../package.json" with { type: "json" };
 
 const { version } = manifest;
 
+import { notFoundPage } from "../packages/publishing/not-found";
 import {
 	canonicalHostRedirect,
 	iconAssetPath,
@@ -154,6 +155,12 @@ export default {
 			headers.set("Vary", "Accept-Language");
 			return respond(null, 301);
 		}
-		return respond("Not Found", 404);
+		headers.set("Content-Type", "text/html; charset=utf-8");
+		headers.set("X-Robots-Tag", "noindex");
+		headers.set("Vary", "Accept-Language");
+		return respond(
+			notFoundPage(surface, path, request.headers.get("Accept-Language") ?? ""),
+			404,
+		);
 	},
 } satisfies ExportedHandler<Env>;

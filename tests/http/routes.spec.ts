@@ -85,6 +85,7 @@ for (const surface of ["resume", "landing"])
 					`/${locale}/content.md>; rel="alternate"`,
 				);
 				const html = await page.text();
+				expect(html).toContain(`<meta name="version" content="${version}">`);
 				const traksSiteKey =
 					surface === "resume"
 						? "pb_live_zq1jbvt6hrll2zx01fk36hp7"
@@ -231,13 +232,31 @@ for (const surface of ["resume", "landing"])
 			expect(await llms.text()).toContain("https://his.fm/");
 			for (const path of [
 				"/_sites/landing/en/index.html",
+				"/_sites",
 				"/docs/content/03-landing-en.md",
+				"/docs",
+				"/.git",
+				"/_sites%2fresume/en/index.html",
 				"/cover/en/",
 				"/assets/missing.js",
 				"/api/unknown",
 			])
 				expect((await get(path)).status(), path).toBe(404);
-			expect((await get("/unknown")).status()).toBe(404);
+			for (const [accept, label] of [
+				["en", "Play"],
+				["zh", "主页"],
+			]) {
+				const missing = await get("/unknown", {
+					"Accept-Language": accept as string,
+				});
+				expect(missing.status()).toBe(404);
+				expect(missing.headers()["content-type"]).toContain("text/html");
+				expect(missing.headers()["x-robots-tag"]).toBe("noindex");
+				expect(missing.headers()["content-security-policy"]).toContain(
+					"frame-ancestors 'none'",
+				);
+				expect(await missing.text()).toContain(`>${label}</a>`);
+			}
 			for (const path of [
 				"/2024/01/post",
 				"/category/tech",

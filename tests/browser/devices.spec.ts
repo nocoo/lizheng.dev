@@ -119,6 +119,15 @@ for (const [index, model] of models.entries()) {
 					await expect(links).toHaveCount(4);
 					expect(
 						await links.evaluateAll((anchors) =>
+							anchors.every(
+								(anchor) =>
+									(anchor as HTMLElement).offsetWidth >= 24 &&
+									(anchor as HTMLElement).offsetHeight >= 24,
+							),
+						),
+					).toBe(true);
+					expect(
+						await links.evaluateAll((anchors) =>
 							anchors.map((anchor) => anchor.getAttribute("href")),
 						),
 					).toEqual(destinations);
@@ -703,8 +712,23 @@ test("all six devices remain usable with touch at 320px and in landscape", async
 		await page.setViewportSize(viewport);
 		for (const [index, id] of models.entries()) {
 			await page.locator(`[data-chapter="${index}"]`).tap();
+			await expect(
+				page.locator(`[data-chapter="${index}"]`),
+			).toHaveAccessibleName(
+				new RegExp(
+					`^0${index + 1} ${["PLAY", "CONNECT", "CREATE", "LISTEN", "EXPLORE", "RIDE"][index]} `,
+				),
+			);
 			const active = page.locator(`[data-device-active="${id}"]`);
 			await expect(active.locator("[data-screen-link]")).toHaveCount(4);
+			expect(
+				await active.locator("[data-screen-link]").evaluateAll((links) =>
+					links.every((link) => {
+						const rect = link.getBoundingClientRect();
+						return rect.width >= 24 && rect.height >= 24;
+					}),
+				),
+			).toBe(true);
 			if (id === "gameboy")
 				expect(
 					await active

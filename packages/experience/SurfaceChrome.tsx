@@ -1,45 +1,11 @@
 import type { PageContent } from "../content/model";
 import { Brand } from "./Brand";
 import { Preferences } from "./Preferences";
+import { surfaceLinks } from "./surface-links";
 
 function SurfaceLinks({ content }: { content: PageContent }) {
 	const { locale, surface, origins } = content;
-	const names = {
-		en: {
-			landing: "Play",
-			blog: "Journal",
-			resume: "Résumé",
-			portfolio: "Portfolio",
-		},
-		zh: {
-			landing: "主页",
-			blog: "博客",
-			resume: "简历",
-			portfolio: "作品集",
-		},
-	}[locale];
-	const links = [
-		{
-			id: "landing",
-			name: names.landing,
-			href: `${origins?.landing ?? "https://lizheng.me"}/${locale}/`,
-		},
-		{
-			id: "blog",
-			name: names.blog,
-			href: `${origins?.blog ?? "https://lizheng.blog"}/`,
-		},
-		{
-			id: "resume",
-			name: names.resume,
-			href: `${origins?.resume ?? "https://lizheng.dev"}/${locale}/`,
-		},
-		{
-			id: "portfolio",
-			name: names.portfolio,
-			href: "https://hexly.ai",
-		},
-	];
+	const links = surfaceLinks(locale, surface, origins);
 	return (
 		<nav
 			className="surface-links"
@@ -48,7 +14,7 @@ function SurfaceLinks({ content }: { content: PageContent }) {
 			{links.map((link) => (
 				<a
 					key={link.id}
-					href={link.id === surface ? `/${locale}/` : link.href}
+					href={link.href}
 					data-surface-link={link.id}
 					aria-current={link.id === surface ? "true" : undefined}
 					lang={locale === "zh" ? "zh-CN" : "en"}
