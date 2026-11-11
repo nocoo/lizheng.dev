@@ -14,7 +14,7 @@ The Linux CI PR initially contained control-character escape text in place of Ma
 
 ## 2026-11-12 — Composite action paths inside job containers
 
-The first Linux PR CI failed before browser tests because the shared setup action passed a host-only `github.action_path` into the container. Checkout also left the root-run workspace untrusted for later Git commands. A second run showed that the standalone Bun setup action required `unzip`, which the image lacks. Container jobs now install the exact Bun binary package like the local baseline script, verify the image's Node and Bun versions, use the same frozen install with lifecycle scripts blocked, and trust only the checked-out workspace. Check composite action path translation, required tools and Git ownership when moving jobs into containers.
+The first Linux PR CI failed before browser tests because the shared setup action passed a host-only `github.action_path` into the container. Checkout also left the root-run workspace untrusted for later Git commands. A second run showed that the standalone Bun setup action required `unzip`, which the image lacks; the third revealed that Firefox cannot start with the runner's unowned HOME. Container jobs now install the exact Bun binary package like the local baseline script, verify the image's Node and Bun versions, use the same frozen install with lifecycle scripts blocked, trust only the checked-out workspace and run browser tests with HOME=/root. Check composite action path translation, required tools, ownership and browser startup when moving jobs into containers.
 
 ## 2026-11-12 — Check the package mirror before installation
 

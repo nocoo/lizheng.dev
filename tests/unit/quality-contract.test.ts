@@ -14,6 +14,7 @@ const PINNED = new RegExp(`^nocoo/base-ci/[^@]+@${BASE_CI_SHA}$`);
 interface Step {
 	run?: string;
 	uses?: string;
+	env?: Record<string, string>;
 	with?: Record<string, string>;
 }
 interface Job {
@@ -109,6 +110,11 @@ it("runs browser jobs in the same pinned Linux image as visual updates", () => {
 		expect(commands).toContain(
 			'git config --global --add safe.directory "$GITHUB_WORKSPACE"',
 		);
+		const browserSteps = job?.steps?.filter((step) =>
+			step.run?.startsWith("bun run test:"),
+		);
+		expect(browserSteps?.length).toBeGreaterThan(0);
+		for (const step of browserSteps ?? []) expect(step.env?.HOME).toBe("/root");
 	}
 	for (const document of [slots, extended, release])
 		for (const job of Object.values(document.jobs))
