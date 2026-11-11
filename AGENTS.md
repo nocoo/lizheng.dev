@@ -50,6 +50,7 @@ bun run build
 bun run test:coverage
 bun run check:docs
 bun run check:deps
+bun run check:workflows
 bun run types:check
 bun run test:http
 bunx playwright install chromium firefox webkit
@@ -58,33 +59,42 @@ bun run check:security
 bun run check:hooks
 ```
 
-G2 needs gitleaks and osv-scanner on PATH. `test:development` remains a blocking Chromium check. `test:performance` runs in the independent daily/manual Performance lab workflow; failures remain visible but do not block publication. Run local suites sequentially with L3.
+Hooks need bun, node, gitleaks, osv-scanner and actionlint on PATH; a missing tool blocks the gate instead of skipping it. `test:development` remains a blocking Chromium check inside L4. `test:performance` runs in the independent daily/manual Performance lab workflow; failures remain visible but do not block publication. Run local suites sequentially with L4.
 Loopback browser host mappings and trusted Caddy previews: [development](docs/12-local-development.md), [release](docs/11-release-implementation.md).
 
 ## Verification
 
-6DQ = L1/L2/L3 + G2 + D1 isolation; the former G1 dimension was merged into L1 on 2026-09-21. Status: `enforced`, `planned`, `manual`, `N/A`. No skipped/focused tests.
+System0 quality slots, base-ci v2026.13 in native mode. `.github/slot-status.json` declares every slot; `scripts/slot-gate.ts` (Z1) verifies each declaration against the job that ran and the tested sha; `tests/unit/quality-contract.test.ts` keeps the declaration, the workflow, the canonical check names and the pinned references in step. Every slot job is named `<ID>: <Name>` inside `quality-slots.yml`, the caller job stays `quality`, so checks render as `quality / <ID>: <Name>`. Branch protection requires only `quality / Z1: Gate`. No skipped or focused tests.
 
-| Piece                       | Required proof and current reality                                                                                                                                                                     | Status   | Evidence                                                                                                                                                                                                                                                                                                                                   |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| L1 (incl. former G1 static) | Statements/branches/functions/lines each ≥95% over configured content/publishing/Worker logic; strict types and lint/format with zero errors/warnings; generated types and docs/dependency consistency | enforced | `scripts/pre-commit-l1.sh` gates a `git checkout-index` snapshot: gitleaks staged secrets, then `scripts/gates.ts static`, `test:coverage` and `build` inside the export; `scripts/verify-l1-gate.ts` proves healthy commits pass and staged UT faults reject despite a corrected worktree. Target wall time <30s on the developer machine |
-| L2                          | Real HTTP for public routes/methods and both hosts; keep the full route matrix current                                                                                                                 | enforced | `tests/http/`, `playwright.http.config.ts`; pre-push and CI                                                                                                                                                                                                                                                                                |
-| L3                          | Bilingual/theme/device journeys, visual regression and accessibility in three browser engines                                                                                                          | enforced | `tests/browser/`, `playwright.config.ts`; complete CI matrix, WebKit split across three isolated runners                                                                                                                                                                                                                                   |
-| G2                          | Required dependency and secret scanners; missing binary fails                                                                                                                                          | enforced | `check:security`, gitleaks + OSV; push-ref gap below                                                                                                                                                                                                                                                                                       |
-| D1                          | Local runtime, per-run temporary state, loopback requests and forbidden production bindings; SQLite marker N/A for stateless site                                                                      | enforced | `scripts/test-server.ts`, `packages/quality/isolation.ts`                                                                                                                                                                                                                                                                                  |
-| Build                       | Publishable assets and fixed Worker artifact                                                                                                                                                           | enforced | Pre-commit build; CI packaging and budgets                                                                                                                                                                                                                                                                                                 |
-| Docs                        | Update active index and numbered documents with behavior changes                                                                                                                                       | manual   | [Documentation index](docs/README.md), diff review                                                                                                                                                                                                                                                                                         |
+| Slot            | Phase            | Working evidence                                                                                        | Status |
+| --------------- | ---------------- | ------------------------------------------------------------------------------------------------------- | ------ |
+| S1 Types        | commit, CI       | `bun run typecheck`, `bun run types:check`                                                              | impl   |
+| S2 Lint         | commit, CI       | `bun run lint` and static `check:docs` / `check:deps` at zero warnings                                  | impl   |
+| S3 Workflow     | commit, CI       | `bun run check:workflows` (actionlint, base-ci sha pinning); CI adds yamllint                           | impl   |
+| G1 Secrets      | commit, push, CI | staged scan, per-pushed-ref scan `oid --not --remotes`, CI scans the checkout                           | impl   |
+| G2 Dependencies | push, CI         | `osv-scanner` over `bun.lock` with `osv-scanner.toml`                                                   | impl   |
+| B1 Build        | commit, push, CI | `bun run build` inside the index snapshot and before budgets                                            | impl   |
+| L1 Unit         | commit, CI       | `bun run test:coverage`, statements/branches/functions/lines each ≥95%                                  | impl   |
+| L2 Runtime      | —                | no workerd or pool-workers suite; Web APIs are covered by L1 units and L3 against a real wrangler build | na     |
+| L3 Integration  | push, CI         | `bun run test:http`: real wrangler artifact on Miniflare, full route and host matrix on 17046           | impl   |
+| L4 E2E          | push, CI         | Playwright Chromium in the slot job; Firefox and WebKit shards as aggregated jobs in three engines      | impl   |
+| P1 Package      | —                | private package, nothing is published                                                                   | na     |
+| Z1 Gate         | CI               | `bun scripts/slot-gate.ts`; also requires the jobs outside the slot list                                | impl   |
 
-| Hook       | Actual behavior                                                                                                                           | Required follow-up                                         |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| pre-commit | Index snapshot: gitleaks, static (`gates.ts static`), coverage, build via `pre-commit-l1.sh`; owned temp dir removed on exit or interrupt | Target <30s                                                |
-| pre-push   | Parallel L2, G2 and budgets; secrets scanned over `origin/main..HEAD`                                                                     | Read stdin push refs for every pushed commit; target <3min |
+`Release package verify` runs `check:hooks`, `check:budgets`, the wrangler dry run and the production archive extraction; it carries no slot id and Z1 requires it. The former L1.5 slot is gone: worker runtime coverage is L2, and this project declares it na.
+
+| Hook       | Measured behavior (bun 1.4.4, node 26.13.0, Apple silicon)                                                                                                        | Budget                      |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| pre-commit | Index snapshot: staged gitleaks, dependency and toolchain snapshot check, static gates, coverage, build. 4.0s cold after a frozen install, 2.7s warm              | ≤15s, reject above 30s      |
+| pre-push   | Reads Git's stdin refs, blocks non-HEAD and absent commits, skips ref deletions, scans each pushed ref, then L3, G2 and budgets in parallel. 3.3s cold, 2.8s warm | target 2.5min, ceiling 5min |
+
+`check:hooks` proves the gates reject: it reproduces 20 failures in a temporary Git fixture, including staged unit failures behind a corrected worktree, dependency and toolchain drift, non-HEAD refs and absent commits, and accepts restored commits and pushes.
 
 Hooks are check-only. No `--no-verify`, disabled checks, hidden failures or autofix gates; commit tests and implementation together in a green atomic commit.
 
 ## Resources / Isolation
 
-Dev uses `127.0.0.1:7046` behind existing résumé/portfolio Caddy hosts. L2: 17046; L3: 27046, never reusing an existing server.
+Dev uses `127.0.0.1:7046` behind existing résumé/portfolio Caddy hosts. Reserved test ports are 17046 for L3 and 27046 for L4, never reusing an existing server; the `l2` / `l3` identifiers inside test configs name those ports, not slots.
 Test builds use `.test-dist/l2` or `l3`; Miniflare owns a fresh temporary state directory. Local `-test` names do not authorize remote test deployments.
 No production or daily-dev stores, credentials or requests enter E2E. Test hosts resolve to loopback; run one suite per reserved port at a time.
 

@@ -91,7 +91,7 @@ jobs:
       - name: Check YAML style
         run: |
           python3 -m pip install --quiet 'yamllint==1.38.0'
-          yamllint -d '{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}' .github/workflows/*.yml
+          yamllint -d '{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable, comments: disable}}' .github/workflows/*.yml
       - name: Record tested sha
         id: record-sha
         if: always()

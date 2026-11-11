@@ -43,10 +43,9 @@ Sep 27 is not queueing. Queue, execution and propagation must be distinguished.
   and artifact SHA, fresh main checked twice, serialized production environment,
   rollback reference and both-surface/redirect verification.
 
-The generic base-ci workflow still reports unused Build/L3/Worker/Package wrappers
-as skipped. These were already unused: this project has dedicated build/browser
-jobs, includes Worker units in L1, and is not a published library. Acceptance
-requires every actual project gate to succeed; optional wrappers do not count.
+The shared base-ci call described above has since been replaced by the
+repository-owned slot workflow below; the history is kept because the acceptance
+protocol and the failure attribution still apply.
 
 ## Changes and tradeoffs
 
@@ -108,3 +107,61 @@ was raised from 200 ms to 300 ms. On hosted macOS runners the same source measur
 landing interaction medians of 96–240 ms across runs, with the failing scenario
 moving between viewports and locales. LCP (2500 ms) and CLS (0.05) budgets are
 unchanged. Earlier documents that cite 200 ms describe the budget in force at the time.
+
+## System0 native slot workflow (2026-11-11)
+
+`ci.yml` is now one caller job (`quality`, no display name) into
+`.github/workflows/quality-slots.yml`, which carries all 12 System0 slots plus the
+blocking jobs outside the slot list. The shared `quality.yml` call could not
+aggregate macOS runners, so the previous split left the browser matrix and the
+release package outside `quality / Z1: Gate`; the native workflow puts them in
+Z1's `needs`.
+
+| Slot | Job | Runner | Command |
+| --- | --- | --- | --- |
+| S1 | `s1-types` | ubuntu | `bun run typecheck`, `bun run types:check` |
+| S2 | `s2-lint` | ubuntu | `bun run lint` |
+| S3 | `s3-workflow` | ubuntu | `bun run check:workflows`, yamllint 1.38.0 |
+| G1 | `g1-secrets` | ubuntu | `gitleaks detect --no-git` on the checkout |
+| G2 | `g2-dependencies` | ubuntu | `osv-scanner scan --lockfile=bun.lock` |
+| B1 | `b1-build` | ubuntu | `bun run build` |
+| L1 | `l1-unit` | ubuntu | `bun run test:coverage` |
+| L2 | `l2-runtime` | — | skipped, declared `na` |
+| L3 | `l3-integration` | ubuntu | `bun run test:http` |
+| L4 | `l4-e2e` | macOS | Playwright Chromium plus `test:development` |
+| P1 | `p1-package` | — | skipped, declared `na` |
+| Z1 | `z1-gate` | ubuntu | `bun scripts/slot-gate.ts` over `toJSON(needs)` |
+| — | `browser-e2e` | macOS | Firefox and WebKit 1/4–4/4, no slot id in the name |
+| — | `release-package` | ubuntu | `check:hooks`, `check:budgets`, wrangler dry run, archive extraction |
+
+Release proof is fail-closed on the deployed sha: both `release-source` steps now
+name `quality / Z1: Gate` explicitly, and a dispatch or artifact whose Z1 failed
+cannot deploy.
+
+### Local hook timings
+
+Measured on bun 1.4.4 and node 26.13.0 (Apple silicon). Cold means the first run
+after a frozen install with no `dist/`, `coverage/` or `.test-dist/`; warm means
+the immediately following run.
+
+| Hook | Cold | Warm | Budget |
+| --- | --- | --- | --- |
+| pre-commit | 4.0s | 2.75s, 2.68s | ≤15s, reject above 30s |
+| pre-push | 3.3s | 2.84s, 2.78s | target 2.5min, ceiling 5min |
+
+Both hooks run their checks inside their own temporary state: the pre-commit gate
+exports the Git index (`git checkout-index`) and reuses `node_modules` only after
+verifying `package.json`, `bun.lock`, `engines` and `packageManager`; the pre-push
+gate pins the pushed OID from Git's stdin and scans each ref with
+`oid --not --remotes`.
+
+### CI duration
+
+The previous shape (shared slot workflow plus a sibling macOS browser matrix)
+finished a green main push in 666s: slots 23s, Z1 7s, browser shards 3–6min, and a
+300s queue wait for one WebKit shard. The 10-minute reference in this document
+covers queueing, so the queue dominates once the browser work is parallel.
+WebKit now runs in four shards; Chromium and Firefox stay on macOS because the
+visual baselines are platform-specific and regenerating Linux baselines is not
+verifiable from this machine. Per-run numbers for the new shape are recorded with
+each release in 11.

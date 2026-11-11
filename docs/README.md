@@ -1,5 +1,14 @@
 # Active documentation
 
+The 2026-11-11 System0 migration replaces the 6DQ wording and the shared base-ci
+call with a repository-owned slot workflow: 12 System0 slots, canonical
+`quality / <ID>: <Name>` checks, a local Z1 that also requires the browser shards
+and the release package, and one required check for branch protection. Local
+hooks now verify push refs, the dependency snapshot and workflow files; measured
+hook times are 4.0s cold / 2.7s warm for pre-commit and 3.3s cold / 2.8s warm for
+pre-push. [07](07-quality-and-tdd.md) holds the slot design, [19](19-ci-stability.md)
+the timings and the release protocol.
+
 The 2026-10-13 dependency patch release is v3.2.3. [11](11-release-implementation.md)
 records the scope and pending final-SHA CI/deployment verification.
 
@@ -37,7 +46,7 @@ Updated: 2026-09-11. The original rebuild is documented in 11; the six-device de
 | [04 — Résumé design](04-resume-design.md) | Formal reading experience; language, themes, responsive and print behavior |
 | [05 — Landing design](05-landing-design.md) | Handheld object, screen, controls, imagery, typography, animation states |
 | [06 — Architecture](06-architecture.md) | Verified technology versions, modules, content/build/runtime boundaries |
-| [07 — Quality and TDD](07-quality-and-tdd.md) | nmem-backed 6DQ, tests designed before code, Husky and CI gates |
+| [07 — Quality and TDD](07-quality-and-tdd.md) | System0 slots, tests designed before code, Husky gates and the native CI workflow |
 | [08 — Delivery plan](08-delivery-plan.md) | Atomic main commits, acceptance checkpoints, cutover and rollback |
 | [09 — Documentation verification](09-documentation-verification.md) | Content extraction and archive audit from M0 |
 | [10 — Design preview](10-design-preview.md) | Approved design, local HTTPS entry points and review evidence |
@@ -49,7 +58,7 @@ Updated: 2026-09-11. The original rebuild is documented in 11; the six-device de
 | [16 — Résumé research and earlier draft](16-resume-refresh.md) | Blog and GitHub evidence, source limits and the superseded editorial pass |
 | [17 — Kami reading and original résumé copy](17-kami-reading.md) | Approved typography, mobile contents, print, and the preceding original-copy restoration |
 | [18 — Engineering and AI profile](18-engineering-and-ai-profile.md) | Complete blog research, Gemini collaboration, engineering and leadership synthesis, and current bilingual résumé copy |
-| [19 — CI stability](19-ci-stability.md) | Run attribution, timing baseline, retained release safeguards, scheduled checks and final-SHA validation protocol |
+| [19 — CI stability](19-ci-stability.md) | Run attribution, timing baseline, the native slot workflow, retained release safeguards and final-SHA validation protocol |
 | [20 - Dependency refresh](20-dependency-refresh.md) | Stable dependency selection, runtime exception, security fixes and local acceptance evidence |
 
 ## Authority and status

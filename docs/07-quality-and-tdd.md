@@ -1,31 +1,33 @@
-# 07 — 6DQ、Husky 与测试驱动开发
+# 07 — System0 槽位、Husky 与测试驱动开发
 
-状态：设计已批准，已进入完整质量门禁。v3.0.0 按用户授权先发布；门禁及后续质量证据见 11。旧 builder 不再属于覆盖率统计口径。
+状态：设计已批准，门禁已按 System0 槽位落地。v3.0.0 按用户授权先发布；门禁及后续质量证据见 11。旧 builder 不再属于覆盖率统计口径。
 
-## nmem 来源
+## 来源与命名
 
-2026-09-05 使用 nmem memories search 6DQ，并读取以下原始记忆：
+本项目最早按 nmem 记忆《开发流程：6维质量体系》（af0daa0f-0a10-4b0b-b328-f2dc32137bdc，2026-03-21）与 2026-04 补充记忆建立门禁，当时叫 6DQ。2026-11 起统一改称 **System0**：槽位定义、约束与阶段目标以 workflow 仓 `agents/skills/system0-quality`（v1.3.0）为准，base-ci 只是实现。旧文档（01、08、09、11 的历史段落）保留当时的 6DQ 用词，不追改历史记录。
 
-- af0daa0f-0a10-4b0b-b328-f2dc32137bdc：《开发流程：6维质量体系》，2026-03-21，规范主来源。
-- crystal_0c9c31f7de97：《开发流程：个人项目完整开发流程体系（2026-04 更新）》，补充独立 ViewModel、编号文档与原子提交流程。
-- 400e2be9-d4a2-4dae-83bb-01ce038567be：《开发流程：编号文档》，采用编号、README 索引、具体文件路径、原子提交与质量计划；其中旧“四层测试”由更新的 6DQ 覆盖。
+槽位编号在 System0 中改过一次含义，读旧文档时注意：旧 L1.5（Worker 运行时）现在是 L2 Runtime；旧 L2（API E2E）现在是 L3 Integration；旧 L3（浏览器）现在是 L4 E2E。
 
-规范由三层测试 L1/L2/L3、两道门控 G1/G2、一道隔离 D1 组成。D1 是隔离维度的名字，不能误读成强制使用 Cloudflare D1 数据库。
+## 本项目选定的槽位
 
-## 六维在本项目的定义
-
-| 维度 | 范围与通过条件 | 时机 |
+| 槽位 | 在 lizheng.dev 的证据 | 时机 |
 | --- | --- | --- |
-| L1 Unit/Component | 内容加载/校验、路由、locale/theme、掌机 ViewModel、元信息和发布模型；逻辑覆盖率各指标 ≥95%，301 分支 100% | pre-commit，目标 <30s |
-| L2 Integration/HTTP | 完整构建 + 真实 Worker + 真实资产；全部公开路由类别和两个访问域名族，逐项核对状态/内容/头/链接 | pre-push，目标 <3min |
-| L3 System/E2E | 浏览器真实阅读、主题语言切换、键盘/触控掌机、外链、打印、无 JS、慢网与视觉/A11y | CI 与阶段评审 |
-| G1 Static Analysis | TS7 strict + noUncheckedIndexedAccess；TS/TSX/CSS/脚本/文档静态检查 0 error、0 warning | pre-commit，与 L1 并行 |
-| G2 Security/Perf | OSV 依赖扫描、Gitleaks secrets 扫描必选；本项目额外强制资源体积与性能预算 | pre-push，与 L2 并行；CI 重跑 |
-| D1 Test Isolation | 无外部存储，存储实例隔离 N/A；仍强制独立测试 Worker/config/资产/端口，禁止测试请求生产 | L2/L3 之前 |
+| S1 Types | `typecheck`（TS7 strict、noUncheckedIndexedAccess）与 `types:check`（生成的 Wrangler 类型） | pre-commit、CI |
+| S2 Lint | Biome `--error-on-warnings`，0 error 0 warning；文档与依赖一致性检查 `check:docs`、`check:deps` 同组运行 | pre-commit、CI |
+| S3 Workflow | `check:workflows`：actionlint 加 base-ci 引用必须钉到 40 位 SHA；CI 追加 yamllint 1.38.0 | pre-commit、CI |
+| G1 Secrets | 提交阶段 `gitleaks protect --staged`；推送阶段逐个推送 ref 扫 `oid --not --remotes`；CI 扫检出内容 | commit、push、CI |
+| G2 Dependencies | `osv-scanner` 扫 `bun.lock`，配置见 `osv-scanner.toml`；缺工具即失败 | push、CI |
+| B1 Build | `bun run build`；提交阶段在 index 快照内构建，推送阶段由预算门禁再次构建 | pre-commit、push、CI |
+| L1 Unit | `test:coverage`；内容加载与校验、路由、locale/theme、掌机 ViewModel、元信息、发布模型；四项 ≥95% | pre-commit、CI |
+| L2 Runtime | 不适用：没有 workerd / vitest-pool-workers 专属套件，Worker 的 Web API 行为由 L1 单测与 L3 真实 wrangler 产物覆盖 | — |
+| L3 Integration | `test:http`：真实 wrangler 产物跑在 Miniflare 上，固定 17046，覆盖全部公开路由类别与两个访问域名族，逐项核对状态/内容/头/链接 | push、CI |
+| L4 E2E | Playwright：Chromium 旅程与 `test:development` 在槽位作业内；Firefox 与 WebKit 分片是槽位外作业，由 Z1 聚合；三引擎全覆盖，含视觉与 axe | push、CI |
+| P1 Package | 不适用：`package.json` 是 private，不发布 npm 包 | — |
+| Z1 Gate | `scripts/slot-gate.ts`：校验声明与实跑一致、各槽位 tested-sha 一致，并要求槽位外阻塞作业全部成功 | CI |
 
-UI 薄壳组件可不追求行覆盖率；其中出现条件、转换、事件或状态逻辑时必须抽出到受覆盖模块。不能把内容与路由逻辑移出统计来提高覆盖率。L3 和视觉评审负责实际 UI 行为与效果。
+声明文件是 `.github/slot-status.json`，`impl` / `na` / `todo` 与理由都写在那里；`tests/unit/quality-contract.test.ts` 断言声明与 `quality-slots.yml` 一致，任何一边单独改动都会让 L1 失败。
 
-6DQ 原始规范把性能基线列为可选；本项目因用户明确要求性能，将体积与核心交互性能设为强制项。这是项目补充，不冒充 nmem 原文。
+槽位外的阻塞作业只允许不带槽位编号的显示名，并必须进入 Z1 的 `needs`：`Browser E2E (<engine>)` 与 `Release package verify`（`check:hooks`、`check:budgets`、wrangler dry run、生产同款归档解包校验）。性能实验室与发布部署不在 CI 门禁内。
 
 ## 测试先行顺序
 
@@ -34,10 +36,10 @@ UI 薄壳组件可不追求行覆盖率；其中出现条件、转换、事件�
 1. 用文档验收编号写测试输入与期望，禁止先复制旧实现。
 2. 运行目标测试，观察因目标行为缺失而失败；框架安装失败、导入错误或无测试不是有效 Red。
 3. 写最小实现使测试通过，再调整结构和设计。
-4. 运行本层测试、相关回归与 G1；记录 Red 断言、Green 命令/结果。
+4. 运行本层测试、相关回归与静态槽位；记录 Red 断言、Green 命令/结果。
 5. 以绿色原子提交把测试和对应实现一起提交 main。测试先写发生在工作区，不把失败提交留在 main。
 
-文档阶段先写下面的行为清单，做内容完整性/链接/归档检查；不为纯文案机械增加单元测试。第一批可执行测试在 M1/M2 中先于新生产代码落地。
+文档阶段先写下面的行为清单，做内容完整性/链接/归档检查；不为纯文案机械增加单元测试。
 
 ## L1 预先定义的测试
 
@@ -56,8 +58,11 @@ UI 薄壳组件可不追求行覆盖率；其中出现条件、转换、事件�
 | H02 | 启动中输入、减少运动、离开视口 | 导航不阻塞，动画可停止、无悬挂计时器 |
 | P01 | 两域名四页面发布模型 | canonical/hreflang/JSON-LD 正确，不串域 |
 | P02 | Markdown / llms / sitemap 输出 | 与公开内容同源；排除所有内部工程信息 |
+| Q01 | 槽位声明与实跑不符、na 槽位却运行、槽位外阻塞作业失败 | Z1 拒绝，并说明是哪一条不一致 |
+| Q02 | 推送非 HEAD 的 ref、已删除 ref、仓库里不存在的 OID | 前两者与非 HEAD 情形阻断，删除跳过源码检查 |
+| Q03 | `node_modules` 与 `bun.lock` / `package.json` / engines 不一致 | index 快照复用依赖前失败，并给出差异 |
 
-## L2 真实 HTTP 矩阵
+## L3 真实 HTTP 矩阵
 
 runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试 Host 映射区分 resume.lizheng-test.localhost 与 landing.lizheng-test.localhost，不请求真实生产域名。使用生产同一代码和实际构建产物，测试配置仅替换主机表与隔离资源。
 
@@ -65,9 +70,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 
 对 redirect 使用 manual 模式，验证 Location 后停止，不跟随到博客。将“没有业务 API”记录为 API 子项 N/A，但不能省略页面与边缘 HTTP 集成测试。
 
-额外检查：HTML 不残留模板变量；资源实际存在；内部目录不会触发对外 Location；不同主机连续请求不会串缓存；错误或不完整构建失败退出。
-
-## L3 浏览器与人工矩阵
+## L4 浏览器与人工矩阵
 
 基础矩阵：两个站 × en/zh × light/dark × 桌面 1440×900 / 手机 390×844。另测 320×568、768×1024、手机横屏 844×390、200% 缩放。
 
@@ -85,51 +88,46 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 | 外链 | 验证 href/新窗口意图并拦截外网请求，不对 LinkedIn/GitHub/博客做业务操作 |
 | 视觉 | 字体、光影、机壳比例、像素头像、中文断行、主题材质人工签查 |
 
-自动视觉快照固定浏览器、字体、主题与视口，按平台保存基线，遮罩页脚动态版本号；稳定画面快照可冻结装饰动画，但必须另有正常动画的行为检查和录屏。不能只测 reduced-motion 后宣布真实动画通过。
+自动视觉快照固定浏览器、字体、主题与视口，按平台保存基线，遮罩页脚动态版本号；稳定画面快照可冻结装饰动画，但必须另有正常动画的行为检查和录屏。不能只测 reduced-motion 后宣布真实动画通过。WebKit 分四片、单片一个 worker；Chromium 与 Firefox 各一片。
 
-## G1 与文档检查
+## 静态检查与工作流检查
 
-实现命令：typecheck（TS7）、lint（Biome error-on-warnings）、check:docs（Markdown 格式/内部链接/公开 allowlist）。lint 覆盖新应用 TSX/CSS、Worker 和脚本，不沿用现有“HTML 全排除”作为新架构豁免。
+实现命令：typecheck（TS7）、types:check（生成的类型必须与代码一致）、lint（Biome error-on-warnings）、check:docs（Markdown 格式/内部链接/公开 allowlist）、check:deps（knip，未使用依赖/导出即失败）、check:workflows（actionlint 加 base-ci 引用 SHA 校验）。CI 的 S3 作业另外跑 yamllint。
 
 不使用 @ts-ignore、关闭 strict、隐藏 warning、扩大 ignore 或修改阈值来换取绿色。例外需有具体原因和追踪，不允许整树豁免。
 
-## G2 与性能证据
+## 依赖、安全与性能
 
-- 固定版本 OSV Scanner 扫描完整 bun.lock 与工作区依赖；检查其实际 CLI 版本再确定参数。
-- Gitleaks 在提交时检查 staged secrets，在 pre-push/CI 检查将发布的差异或相应历史范围。
-- 缺少扫描工具、扫描命令失败、结果无法解析均阻断；禁止“未安装所以跳过”。
-- 漏洞处理优先升级/移除。精确、说明理由且有失效时间的已有例外才可使用；不添加全局忽略来掩盖风险。
-- 对真实产物测 gzip 体积，执行 06 的预算；性能评审固定设备、网络与 CPU 模型，冷缓存至少 3 次取中位数并保留全部结果。
-- 入场、按键、视差使用 Performance trace 检查长任务和渲染抖动；普通动画模式参加测试。
+- G1：提交阶段扫 staged 变更；推送阶段读 Git 的 stdin ref，按 local OID 固定待验证版本（非 HEAD 或缺失对象直接阻断，删除 ref 跳过），用 `oid --not --remotes` 逐个扫；CI 独立扫检出内容。工具缺失、命令失败、结果无法解析都阻断。
+- 依赖快照：pre-commit 在 index 快照内复用 `node_modules` 之前，核对 `package.json`、`bun.lock` 与声明的 `engines` / `packageManager`（bun 与真实 `node --version`）；不一致或无法确认即失败，提示重新安装。
+- G2：固定版本 OSV Scanner 扫 `bun.lock`；漏洞处理优先升级/移除，精确、说明理由且有失效时间的例外才可使用。
+- 性能：对真实产物测 gzip 体积并执行 06 的预算；交互与加载预算在独立的 Performance lab 工作流运行，失败可见但不阻塞发布。
 
-## D1 隔离设计
+## 隔离设计（不是槽位）
 
-当前无数据库、KV、R2 或外部写入，存储隔离子项标记 N/A 并说明原因；不为了质量评分引入不需要的数据库。
+隔离是所有测试层的前置约束，不是编号槽位。当前无数据库、KV、R2 或外部写入，存储隔离子项标记 N/A 并说明原因；不为了质量评分引入不需要的数据库。
 
 仍须满足：
 
-1. 独立 wrangler.test.jsonc，Worker 名 lizheng-dev-l2-test / lizheng-dev-l3-test；不含生产 routes/Custom Domains、账号凭据或生产资源 ID。
-2. 构建前解析测试配置与资产路径；测试资源名统一 -test 后缀。开发 7046、L2 17046、L3 27046，工作目录临时隔离。
+1. 独立 wrangler.test.jsonc，Worker 名 lizheng-dev-l2-test / lizheng-dev-l3-test；不含生产 routes/Custom Domains、账号凭据或生产资源 ID。这些 `l2` / `l3` 标识指保留端口层，与槽位编号无关。
+2. 构建前解析测试配置与资产路径；测试资源名统一 `-test` 后缀。开发 7046、L3 用 17046、L4 用 27046，工作目录临时隔离。
 3. 运行时验证本地/测试 origin 和实际配置；不能只设置 TEST=true 就放行。
 4. HTTP/浏览器设置出网 allowlist；拦截真实外链导航，redirect 不自动跟随。
-5. runner 正常/失败/中断均清理自己创建的进程与临时目录；不杀占用端口的其他用户进程。
-6. 如果未来增加存储，必须独立 -test 资源实例、构建绑定校验、运行时检查与测试数据标记；生产存储内加 test 行不合格。
+5. runner 正常/失败/中断均清理自己创建的进程与临时目录；不杀占用端口的其他进程。
+6. 如果未来增加存储，必须独立 `-test` 资源实例、构建绑定校验、运行时检查与测试数据标记；生产存储内加 test 行不合格。
 
 ## Husky 与 CI 落地
 
-| 入口 | 顺序 |
+| 入口 | 行为 |
 | --- | --- |
-| prepare | 安装 Husky；验证 core.hooksPath 指向 .husky/_ |
-| pre-commit | staged secrets +（G1 并行 L1）；任何非零退出码阻断 |
-| pre-push | D1 配置验证 →（真实 L2 并行 G2）；任何非零退出码阻断 |
-| CI | 安装锁定依赖 → G1/L1 → D1 → L2/G2 → L3 → 产物验收 |
+| pre-commit | `scripts/pre-commit-l1.sh` 导出 Git index 快照：staged gitleaks → 依赖与工具链快照校验 → 静态槽位（S1/S2/S3 与文档、依赖） → L1 覆盖 → B1 构建；全部在快照内运行，未暂存的修复无法掩盖问题 |
+| pre-push | `scripts/gates.ts pre-push` 读 stdin 的每个 ref、固定待验证 OID，然后并行跑逐 ref gitleaks、G2、L3 与预算（B1 重构建） |
+| CI | `.github/workflows/quality-slots.yml`（`on: workflow_call`）承载 12 个槽位作业、槽位外阻塞作业与本地 Z1；`ci.yml` 只有一个 `quality` 调用作业 |
 
-hook 调用一个等待所有子任务的 gate runner，保留每项退出码，不使用后台命令后直接退出。不能只检查最后一个命令而吞掉先前失败。
+每个 hook 调用一个等待所有子任务的 gate runner，保留每项退出码，不使用后台命令后直接退出。两个 hook 都只读，不修改源码或暂存区。
 
-新门禁需要故障注入验收：临时制造一个 L1 失败、类型/ lint warning、隔离错误、扫描器缺失/失败、L2 失败，分别确认 Git 操作被阻断并在恢复后通过。采用隔离临时 Git fixture，不在 main 留下故意失败提交。
-
-只维护 Husky 一套 hooks；旧 scripts/setup-hooks.sh 的 .git/hooks 软链机制在 M1 退役。CI 重跑门禁，防止本地 hook 未安装产生绕过。
+新门禁需要故障注入验收：`scripts/verify-hooks.ts` 在隔离的临时 Git 仓库里注入静态槽位、安全扫描器、依赖漂移、工具链越界、非 HEAD ref、缺失对象等失败，逐一确认阻断，并确认恢复后的提交与推送可通过。CI 重跑门禁，防止本地 hook 未安装产生绕过。
 
 ## 证据与评级
 
-实际 L1/L2/L3、G1/G2、D1 命令和结果记录在 11。UI 行为通过浏览器测试；应用逻辑覆盖率阈值四项均为 95%。Husky 门禁使用真实临时 Git fixture 验证失败能阻断，CI 重跑检查并只打包通过验证的源码。没有存储的子项为 N/A，真实设备和真实用户 Web Vitals 不计为已验证。
+实测（bun 1.4.4、node 26.13.0、Apple silicon）：pre-commit 冷启动 4.0 秒、热启动 2.7 秒；pre-push 冷启动 3.3 秒、热启动 2.8 秒。CI 槽位部分约 30 秒，总时长瓶颈在 macOS 浏览器作业与 runner 排队，实测数字记在 19。没有存储的子项为 N/A，真实设备和真实用户 Web Vitals 不计为已验证。
