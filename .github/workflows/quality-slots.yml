@@ -1,0 +1,397 @@
+# System0 quality slots for lizheng.dev — native mode (base-ci v2026.13).
+# Job display names are exactly `<ID>: <Name>`, so ci.yml's `quality` caller renders
+# `quality / <ID>: <Name>` and `quality / Z1: Gate` is the single required check.
+# Blocking jobs outside the slot list carry no slot id and are aggregated by Z1.
+name: Quality slots
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  s1-types:
+    name: "S1: Types"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Typecheck sources and generated types
+        run: |
+          bun run typecheck
+          bun run types:check
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  s2-lint:
+    name: "S2: Lint"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Lint with zero warnings
+        run: bun run lint
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  s3-workflow:
+    name: "S3: Workflow"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Install verified actionlint
+        run: |
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            -o "$RUNNER_TEMP/actionlint.tar.gz"
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Lint workflows and shared references
+        run: bun run check:workflows
+      - name: Check YAML style
+        run: |
+          python3 -m pip install --quiet 'yamllint==1.38.0'
+          yamllint -d '{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}' .github/workflows/*.yml
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  g1-secrets:
+    name: "G1: Secrets"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+      - name: Scan checked out content for secrets
+        run: gitleaks detect --no-banner --verbose --redact --no-git --config=.gitleaks.toml
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  g2-dependencies:
+    name: "G2: Dependencies"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+      - name: Scan the lockfile for known vulnerabilities
+        run: osv-scanner scan --lockfile=bun.lock --config=osv-scanner.toml
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  b1-build:
+    name: "B1: Build"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Build published assets and Worker
+        run: bun run build
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  l1-unit:
+    name: "L1: Unit"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Unit tests with coverage thresholds
+        run: bun run test:coverage
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  l2-runtime:
+    name: "L2: Runtime"
+    if: ${{ vars.SLOT_L2_RUNTIME == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: echo "L2 Runtime is not applicable; see .github/slot-status.json"
+
+  l3-integration:
+    name: "L3: Integration"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Real HTTP against the built Worker
+        run: bun run test:http
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  l4-e2e:
+    name: "L4: E2E"
+    runs-on: macos-26
+    timeout-minutes: 20
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - run: bunx playwright install --with-deps chromium
+      - name: Resolve test hosts only to IPv4 loopback
+        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
+      - run: bun run test:browser --project=chromium --workers=3
+      - run: bun run test:development
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: l4-chromium-evidence-${{ github.sha }}
+          path: |
+            .test-results
+            playwright-report
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  p1-package:
+    name: "P1: Package"
+    if: ${{ vars.SLOT_P1_PACKAGE == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: echo "P1 Package is not applicable; see .github/slot-status.json"
+
+  # Outside the slot list: the remaining engines of L4, aggregated by Z1. Names must not
+  # carry a slot id, and a green Z1 requires them to succeed.
+  browser-e2e:
+    name: "Browser E2E (${{ matrix.label }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: firefox
+            browser: firefox
+            slug: firefox
+            shard: 1
+            shards: 1
+            workers: 3
+          - label: webkit 1/4
+            browser: webkit
+            slug: webkit-1
+            shard: 1
+            shards: 4
+            workers: 1
+          - label: webkit 2/4
+            browser: webkit
+            slug: webkit-2
+            shard: 2
+            shards: 4
+            workers: 1
+          - label: webkit 3/4
+            browser: webkit
+            slug: webkit-3
+            shard: 3
+            shards: 4
+            workers: 1
+          - label: webkit 4/4
+            browser: webkit
+            slug: webkit-4
+            shard: 4
+            shards: 4
+            workers: 1
+    runs-on: macos-26
+    timeout-minutes: 20
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - run: bunx playwright install --with-deps ${{ matrix.browser }}
+      - name: Resolve test hosts only to IPv4 loopback
+        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
+      - run: bun run test:browser --project=${{ matrix.browser }} --workers=${{ matrix.workers }} --shard=${{ matrix.shard }}/${{ matrix.shards }}
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: browser-${{ matrix.slug }}-evidence-${{ github.sha }}
+          path: |
+            .test-results
+            playwright-report
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  # Outside the slot list: publishable artifact and gate self-checks, aggregated by Z1.
+  release-package:
+    name: "Release package verify"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@e4598815d171e2281f77f27a4800ff8fc2537f3f # v2026.13
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Verify hooks, budgets and the release archive
+        run: |
+          bun run check:hooks
+          bun run check:budgets
+          test -d dist
+          ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
+          tar -czf release-artifact.tgz dist .release-worker
+          validation_dir=$(mktemp -d)
+          (cd "$validation_dir" && bash "$GITHUB_WORKSPACE/scripts/unpack-release.sh" "$GITHUB_WORKSPACE/release-artifact.tgz")
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: worker-${{ github.sha }}
+          path: release-artifact.tgz
+          retention-days: 14
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  z1-gate:
+    name: "Z1: Gate"
+    if: always()
+    needs:
+      - s1-types
+      - s2-lint
+      - s3-workflow
+      - g1-secrets
+      - g2-dependencies
+      - b1-build
+      - l1-unit
+      - l2-runtime
+      - l3-integration
+      - l4-e2e
+      - p1-package
+      - browser-e2e
+      - release-package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tested-sha: ${{ steps.gate.outputs.tested-sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.0"
+      - name: Verify slot declarations, blocking jobs and tested shas
+        id: gate
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: bun scripts/slot-gate.ts
