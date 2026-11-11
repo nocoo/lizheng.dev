@@ -39,7 +39,7 @@ Keep content, publishing, browser behavior and Worker routing separate; no datab
 
 ## Commands
 
-Run from root with Bun 1.4.0 and Node ≥26 (CI: 26.12.1). Tests need no production credentials.
+Run from root with Bun 1.4.0 and Node ≥26 (CI: 26.12.1; browser containers: 26.13.1). Tests need no production credentials.
 
 ```bash
 bun install --frozen-lockfile
@@ -55,12 +55,14 @@ bun run types:check
 bun run test:http
 bunx playwright install chromium firefox webkit
 bun run test:browser
+bun run test:visual:update:linux
 bun run check:security
 bun run check:hooks
 ```
 
 Hooks need bun, node, gitleaks, osv-scanner and actionlint on PATH; a missing tool blocks the gate instead of skipping it. `test:development` remains a blocking Chromium check inside L4. `test:performance` runs in the independent daily/manual Performance lab workflow; failures remain visible but do not block publication. Run local suites sequentially with L4.
 Loopback browser host mappings and trusted Caddy previews: [development](docs/12-local-development.md), [release](docs/11-release-implementation.md).
+Visual baseline updates run in the pinned linux/amd64 Playwright container; see the release documentation for the image, fonts and registry settings.
 
 ## Verification
 

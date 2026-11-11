@@ -4,6 +4,10 @@ Accident narratives for this repository. No root-handbook incidents were present
 
 Record the actual date, what happened, cause and follow-up. Keep recurring project rules brief in [AGENTS.md](AGENTS.md); cross-project lessons belong in global rules/nmem, and deterministic checks belong in tests or hooks.
 
+## 2026-11-12 — Keep local suites sequential with L4
+
+While generating Linux browser baselines in Docker, local unit coverage and a targeted contract test ran concurrently with the L4 suite, contrary to the repository's sequential-suite rule. They used separate test resources and passed, but contention can affect browser results. Finish L4 before starting any other suite, then rerun the affected checks sequentially.
+
 ## 2026-11-12 — Check the package mirror before installation
 
 During the SEO follow-up, the first frozen Bun install ran before checking the machine's registry rule and without an explicit mirror. It succeeded, but the registry used was not established. The install was repeated with the reachable Microsoft mirror and the frozen lockfile remained unchanged. Read the package-install rule and select the permitted mirror before the first install, even when dependencies may already be cached.

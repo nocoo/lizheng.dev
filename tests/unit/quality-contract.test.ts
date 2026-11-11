@@ -19,6 +19,8 @@ interface Step {
 interface Job {
 	name?: string;
 	uses?: string;
+	"runs-on"?: string;
+	container?: { image: string; options: string };
 	if?: string;
 	needs?: string[];
 	outputs?: Record<string, string>;
@@ -82,6 +84,30 @@ it("keeps the caller shape branch protection depends on", () => {
 	const caller = ci.jobs.quality;
 	expect(caller?.uses).toBe("./.github/workflows/quality-slots.yml");
 	expect(caller?.name).toBeUndefined();
+});
+
+it("runs browser jobs in the same pinned Linux image as visual updates", () => {
+	const image =
+		"mcr.microsoft.com/playwright:v1.65.0-noble@sha256:9beb546099e11f52d62e505537914870e01a67e0e6b00ae41da4775324e73dbe";
+	const extended = read(".github/workflows/extended.yml");
+	for (const job of [
+		slots.jobs["l4-e2e"],
+		slots.jobs["browser-e2e"],
+		extended.jobs.performance,
+	]) {
+		expect(job?.["runs-on"]).toBe("ubuntu-latest");
+		expect(job?.container).toEqual({ image, options: "--ipc=host" });
+		const setup = job?.steps?.find((step) => step.uses?.includes("setup-js"));
+		expect(setup?.with?.["node-version"]).toBe("26.13.1");
+		expect(setup?.with?.["runtime-version"]).toBe("1.4.0");
+		expect(setup?.with?.["install-policy"]).toBe("blocked");
+	}
+	for (const document of [slots, extended, release])
+		for (const job of Object.values(document.jobs))
+			if (job["runs-on"]) expect(job["runs-on"]).toBe("ubuntu-latest");
+	expect(readFileSync("scripts/update-linux-snapshots.sh", "utf8")).toContain(
+		image,
+	);
 });
 
 it("pins every shared base-ci reference to v2026.15", () => {

@@ -128,10 +128,10 @@ Z1's `needs`.
 | L1 | `l1-unit` | ubuntu | `bun run test:coverage` |
 | L2 | `l2-runtime` | — | skipped, declared `na` |
 | L3 | `l3-integration` | ubuntu | `bun run test:http` |
-| L4 | `l4-e2e` | macOS | Playwright Chromium plus `test:development` |
+| L4 | `l4-e2e` | ubuntu, Playwright container | Playwright Chromium plus `test:development` |
 | P1 | `p1-package` | — | skipped, declared `na` |
 | Z1 | `z1-gate` | ubuntu | `bun scripts/slot-gate.ts` over `toJSON(needs)` |
-| — | `browser-e2e` | macOS | Firefox 1/2–2/2 and WebKit 1/4–4/4, no slot id in the name |
+| — | `browser-e2e` | ubuntu, Playwright container | Firefox 1/2–2/2 and WebKit 1/4–4/4, no slot id in the name |
 | — | `release-package` | ubuntu | `check:hooks`, `check:budgets`, wrangler dry run, archive extraction |
 
 Release proof is fail-closed on the deployed sha: both `release-source` steps now
@@ -183,10 +183,11 @@ difference. The 10-minute reference holds, including the flaky run that had to b
 rerun. Sharing a 3-core macOS runner doubled per-journey durations, so the
 browser timeout now allows 60s in CI while assertions, retries (0) and visual
 thresholds stay unchanged. Firefox moved to two shards because it was the
-critical path; Chromium and Firefox stay on macOS because the visual baselines are
-platform-specific and regenerating Linux baselines is not verifiable from this
-machine. WebKit keeps four shards. Per-run numbers for later changes are recorded
-with each release in 11.
+critical path; WebKit keeps four shards. Browser and performance jobs now run
+on Ubuntu in the same pinned linux/amd64 Playwright image used to generate the
+Linux CI baselines locally. This removes macOS queue dependence; the five-minute
+target remains to be measured on the new workflow. Image, fonts and regeneration
+instructions are recorded in [11](11-release-implementation.md).
 
 ## Review round 1 (2026-11-11)
 

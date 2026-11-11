@@ -58,7 +58,7 @@
 | `bun run test:coverage` | 283 项通过；语句、函数、行覆盖率 100%，分支覆盖率 99.46% |
 | `bun run test:http` | 5 项通过 |
 | `bun run test:browser --grep 'resume\|portrait keepsake' --update-snapshots=all` | 恢复原文后 Chromium、Firefox、WebKit 共 60 项通过；包括中英文、主题、响应式、可访问性、目录、打印与装饰 |
-| Chromium 的 darwin-ci 简历截图 | 本机 CI 模式下 8 项检查通过，八张参考图已刷新；远端 GitHub Actions 未运行 |
+| Chromium 的当时 CI 简历截图 | 本机 CI 模式下 8 项检查通过，八张参考图已刷新；远端 GitHub Actions 未运行 |
 | `bun run check:budgets` | 四页构建与体积预算通过；英文简历 174124 bytes，中文 174677 bytes，均低于 300KB；没有新增字体、图片和运行时依赖 |
 | `git diff --check` | 通过 |
 
