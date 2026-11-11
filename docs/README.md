@@ -5,8 +5,8 @@ call with a repository-owned slot workflow: 12 System0 slots, canonical
 `quality / <ID>: <Name>` checks, a local Z1 that also requires the browser shards
 and the release package, and one required check for branch protection. Local
 hooks now verify push refs, the dependency snapshot and workflow files; measured
-hook times are 4.0s cold / 2.7s warm for pre-commit and 3.3s cold / 2.8s warm for
-pre-push. [07](07-quality-and-tdd.md) holds the slot design, [19](19-ci-stability.md)
+hook times are 4.7s cold / 3.4s warm for pre-commit and 4.1s cold / 3.3s warm for
+pre-push, and both verify a snapshot of exactly what is being committed or pushed. [07](07-quality-and-tdd.md) holds the slot design, [19](19-ci-stability.md)
 the timings and the release protocol.
 
 The 2026-10-13 dependency patch release is v3.2.3. [11](11-release-implementation.md)

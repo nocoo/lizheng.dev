@@ -21,7 +21,7 @@
 | L1 Unit | `test:coverage`；内容加载与校验、路由、locale/theme、掌机 ViewModel、元信息、发布模型；四项 ≥95% | pre-commit、CI |
 | L2 Runtime | 不适用：没有 workerd / vitest-pool-workers 专属套件，Worker 的 Web API 行为由 L1 单测与 L3 真实 wrangler 产物覆盖 | — |
 | L3 Integration | `test:http`：真实 wrangler 产物跑在 Miniflare 上，固定 17046，覆盖全部公开路由类别与两个访问域名族，逐项核对状态/内容/头/链接 | push、CI |
-| L4 E2E | Playwright：Chromium 旅程与 `test:development` 在槽位作业内；Firefox 与 WebKit 分片是槽位外作业，由 Z1 聚合；三引擎全覆盖，含视觉与 axe | push、CI |
+| L4 E2E | Playwright：Chromium 旅程与 `test:development` 在槽位作业内；Firefox 两片与 WebKit 四片是槽位外作业，由 Z1 聚合；三引擎全覆盖，含视觉与 axe | CI |
 | P1 Package | 不适用：`package.json` 是 private，不发布 npm 包 | — |
 | Z1 Gate | `scripts/slot-gate.ts`：校验声明与实跑一致、各槽位 tested-sha 一致，并要求槽位外阻塞作业全部成功 | CI |
 
@@ -99,7 +99,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 ## 依赖、安全与性能
 
 - G1：提交阶段扫 staged 变更；推送阶段读 Git 的 stdin ref，按 local OID 固定待验证版本（非 HEAD 或缺失对象直接阻断，删除 ref 跳过），用 `oid --not --remotes` 逐个扫；CI 独立扫检出内容。工具缺失、命令失败、结果无法解析都阻断。
-- 依赖快照：pre-commit 在 index 快照内复用 `node_modules` 之前，核对 `package.json`、`bun.lock` 与声明的 `engines` / `packageManager`（bun 与真实 `node --version`）；不一致或无法确认即失败，提示重新安装。
+- 依赖快照：复用 `node_modules` 之前核对四件事——`package.json` 与 `bun.lock` 的依赖及 override（保留 `parent>target` 作用域）完全一致；每个已安装包都锁定在同名同版本；每个直接依赖与 override 目标按锁定版本安装；每个已安装包的锁定 `dependencies` 全部在位。工具链核对 `engines`（严格解析单比较符范围，无法解析即失败）与 `packageManager`（必须同 major.minor 且不比 pin 老，CI 精确钉 1.4.0）以及真实 `node --version`。任何不一致或无法确认都失败，并提示 `bun install --frozen-lockfile`。
 - G2：固定版本 OSV Scanner 扫 `bun.lock`；漏洞处理优先升级/移除，精确、说明理由且有失效时间的例外才可使用。
 - 性能：对真实产物测 gzip 体积并执行 06 的预算；交互与加载预算在独立的 Performance lab 工作流运行，失败可见但不阻塞发布。
 
@@ -121,13 +121,17 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 | 入口 | 行为 |
 | --- | --- |
 | pre-commit | `scripts/pre-commit-l1.sh` 导出 Git index 快照：staged gitleaks → 依赖与工具链快照校验 → 静态槽位（S1/S2/S3 与文档、依赖） → L1 覆盖 → B1 构建；全部在快照内运行，未暂存的修复无法掩盖问题 |
-| pre-push | `scripts/gates.ts pre-push` 读 stdin 的每个 ref、固定待验证 OID，然后并行跑逐 ref gitleaks、G2、L3 与预算（B1 重构建） |
+| pre-push | `scripts/gates.ts pre-push` 读 stdin 的每个 ref 并固定待验证 OID：非 HEAD 或仓库中不存在的对象直接阻断，纯删除跳过全部源码检查；随后把该 OID 导出到临时快照（`git archive`），只有快照自身的锁文件校验通过才复用 `node_modules`，再在快照内并行跑逐 ref gitleaks、依赖快照、G2、L3 与预算（B1 重构建） |
 | CI | `.github/workflows/quality-slots.yml`（`on: workflow_call`）承载 12 个槽位作业、槽位外阻塞作业与本地 Z1；`ci.yml` 只有一个 `quality` 调用作业 |
 
 每个 hook 调用一个等待所有子任务的 gate runner，保留每项退出码，不使用后台命令后直接退出。两个 hook 都只读，不修改源码或暂存区。
 
-新门禁需要故障注入验收：`scripts/verify-hooks.ts` 在隔离的临时 Git 仓库里注入静态槽位、安全扫描器、依赖漂移、工具链越界、非 HEAD ref、缺失对象等失败，逐一确认阻断，并确认恢复后的提交与推送可通过。CI 重跑门禁，防止本地 hook 未安装产生绕过。
+新门禁需要故障注入验收：`scripts/verify-hooks.ts` 在隔离的临时 Git 仓库里通过替身子命令注入静态槽位、安全扫描器、L3、预算失败，并构造依赖漂移、工具链越界、被工作区掩盖的坏提交、非 HEAD ref、缺失对象等真实失败，逐一确认阻断；同时验证纯删除 ref 不触发源码检查、健康提交与推送可通过。`scripts/verify-l1-gate.ts` 另外验证「暂存了失败测试、工作区已修好」仍被拒绝。两者都在 CI 的 release package 作业运行，防止本地 hook 未安装产生绕过。
+
+## 分支保护
+
+`main` 上的 `main quality gate` ruleset（id 27029540）只要求 `quality / Z1: Gate`，并允许 admin 仓库角色 always 旁路。理由：本项目由单一维护者直接向 main 推送，若要求 PR 或禁止旁路，日常迭代会被自己的门禁卡死；而 Z1 已经聚合全部槽位与槽位外阻塞作业，其他路径（PR、机器提交）仍靠 hooks 与 CI 兜底。改名、改编号或调整旁路前，先跑一次真实 CI 读出实际检查名，不要凭猜测修改。
 
 ## 证据与评级
 
-实测（bun 1.4.4、node 26.13.0、Apple silicon）：pre-commit 冷启动 4.0 秒、热启动 2.7 秒；pre-push 冷启动 3.3 秒、热启动 2.8 秒。CI 槽位部分约 30 秒，总时长瓶颈在 macOS 浏览器作业与 runner 排队，实测数字记在 19。没有存储的子项为 N/A，真实设备和真实用户 Web Vitals 不计为已验证。
+实测（bun 1.4.4、node 26.13.0、Apple silicon）：pre-commit 冷启动 4.7 秒、热启动 3.4 秒；pre-push 冷启动 4.1 秒、热启动 3.3 秒；`check:hooks` 约 51 秒、`check:l1-gate` 约 21 秒。CI 槽位部分约 30 秒，总时长瓶颈在 macOS 浏览器作业与 runner 排队，实测数字记在 19。没有存储的子项为 N/A，真实设备和真实用户 Web Vitals 不计为已验证。

@@ -66,31 +66,31 @@ Loopback browser host mappings and trusted Caddy previews: [development](docs/12
 
 System0 quality slots, base-ci v2026.13 in native mode. `.github/slot-status.json` declares every slot; `scripts/slot-gate.ts` (Z1) verifies each declaration against the job that ran and the tested sha; `tests/unit/quality-contract.test.ts` keeps the declaration, the workflow, the canonical check names and the pinned references in step. Every slot job is named `<ID>: <Name>` inside `quality-slots.yml`, the caller job stays `quality`, so checks render as `quality / <ID>: <Name>`. Branch protection requires only `quality / Z1: Gate`. No skipped or focused tests.
 
-| Slot            | Phase            | Working evidence                                                                                        | Status |
-| --------------- | ---------------- | ------------------------------------------------------------------------------------------------------- | ------ |
-| S1 Types        | commit, CI       | `bun run typecheck`, `bun run types:check`                                                              | impl   |
-| S2 Lint         | commit, CI       | `bun run lint` and static `check:docs` / `check:deps` at zero warnings                                  | impl   |
-| S3 Workflow     | commit, CI       | `bun run check:workflows` (actionlint, base-ci sha pinning); CI adds yamllint                           | impl   |
-| G1 Secrets      | commit, push, CI | staged scan, per-pushed-ref scan `oid --not --remotes`, CI scans the checkout                           | impl   |
-| G2 Dependencies | push, CI         | `osv-scanner` over `bun.lock` with `osv-scanner.toml`                                                   | impl   |
-| B1 Build        | commit, push, CI | `bun run build` inside the index snapshot and before budgets                                            | impl   |
-| L1 Unit         | commit, CI       | `bun run test:coverage`, statements/branches/functions/lines each ≥95%                                  | impl   |
-| L2 Runtime      | —                | no workerd or pool-workers suite; Web APIs are covered by L1 units and L3 against a real wrangler build | na     |
-| L3 Integration  | push, CI         | `bun run test:http`: real wrangler artifact on Miniflare, full route and host matrix on 17046           | impl   |
-| L4 E2E          | push, CI         | Playwright Chromium in the slot job; Firefox and WebKit shards as aggregated jobs in three engines      | impl   |
-| P1 Package      | —                | private package, nothing is published                                                                   | na     |
-| Z1 Gate         | CI               | `bun scripts/slot-gate.ts`; also requires the jobs outside the slot list                                | impl   |
+| Slot            | Phase            | Working evidence                                                                                               | Status |
+| --------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- | ------ |
+| S1 Types        | commit, CI       | `bun run typecheck`, `bun run types:check`                                                                     | impl   |
+| S2 Lint         | commit, CI       | `bun run lint` and static `check:docs` / `check:deps` at zero warnings                                         | impl   |
+| S3 Workflow     | commit, CI       | `bun run check:workflows` (actionlint, base-ci sha pinning); CI adds yamllint                                  | impl   |
+| G1 Secrets      | commit, push, CI | staged scan, per-pushed-ref scan `oid --not --remotes`, CI scans the checkout                                  | impl   |
+| G2 Dependencies | push, CI         | `osv-scanner` over `bun.lock` with `osv-scanner.toml`                                                          | impl   |
+| B1 Build        | commit, push, CI | `bun run build` inside the index snapshot and before budgets                                                   | impl   |
+| L1 Unit         | commit, CI       | `bun run test:coverage`, statements/branches/functions/lines each ≥95%                                         | impl   |
+| L2 Runtime      | —                | no workerd or pool-workers suite; Web APIs are covered by L1 units and L3 against a real wrangler build        | na     |
+| L3 Integration  | push, CI         | `bun run test:http`: real wrangler artifact on Miniflare, full route and host matrix on 17046                  | impl   |
+| L4 E2E          | CI               | Chromium plus `test:development` in the slot job; Firefox 1/2–2/2 and WebKit 1/4–4/4 aggregated, three engines | impl   |
+| P1 Package      | —                | private package, nothing is published                                                                          | na     |
+| Z1 Gate         | CI               | `bun scripts/slot-gate.ts`; also requires the jobs outside the slot list                                       | impl   |
 
 `Release package verify` runs `check:hooks`, `check:budgets`, the wrangler dry run and the production archive extraction; it carries no slot id and Z1 requires it. The former L1.5 slot is gone: worker runtime coverage is L2, and this project declares it na.
 
-| Hook       | Measured behavior (bun 1.4.4, node 26.13.0, Apple silicon)                                                                                                        | Budget                      |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| pre-commit | Index snapshot: staged gitleaks, dependency and toolchain snapshot check, static gates, coverage, build. 4.0s cold after a frozen install, 2.7s warm              | ≤15s, reject above 30s      |
-| pre-push   | Reads Git's stdin refs, blocks non-HEAD and absent commits, skips ref deletions, scans each pushed ref, then L3, G2 and budgets in parallel. 3.3s cold, 2.8s warm | target 2.5min, ceiling 5min |
+| Hook       | Measured behavior (bun 1.4.4, node 26.13.0, Apple silicon)                                                                                                                                                                                              | Budget                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| pre-commit | Index snapshot: staged gitleaks, dependency and toolchain snapshot check, static gates, coverage, build. 4.7s cold after a frozen install, 3.4s warm                                                                                                    | ≤15s, reject above 30s      |
+| pre-push   | Reads Git's stdin refs, blocks non-HEAD and absent commits, skips ref deletions without source checks, exports the pushed commit to a temporary snapshot and runs per-ref gitleaks, the dependency snapshot, L3 and budgets there. 4.1s cold, 3.3s warm | target 2.5min, ceiling 5min |
 
-`check:hooks` proves the gates reject: it reproduces 20 failures in a temporary Git fixture, including staged unit failures behind a corrected worktree, dependency and toolchain drift, non-HEAD refs and absent commits, and accepts restored commits and pushes.
+`check:hooks` proves the gates reject: it reproduces 19 failures in a temporary Git fixture, including dependency and toolchain drift, a bad pushed commit behind a clean worktree, non-HEAD refs and absent commits, and accepts a commit, a push and a deletion that must skip source checks. `check:l1-gate` proves the staged-unit-failure-behind-a-corrected-worktree case; both run in CI's release package job.
 
-Hooks are check-only. No `--no-verify`, disabled checks, hidden failures or autofix gates; commit tests and implementation together in a green atomic commit.
+Hooks are check-only. No `--no-verify`, disabled checks, hidden failures or autofix gates; commit tests and implementation together in a green atomic commit. Work with production access pushes to `main` directly, so the `main quality gate` ruleset (id 27029540) requires only `quality / Z1: Gate` and lets the admin repository role bypass it; every other push path is checked by the hooks and by CI.
 
 ## Resources / Isolation
 

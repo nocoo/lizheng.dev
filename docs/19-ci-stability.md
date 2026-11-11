@@ -146,14 +146,16 @@ the immediately following run.
 
 | Hook | Cold | Warm | Budget |
 | --- | --- | --- | --- |
-| pre-commit | 4.0s | 2.75s, 2.68s | ≤15s, reject above 30s |
-| pre-push | 3.3s | 2.84s, 2.78s | target 2.5min, ceiling 5min |
+| pre-commit | 4.74s | 3.36s, 3.70s | ≤15s, reject above 30s |
+| pre-push | 4.13s | 3.31s, 3.39s | target 2.5min, ceiling 5min |
 
 Both hooks run their checks inside their own temporary state: the pre-commit gate
-exports the Git index (`git checkout-index`) and reuses `node_modules` only after
-verifying `package.json`, `bun.lock`, `engines` and `packageManager`; the pre-push
-gate pins the pushed OID from Git's stdin and scans each ref with
-`oid --not --remotes`.
+exports the Git index (`git checkout-index`), and the pre-push gate pins the
+pushed OID from Git's stdin and exports that commit (`git archive`). Either way
+`node_modules` is reused only after the snapshot's own `package.json`,
+`bun.lock`, override scopes, dependency closure, `engines` and `packageManager`
+check passes, so stale installs, unstaged fixes and a bad commit cannot satisfy
+the gate. Deletion-only pushes run no source checks at all.
 
 ### CI duration
 
@@ -168,6 +170,7 @@ Measured on the first native green runs:
 | --- | --- | --- | --- |
 | [43015367140](https://github.com/nocoo/lizheng.dev/actions/runs/43015367140) | failure, Firefox journey timed out at 38s against a 30s limit | 469s | Firefox 453s |
 | [43016631668](https://github.com/nocoo/lizheng.dev/actions/runs/43016631668) | success | 393s | Firefox 378s, L4 240s, WebKit shards 135–215s, Z1 10s |
+| [43017665520](https://github.com/nocoo/lizheng.dev/actions/runs/43017665520) | success after splitting Firefox in two | 354s | WebKit 3/4 341s (154s queue), Firefox shards 154s and 291s, L4 243s, Z1 7s |
 
 Slot jobs finish in 7–20s (S1 16s, S2 18s, S3 17s, G1 7s, G2 8s, B1 14s, L1 20s,
 L3 18s, L4 240s, release package 58s, Z1 10s). The run is therefore 6.5 minutes of
@@ -179,3 +182,32 @@ critical path; Chromium and Firefox stay on macOS because the visual baselines a
 platform-specific and regenerating Linux baselines is not verifiable from this
 machine. WebKit keeps four shards. Per-run numbers for later changes are recorded
 with each release in 11.
+
+## Review round 1 (2026-11-11)
+
+An independent review of `51d4fd3..0720a3b` found three P1 and four P2 gaps and no
+P0. All were accepted and fixed:
+
+- pre-push proved only `local sha == HEAD` and then ran OSV, L3 and budgets in the
+  working tree, so unstaged work could mask a broken commit, and the `.gitleaks.toml`
+  and lockfile came from the worktree. The pushed commit is now exported to a
+  temporary snapshot and every gate runs there; a deletion-only push returns no
+  gates instead of running source checks.
+- the dependency snapshot compared name/version sets, so a missing transitive
+  dependency and a re-parented override could pass. It now checks override scope,
+  the locked dependency closure, direct dependencies, strict range syntax and a
+  same-major.minor `packageManager` line.
+- Z1 accepted a blocking job that reported no tested sha, and six browser shards
+  shared one matrix output. Every job now asserts `git rev-parse HEAD == GITHUB_SHA`
+  before recording it, and Z1 requires a non-empty sha from every blocking job.
+- the fixture's own marker file made the commit-side injections prove only that a
+  short-circuit worked. The production script no longer reads fixture state, the
+  stub gate binaries take the marker path from the environment, and new cases cover
+  a bad pushed commit behind a clean worktree and a deletion that must skip source
+  checks. `check:l1-gate` (staged failing test behind a corrected worktree) now
+  runs in the release package job.
+
+Branch protection: the `main quality gate` ruleset (id 27029540) requires only
+`quality / Z1: Gate` and lets the admin repository role bypass it, because this
+single-maintainer repository pushes to `main` directly. Everything else still goes
+through the hooks and CI.
