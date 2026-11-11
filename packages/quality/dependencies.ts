@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 export interface Manifest {
 	dependencies?: Record<string, string>;
@@ -25,6 +25,7 @@ export interface Lockfile {
 
 export interface InstalledPackage {
 	name: string;
+	path: string;
 	version: string;
 }
 
@@ -134,7 +135,7 @@ function collect(
 			version?: string;
 		};
 		if (manifest.name && manifest.version)
-			installed.push({ name: manifest.name, version: manifest.version });
+			installed.push({ name: manifest.name, path, version: manifest.version });
 	}
 	const nested = join(path, "node_modules");
 	if (existsSync(nested)) visit(nested);
@@ -217,37 +218,83 @@ export function auditInstalled(
 			problems.push(
 				`override ${scope}@${version} is not installed at that version`,
 			);
+	const byPath = new Map(installed.map((entry) => [entry.path, entry]));
 	for (const entry of installed) {
 		const key = `${entry.name}@${entry.version}`;
 		const locked = lock.byNameVersion.get(key);
 		if (!locked) continue;
 		for (const dependency of Object.keys(locked.dependencies)) {
-			const nested =
-				lock.entries.get(`${entry.name}/${dependency}`) ??
-				lock.entries.get(dependency);
-			if (!nested) {
+			const expected = edgeVersion(lock, entry.name, dependency);
+			if (expected === "ambiguous") {
+				problems.push(
+					`cannot verify ${key} -> ${dependency}: bun.lock records several resolutions`,
+				);
+				continue;
+			}
+			if (expected === undefined) {
 				problems.push(
 					`${key} depends on ${dependency}, which bun.lock does not record`,
 				);
 				continue;
 			}
-			if (!present.has(`${nested.name}@${nested.version}`))
+			const resolved = resolveDependency(entry.path, dependency, byPath);
+			if (!resolved) {
 				problems.push(
-					`${key} depends on ${nested.name}@${nested.version}, which is not installed`,
+					`${key} depends on ${dependency}@${expected}, which is not installed`,
+				);
+				continue;
+			}
+			if (resolved.version !== expected)
+				problems.push(
+					`${key} resolves ${dependency}@${resolved.version} but bun.lock records ${expected}`,
 				);
 		}
 	}
 	return problems;
 }
 
+const STABLE_VERSION = /^(\d+)\.(\d+)\.(\d+)$/;
+
 export function parseVersion(version: string): number[] {
-	const core = version.split("-")[0]?.split("+")[0] ?? version;
-	return core.split(".").map((part) => {
-		const parsed = Number.parseInt(part, 10);
-		if (Number.isNaN(parsed))
-			throw new Error(`cannot parse version '${version}'`);
-		return parsed;
-	});
+	const match = STABLE_VERSION.exec(version);
+	if (!match)
+		throw new Error(
+			`cannot verify the non-stable or malformed version '${version}'`,
+		);
+	return [match[1], match[2], match[3]].map((part) =>
+		Number.parseInt(part as string, 10),
+	);
+}
+
+function edgeVersion(
+	lock: Lockfile,
+	parent: string,
+	dependency: string,
+): string | "ambiguous" | undefined {
+	const exact = lock.entries.get(`${parent}/${dependency}`);
+	if (exact) return exact.version;
+	const nested = new Set<string>();
+	for (const [key, entry] of lock.entries)
+		if (entry.name === dependency && key.endsWith(`/${parent}/${dependency}`))
+			nested.add(entry.version);
+	if (nested.size > 1) return "ambiguous";
+	if (nested.size === 1) return [...nested][0];
+	return lock.entries.get(dependency)?.version;
+}
+
+function resolveDependency(
+	from: string,
+	name: string,
+	byPath: Map<string, InstalledPackage>,
+): InstalledPackage | undefined {
+	let directory = from;
+	for (;;) {
+		const candidate = byPath.get(join(directory, "node_modules", name));
+		if (candidate) return candidate;
+		const parent = dirname(directory);
+		if (parent === directory) return undefined;
+		directory = parent;
+	}
 }
 
 const RANGE = /^(>=|>|<=|<)?(\d+)\.(\d+)\.(\d+)$/;
@@ -283,40 +330,45 @@ export function auditToolchain(
 	actual: { bun: string; node: string },
 ): string[] {
 	const problems: string[] = [];
+	const check = (value: string, range: string, label: string) => {
+		try {
+			if (!satisfies(value, range)) problems.push(label);
+		} catch (error) {
+			problems.push(error instanceof Error ? error.message : String(error));
+		}
+	};
 	for (const field of ["bun", "node"] as const) {
 		const range = manifest.engines?.[field];
 		if (!range) {
 			problems.push(`package.json engines.${field} is missing`);
 			continue;
 		}
-		if (!satisfies(actual[field], range))
-			problems.push(
-				`${field} ${actual[field]} does not satisfy engines.${field} '${range}'`,
-			);
+		check(
+			actual[field],
+			range,
+			`${field} ${actual[field]} does not satisfy engines.${field} '${range}'`,
+		);
 	}
 	const declared = manifest.packageManager;
-	if (!declared) {
-		problems.push("package.json packageManager is missing");
-		return problems;
-	}
-	const [manager, version] = declared.split("@") as [
-		string,
-		string | undefined,
-	];
-	if (manager !== "bun" || !version) {
+	const pin = declared?.startsWith("bun@") ? declared.slice("bun@".length) : "";
+	if (!STABLE_VERSION.test(pin)) {
 		problems.push(
-			`package.json packageManager '${declared}' is not a pinned bun version`,
+			`package.json packageManager '${declared ?? "missing"}' is not a pinned bun version`,
 		);
 		return problems;
 	}
-	const pinned = parseVersion(version);
-	const running = parseVersion(actual.bun);
-	const sameLine =
-		(running[0] ?? 0) === (pinned[0] ?? 0) &&
-		(running[1] ?? 0) === (pinned[1] ?? 0);
-	if (!sameLine || compare(running, pinned) < 0)
-		problems.push(
-			`bun ${actual.bun} is not on the pinned line bun@${version} (same major.minor, not older)`,
-		);
+	try {
+		const pinned = parseVersion(pin);
+		const running = parseVersion(actual.bun);
+		const sameLine =
+			(running[0] ?? 0) === (pinned[0] ?? 0) &&
+			(running[1] ?? 0) === (pinned[1] ?? 0);
+		if (!sameLine || compare(running, pinned) < 0)
+			problems.push(
+				`bun ${actual.bun} is not on the pinned line bun@${pin} (same major.minor, not older)`,
+			);
+	} catch (error) {
+		problems.push(error instanceof Error ? error.message : String(error));
+	}
 	return problems;
 }

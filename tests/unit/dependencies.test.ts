@@ -12,6 +12,7 @@ import {
 	auditInstalled,
 	auditManifest,
 	auditToolchain,
+	type InstalledPackage,
 	type Lockfile,
 	type Manifest,
 	parseLockfile,
@@ -23,6 +24,38 @@ import {
 
 const manifest = JSON.parse(readFileSync("package.json", "utf8")) as Manifest;
 const lockText = readFileSync("bun.lock", "utf8");
+const root = "/tree";
+
+type Entry = {
+	dependencies: Record<string, string>;
+	name: string;
+	version: string;
+};
+
+const lockFrom = (entries: Map<string, Entry>, overrides = {}): Lockfile => ({
+	byNameVersion: new Map(
+		[...entries.values()].map((value) => [
+			`${value.name}@${value.version}`,
+			value,
+		]),
+	),
+	entries,
+	nameVersions: new Map(
+		[...entries.values()].reduce((all, value) => {
+			const versions = all.get(value.name) ?? new Set<string>();
+			versions.add(value.version);
+			all.set(value.name, versions);
+			return all;
+		}, new Map<string, Set<string>>()),
+	),
+	overrides,
+	workspace: {},
+});
+const at = (path: string, name: string, version: string): InstalledPackage => ({
+	name,
+	path: join(root, path),
+	version,
+});
 
 it("strips trailing commas without touching strings", () => {
 	const source = '{"a": [1, 2,], "b": {"c": "x,}",}, "d": "\\",]",}';
@@ -65,38 +98,41 @@ it("rejects malformed lockfiles", () => {
 });
 
 it("reads installed packages across scopes and nested trees", () => {
-	const root = mkdtempSync(join(tmpdir(), "lizheng-deps-"));
+	const directory = mkdtempSync(join(tmpdir(), "lizheng-deps-"));
 	try {
 		const write = (path: string, name: string, version: string) => {
-			mkdirSync(join(root, path), { recursive: true });
+			mkdirSync(join(directory, path), { recursive: true });
 			writeFileSync(
-				join(root, path, "package.json"),
+				join(directory, path, "package.json"),
 				JSON.stringify({ name, version }),
 			);
 		};
 		write("node_modules/react", "react", "19.3.1");
 		write("node_modules/@scope/pkg", "@scope/pkg", "1.0.0");
 		write("node_modules/parent/node_modules/child", "child", "2.0.0");
-		mkdirSync(join(root, "node_modules/.bin"), { recursive: true });
-		writeFileSync(join(root, "node_modules/.bin/react"), "");
-		writeFileSync(join(root, "node_modules/@scope/LICENSE"), "");
-		mkdirSync(join(root, "node_modules/empty"), { recursive: true });
-		expect(readInstalledPackages(join(root, "node_modules"))).toEqual(
-			expect.arrayContaining([
-				{ name: "react", version: "19.3.1" },
-				{ name: "@scope/pkg", version: "1.0.0" },
-				{ name: "child", version: "2.0.0" },
-			]),
+		mkdirSync(join(directory, "node_modules/.bin"), { recursive: true });
+		writeFileSync(join(directory, "node_modules/.bin/react"), "");
+		mkdirSync(join(directory, "node_modules/empty"), { recursive: true });
+		writeFileSync(join(directory, "node_modules/@scope/LICENSE"), "");
+		const installed = readInstalledPackages(join(directory, "node_modules"));
+		for (const expected of [
+			{ name: "react", version: "19.3.1" },
+			{ name: "@scope/pkg", version: "1.0.0" },
+			{ name: "child", version: "2.0.0" },
+		])
+			expect(installed).toContainEqual(expect.objectContaining(expected));
+		expect(installed.find((item) => item.name === "child")?.path).toBe(
+			join(directory, "node_modules/parent/node_modules/child"),
 		);
-		expect(() => readInstalledPackages(join(root, "missing"))).toThrow(
+		expect(() => readInstalledPackages(join(directory, "missing"))).toThrow(
 			/is missing; install dependencies first/,
 		);
 	} finally {
-		rmSync(root, { recursive: true, force: true });
+		rmSync(directory, { recursive: true, force: true });
 	}
 });
 
-it("accepts an installed tree that matches the manifest and lock", () => {
+it("accepts the real tree, including nested duplicate resolutions", () => {
 	const lock = parseLockfile(lockText);
 	expect(auditManifest(manifest, lock)).toEqual([]);
 	expect(
@@ -132,6 +168,87 @@ it("keeps override parent scopes distinct", () => {
 	);
 });
 
+it("follows node resolution instead of trusting any matching version", () => {
+	const lock = lockFrom(
+		new Map<string, Entry>([
+			[
+				"consumer",
+				{
+					dependencies: { child: "1.0.0" },
+					name: "consumer",
+					version: "1.0.0",
+				},
+			],
+			["consumer/child", { dependencies: {}, name: "child", version: "1.0.0" }],
+			["child", { dependencies: {}, name: "child", version: "2.0.0" }],
+			[
+				"a/shared",
+				{ dependencies: { leaf: "1.0.0" }, name: "shared", version: "1.0.0" },
+			],
+			["a/shared/leaf", { dependencies: {}, name: "leaf", version: "1.0.0" }],
+			["leaf", { dependencies: {}, name: "leaf", version: "2.0.0" }],
+		]),
+	);
+	const problems = auditInstalled({}, lock, [
+		at("node_modules/consumer", "consumer", "1.0.0"),
+		at("node_modules/child", "child", "2.0.0"),
+		at("node_modules/a/node_modules/shared", "shared", "1.0.0"),
+		at("node_modules/leaf", "leaf", "2.0.0"),
+	]);
+	expect(problems).toContain(
+		"consumer@1.0.0 resolves child@2.0.0 but bun.lock records 1.0.0",
+	);
+	expect(problems).toContain(
+		"shared@1.0.0 resolves leaf@2.0.0 but bun.lock records 1.0.0",
+	);
+});
+
+it("accepts the nested resolution the lockfile records", () => {
+	const lock = lockFrom(
+		new Map<string, Entry>([
+			[
+				"consumer",
+				{
+					dependencies: { child: "1.0.0" },
+					name: "consumer",
+					version: "1.0.0",
+				},
+			],
+			["consumer/child", { dependencies: {}, name: "child", version: "1.0.0" }],
+			["child", { dependencies: {}, name: "child", version: "2.0.0" }],
+		]),
+	);
+	expect(
+		auditInstalled({}, lock, [
+			at("node_modules/consumer", "consumer", "1.0.0"),
+			at("node_modules/consumer/node_modules/child", "child", "1.0.0"),
+			at("node_modules/child", "child", "2.0.0"),
+		]),
+	).toEqual([]);
+});
+
+it("fails closed when a dependency edge is ambiguous in the lockfile", () => {
+	const lock = lockFrom(
+		new Map<string, Entry>([
+			[
+				"consumer",
+				{ dependencies: { leaf: "1.0.0" }, name: "consumer", version: "1.0.0" },
+			],
+			["x/consumer/leaf", { dependencies: {}, name: "leaf", version: "1.0.0" }],
+			["y/consumer/leaf", { dependencies: {}, name: "leaf", version: "3.0.0" }],
+			["leaf", { dependencies: {}, name: "leaf", version: "2.0.0" }],
+		]),
+	);
+	expect(
+		auditInstalled({}, lock, [
+			at("node_modules/consumer", "consumer", "1.0.0"),
+			at("node_modules/leaf", "leaf", "2.0.0"),
+		]),
+	).toContain(
+		"cannot verify consumer@1.0.0 -> leaf: bun.lock records several resolutions",
+	);
+});
+
 it("reports manifest and lock drift", () => {
 	const lock = parseLockfile(lockText);
 	const problems = auditManifest(
@@ -164,23 +281,16 @@ it("reports manifest and lock drift", () => {
 });
 
 it("reports installed drift, missing declarations and overrides", () => {
-	const lock: Lockfile = {
-		byNameVersion: new Map([
-			[
-				"child@2.0.0",
-				{ dependencies: { grand: "1.0.0" }, name: "child", version: "2.0.0" },
-			],
-		]),
-		entries: new Map([
+	const lock = lockFrom(
+		new Map<string, Entry>([
 			[
 				"child",
 				{ dependencies: { grand: "1.0.0" }, name: "child", version: "2.0.0" },
 			],
+			["grand", { dependencies: {}, name: "grand", version: "1.0.0" }],
 		]),
-		nameVersions: new Map([["child", new Set(["2.0.0"])]]),
-		overrides: { parent: { child: "2.0.0" }, other: { child: "3.0.0" } },
-		workspace: {},
-	};
+		{ parent: { child: "2.0.0" }, other: { child: "3.0.0" } },
+	);
 	const problems = auditInstalled(
 		{
 			dependencies: { child: "2.0.0", missing: "1.0.0" },
@@ -188,9 +298,9 @@ it("reports installed drift, missing declarations and overrides", () => {
 		},
 		lock,
 		[
-			{ name: "child", version: "2.0.0" },
-			{ name: "child", version: "1.0.0" },
-			{ name: "stray", version: "1.0.0" },
+			at("node_modules/child", "child", "2.0.0"),
+			at("node_modules/parent/node_modules/child", "child", "1.0.0"),
+			at("node_modules/stray", "stray", "1.0.0"),
 		],
 	);
 	expect(problems).toContain("stray@1.0.0 is installed but not locked");
@@ -203,22 +313,19 @@ it("reports installed drift, missing declarations and overrides", () => {
 	expect(problems).toContain(
 		"override other>child@3.0.0 is not installed at that version",
 	);
+	expect(problems).toContain(
+		"child@2.0.0 depends on grand@1.0.0, which is not installed",
+	);
 });
 
 it("compares versions against the ranges the manifest declares", () => {
 	expect(parseVersion("26.12.1")).toEqual([26, 12, 1]);
-	expect(parseVersion("5.20261006.1-alpha")).toEqual([5, 20261006, 1]);
-	expect(() => parseVersion("7.x")).toThrow(/cannot parse version '7\.x'/);
+	expect(() => parseVersion("7.x")).toThrow(/non-stable or malformed/);
+	expect(() => parseVersion("26.0.0-rc.1")).toThrow(/non-stable or malformed/);
 	expect(satisfies("26.13.0", ">=26.0.0")).toBe(true);
 	expect(satisfies("26.13.0", "*")).toBe(true);
 	expect(satisfies("26.13.0", "")).toBe(true);
 	expect(satisfies("26.13.0", "26.13.0")).toBe(true);
-	expect(() => satisfies("26.13", ">=26.0")).toThrow(
-		/cannot verify version range/,
-	);
-	expect(() => satisfies("26.13.0", ">=26.0.0 <27.0.0")).toThrow(
-		/cannot verify version range/,
-	);
 	expect(satisfies("26.13.0", ">26.13.0")).toBe(false);
 	expect(satisfies("26.13.0", ">=26.13.1")).toBe(false);
 	expect(satisfies("26.13.0", "<=26.13.0")).toBe(true);
@@ -227,6 +334,9 @@ it("compares versions against the ranges the manifest declares", () => {
 		/cannot verify version range/,
 	);
 	expect(() => satisfies("26.13.0", "26.x")).toThrow(
+		/cannot verify version range/,
+	);
+	expect(() => satisfies("26.13.0", ">=26.0.0 <27.0.0")).toThrow(
 		/cannot verify version range/,
 	);
 });
@@ -242,7 +352,7 @@ it("accepts the declared toolchain minimum and rejects mismatches", () => {
 	).toEqual([
 		"package.json engines.bun is missing",
 		"package.json engines.node is missing",
-		"package.json packageManager is missing",
+		"package.json packageManager 'missing' is not a pinned bun version",
 	]);
 	expect(
 		auditToolchain(
@@ -259,6 +369,11 @@ it("accepts the declared toolchain minimum and rejects mismatches", () => {
 		auditToolchain({ ...manifest, packageManager: "bun" }, actual),
 	).toContain("package.json packageManager 'bun' is not a pinned bun version");
 	expect(
+		auditToolchain({ ...manifest, packageManager: "bun@1.4.0garbage" }, actual),
+	).toContain(
+		"package.json packageManager 'bun@1.4.0garbage' is not a pinned bun version",
+	);
+	expect(
 		auditToolchain({ ...manifest, packageManager: "bun@99.0.0" }, actual),
 	).toContain(
 		"bun 1.4.0 is not on the pinned line bun@99.0.0 (same major.minor, not older)",
@@ -270,5 +385,10 @@ it("accepts the declared toolchain minimum and rejects mismatches", () => {
 	);
 	expect(auditToolchain(manifest, { bun: "1.4.4", node: "26.13.0" })).toEqual(
 		[],
+	);
+	expect(
+		auditToolchain(manifest, { bun: "1.4.0-canary", node: "26.13.0" }),
+	).toContain(
+		"cannot verify the non-stable or malformed version '1.4.0-canary'",
 	);
 });

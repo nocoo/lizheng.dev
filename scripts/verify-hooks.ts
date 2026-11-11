@@ -1,5 +1,12 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import {
+	existsSync,
+	readdirSync,
+	readFileSync,
+	symlinkSync,
+	unlinkSync,
+	writeFileSync,
+} from "node:fs";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -16,9 +23,18 @@ await mkdir(join(root, ".husky"));
 const husky = resolve("node_modules/husky/bin.js");
 const gate = resolve("scripts/gates.ts");
 const bun = process.execPath;
+const realGitleaks = execFileSync("which", ["gitleaks"], {
+	encoding: "utf8",
+}).trim();
+const realOsv = execFileSync("which", ["osv-scanner"], {
+	encoding: "utf8",
+}).trim();
 const env = {
 	...process.env,
 	PATH: `${bin}:${process.env.PATH}`,
+	FIXTURE_INVOCATIONS: join(root, "invocations"),
+	REAL_GITLEAKS: realGitleaks,
+	REAL_OSV: realOsv,
 	NO_COLOR: undefined,
 	REAL_BUN: bun,
 	REAL_GATE: gate,
@@ -103,6 +119,9 @@ case "$1" in
     exec "$REAL_BUN" "$@"
     ;;
   run)
+    case "$2" in
+      test:http|check:budgets) echo "$2" >> "$FIXTURE_INVOCATIONS" ;;
+    esac
     if should_fail "isolation" && [ "$2" = "test:http" ]; then exec "$REAL_BUN" "$FIXTURE_ISOLATION"; fi
     for gate in lint typecheck types:check check:deps check:docs check:workflows test:coverage build test:http check:budgets; do
       if should_fail "$gate" && [ "$2" = "$gate" ]; then exit 1; fi
@@ -121,7 +140,7 @@ exec "$REAL_BUN" "$@"
 FAIL_GATE=$(cat "\${FIXTURE_FAIL_GATE:-/nonexistent}" 2>/dev/null || true)
 if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
 if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
-exit 0
+exec "$REAL_${scanner === "gitleaks" ? "GITLEAKS" : "OSV"}" "$@"
 `,
 			{ mode: 0o755 },
 		);
@@ -243,6 +262,34 @@ assertIsolation(config, "l2", 17046);
 			input: `refs/heads/ghost ${"a".repeat(40)} refs/heads/ghost ${"0".repeat(40)}\n`,
 		},
 	);
+	const invocations = join(root, "invocations");
+	const invoked = () =>
+		existsSync(invocations)
+			? readFileSync(invocations, "utf8").trim().split("\n")
+			: [];
+
+	// A real secret in the pushed commit must be found by the real scanner, which also
+	// proves the export did not silently scan an empty range.
+	const secretPath = join(root, "secret.txt");
+	// Assembled at runtime so this fixture never trips the repository's own scan.
+	const secret = ["AKIA", "ZZ7X4Q2LM", "NOPQR55"].join("");
+	await writeFile(secretPath, `aws_access_key_id = ${secret}\n`);
+	git(["add", "secret.txt"]);
+	const secretTree = execFileSync("git", ["write-tree"], {
+		cwd: root,
+		encoding: "utf8",
+	}).trim();
+	const secretCommit = execFileSync(
+		"git",
+		["commit-tree", secretTree, "-p", "HEAD", "-m", "secret"],
+		{ cwd: root, encoding: "utf8" },
+	).trim();
+	execFileSync("git", ["update-ref", `refs/heads/${branch}`, secretCommit], {
+		cwd: root,
+	});
+	git(["push", "origin", "HEAD"], 1, "", /secret\.txt|leaks found|aws/i);
+	git(["reset", "--hard", "--quiet", "HEAD~1"]);
+
 	if (missing.status === 0)
 		throw new Error(
 			"Hook accepted a push ref with a commit that is not present",
@@ -275,15 +322,22 @@ assertIsolation(config, "l2", 17046);
 		cwd: root,
 	});
 	await writeFile(manifestPath, goodManifest);
+	await rm(invocations, { force: true });
 	git(
 		["push", "origin", "HEAD"],
 		1,
 		"",
 		/dependencies: .*unlocked-package.*bun\.lock records nothing/,
 	);
+	if (
+		invoked().some((gate) => gate === "test:http" || gate === "check:budgets")
+	)
+		throw new Error(
+			`A dependency mismatch still ran ${invoked().join(", ")}; the snapshot must verify dependencies first`,
+		);
 	git(["reset", "--hard", "--quiet", "HEAD~1"]);
 
-	const rejections = commitGates.length + pushGates.length + 3;
+	const rejections = commitGates.length + pushGates.length + 4;
 	git(["push", "origin", "HEAD"]);
 	execFileSync("git", [
 		"--git-dir",
@@ -297,8 +351,16 @@ assertIsolation(config, "l2", 17046);
 	]);
 	// A deletion must not run source checks: the injected failure would block it.
 	git(["push", "origin", "--delete", "stale"], 0, "test:http");
+	const leftovers = readdirSync(tmpdir()).filter(
+		(name) =>
+			name.startsWith("lizheng-push-") || name.startsWith("lizheng-index-"),
+	);
+	if (leftovers.length > 0)
+		throw new Error(
+			`Hook fixtures left temporary state behind: ${leftovers.join(", ")}`,
+		);
 	console.info(
-		`Real Git fixture blocked ${rejections} failures, including nested static/security gates, dependency and toolchain drift, a bad pushed commit behind a clean worktree, non-HEAD refs and absent commits, and accepted a commit, a push and a deletion that skipped source checks.`,
+		`Real Git fixture blocked ${rejections} failures, including nested static/security gates, dependency and toolchain drift, a bad pushed commit behind a clean worktree, a real secret found by the real scanner, non-HEAD refs and absent commits, and accepted a commit, a push and a deletion that skipped source checks.`,
 	);
 } finally {
 	await rm(root, { recursive: true, force: true });

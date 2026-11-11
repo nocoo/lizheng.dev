@@ -176,8 +176,8 @@ Measured on the first native green runs:
 Slot jobs finish in 7–20s (S1 16s, S2 18s, S3 17s, G1 7s, G2 8s, B1 14s, L1 20s,
 L3 18s, release package 58s, Z1 10s); the browser jobs and their queue are the
 whole critical path. Total time across the three green runs is 354–503s, so the
-5-minute target is met only when the macOS queue is short, while the 10-minute
-reference holds. Sharing a 3-core macOS runner doubled per-journey durations, so the
+5-minute target is not met yet: every recorded green run is above 300 seconds, and
+the queue is the difference. The 10-minute reference holds. Sharing a 3-core macOS runner doubled per-journey durations, so the
 browser timeout now allows 60s in CI while assertions, retries (0) and visual
 thresholds stay unchanged. Firefox moved to two shards because it was the
 critical path; Chromium and Firefox stay on macOS because the visual baselines are
@@ -188,7 +188,9 @@ with each release in 11.
 ## Review round 1 (2026-11-11)
 
 An independent review of `51d4fd3..0720a3b` found three P1 and four P2 gaps and no
-P0. All were accepted and fixed:
+P0. All were accepted; the fixes are listed here and were re-reviewed. A second
+round accepted three of them as fixed, found four partially fixed and raised one
+new P1 plus two P2, all fixed in the same pass:
 
 - pre-push proved only `local sha == HEAD` and then ran OSV, L3 and budgets in the
   working tree, so unstaged work could mask a broken commit, and the `.gitleaks.toml`
@@ -208,6 +210,16 @@ P0. All were accepted and fixed:
   a bad pushed commit behind a clean worktree and a deletion that must skip source
   checks. `check:l1-gate` (staged failing test behind a corrected worktree) now
   runs in the release package job.
+
+Round two found that gitleaks, run inside the exported tree, had no Git metadata
+and reported "0 commits scanned" as success; it now runs in the repository with
+the pushed commit's config, and the fixture proves detection with a real secret
+and the real scanner. The dependency snapshot ran in parallel with the suites it
+was supposed to gate, so it now runs alone and the fixture fails if a mismatch
+still starts L3 or budgets. The snapshot also leaked its temporary tree whenever
+preparation threw, which the fixture now watches for. Dependency checking resolves
+each edge the way Node does and fails closed on ambiguous lockfile resolutions;
+toolchain parsing rejects composite ranges and prerelease versions.
 
 Branch protection: the `main quality gate` ruleset (id 27029540) requires only
 `quality / Z1: Gate` and lets the admin repository role bypass it, because this
