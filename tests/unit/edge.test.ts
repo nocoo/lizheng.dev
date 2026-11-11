@@ -168,6 +168,7 @@ for (const host of ["lizheng.dev", "lizheng.me"]) {
 				"frame-ancestors 'none'",
 			);
 			expect(html).toContain('<meta name="robots" content="noindex">');
+			expect(html).toContain(`<meta name="version" content="${version}">`);
 			for (const label of locale === "zh"
 				? ["主页", "博客", "简历", "作品集"]
 				: ["Play", "Journal", "Résumé", "Portfolio"])

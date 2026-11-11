@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.14] - 2026-11-12
+
+- Link to the Chinese-language podcast his.fm in both landing-page introductions.
+- Return navigable, localized HTML 404 pages with noindex for unknown public paths.
+- Improve device-screen link target sizes and chapter tab accessible names.
+- Expose the deployed package version in HTML metadata while retaining `/api/live`.
+
 ## [3.2.12] - 2026-11-04
 
 - Stop résumé hero layout shift on mobile cold loads by using `font-display: optional` for self-hosted Newsreader and Source Sans 3.

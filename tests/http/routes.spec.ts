@@ -85,6 +85,7 @@ for (const surface of ["resume", "landing"])
 					`/${locale}/content.md>; rel="alternate"`,
 				);
 				const html = await page.text();
+				expect(html).toContain(`<meta name="version" content="${version}">`);
 				const traksSiteKey =
 					surface === "resume"
 						? "pb_live_zq1jbvt6hrll2zx01fk36hp7"
