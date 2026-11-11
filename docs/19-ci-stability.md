@@ -171,11 +171,13 @@ Measured on the first native green runs:
 | [43015367140](https://github.com/nocoo/lizheng.dev/actions/runs/43015367140) | failure, Firefox journey timed out at 38s against a 30s limit | 469s | Firefox 453s |
 | [43016631668](https://github.com/nocoo/lizheng.dev/actions/runs/43016631668) | success | 393s | Firefox 378s, L4 240s, WebKit shards 135–215s, Z1 10s |
 | [43017665520](https://github.com/nocoo/lizheng.dev/actions/runs/43017665520) | success after splitting Firefox in two | 354s | WebKit 3/4 341s (154s queue), Firefox shards 154s and 291s, L4 243s, Z1 7s |
+| [43022178522](https://github.com/nocoo/lizheng.dev/actions/runs/43022178522) | success with the snapshot gates | 503s | L4 queued 161s then 324s, Firefox 1/2 296s, WebKit 4/4 160s after a 133s queue, Z1 13s |
 
 Slot jobs finish in 7–20s (S1 16s, S2 18s, S3 17s, G1 7s, G2 8s, B1 14s, L1 20s,
-L3 18s, L4 240s, release package 58s, Z1 10s). The run is therefore 6.5 minutes of
-mostly runner wall time: still above the 5-minute target, inside the 10-minute
-reference. Sharing a 3-core macOS runner doubled per-journey durations, so the
+L3 18s, release package 58s, Z1 10s); the browser jobs and their queue are the
+whole critical path. Total time across the three green runs is 354–503s, so the
+5-minute target is met only when the macOS queue is short, while the 10-minute
+reference holds. Sharing a 3-core macOS runner doubled per-journey durations, so the
 browser timeout now allows 60s in CI while assertions, retries (0) and visual
 thresholds stay unchanged. Firefox moved to two shards because it was the
 critical path; Chromium and Firefox stay on macOS because the visual baselines are
