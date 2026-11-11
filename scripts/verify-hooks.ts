@@ -22,6 +22,7 @@ const env = {
 	NO_COLOR: undefined,
 	REAL_BUN: bun,
 	REAL_GATE: gate,
+	FIXTURE_FAIL_GATE: join(root, ".fixture-fail-gate"),
 	FIXTURE_ISOLATION: join(root, "isolation.ts"),
 };
 const failGateFile = join(root, ".fixture-fail-gate");
@@ -92,8 +93,7 @@ try {
 	await writeFile(
 		join(bin, "bun"),
 		`#!/bin/sh
-repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-FAIL_GATE=$(cat "$repo_root/.fixture-fail-gate" 2>/dev/null || true)
+FAIL_GATE=$(cat "\${FIXTURE_FAIL_GATE:-/nonexistent}" 2>/dev/null || true)
 should_fail() { [ "$FAIL_GATE" = "$1" ]; }
 case "$1" in
   scripts/*gates.ts) exec "$REAL_BUN" "$@" ;;
@@ -118,8 +118,7 @@ exec "$REAL_BUN" "$@"
 		await writeFile(
 			join(bin, scanner),
 			`#!/bin/sh
-repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-FAIL_GATE=$(cat "$repo_root/.fixture-fail-gate" 2>/dev/null || true)
+FAIL_GATE=$(cat "\${FIXTURE_FAIL_GATE:-/nonexistent}" 2>/dev/null || true)
 if [ "$FAIL_GATE" = "${scanner}" ]; then exit 1; fi
 if [ "$FAIL_GATE" = "${scanner}-missing" ]; then exit 127; fi
 exit 0
@@ -194,7 +193,7 @@ import { assertIsolation } from ${JSON.stringify(resolve("packages/quality/isola
 const config = ${await readFile("wrangler.test.jsonc", "utf8")};
 let failGate = "";
 try {
-  failGate = readFileSync(".fixture-fail-gate", "utf8").trim();
+  failGate = readFileSync(process.env.FIXTURE_FAIL_GATE, "utf8").trim();
 } catch {}
 if (failGate === "isolation") config.name = "lizheng-dev";
 assertIsolation(config, "l2", 17046);
