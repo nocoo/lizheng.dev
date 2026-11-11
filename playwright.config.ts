@@ -7,7 +7,9 @@ export default defineConfig({
 	workers: 3,
 	forbidOnly: true,
 	retries: 0,
-	timeout: 30000,
+	// Shared macOS runners vary by roughly 2x; the single heaviest device test took 38s
+	// under contention. Assertions stay unchanged and retries stay disabled.
+	timeout: process.env.CI ? 60000 : 30000,
 	reporter: [
 		["list"],
 		["html", { open: "never" }],
