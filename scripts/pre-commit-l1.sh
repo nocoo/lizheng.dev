@@ -12,11 +12,15 @@ command -v gitleaks >/dev/null 2>&1 || {
 	echo "pre-commit: gitleaks is required" >&2
 	exit 1
 }
+command -v actionlint >/dev/null 2>&1 || {
+	echo "pre-commit: actionlint is required" >&2
+	exit 1
+}
 repo=$(git rev-parse --show-toplevel)
 if [ -f "$repo/.fixture-fail-gate" ]; then
 	fail_gate=$(tr -d '\n' <"$repo/.fixture-fail-gate")
 	case "$fail_gate" in
-		gitleaks | check:static | lint | typecheck | types:check | check:deps | check:docs | test:coverage | build)
+		gitleaks | check:static | lint | typecheck | types:check | check:deps | check:docs | check:workflows | dependencies | test:coverage | build)
 			echo "pre-commit: fixture rejected $fail_gate" >&2
 			exit 1
 			;;
@@ -87,6 +91,7 @@ if ! grep -Fq -- '--coverage' package.json; then
 	exit 1
 fi
 
+bun "$snapshot/scripts/verify-dependencies.ts" "$repo/node_modules"
 bun scripts/gates.ts static
 bun run test:coverage
 if [ ! -d coverage ]; then

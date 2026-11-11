@@ -2,7 +2,7 @@ import type { KnipConfig } from "knip";
 
 const config: KnipConfig = {
 	// Installed operating-system tool, enforced separately by the security gate.
-	ignoreBinaries: ["gitleaks"],
+	ignoreBinaries: ["gitleaks", "osv-scanner", "actionlint"],
 	entry: [
 		"apps/*/client.{ts,tsx}",
 		"worker/index.ts",
