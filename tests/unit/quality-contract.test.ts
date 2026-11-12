@@ -8,7 +8,7 @@ import {
 	SLOT_NAMES,
 } from "../../packages/quality/slots";
 
-const BASE_CI_SHA = "9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6";
+const BASE_CI_SHA = "777bbe4f9bacab8a91d8c01974480a6ee23d28e0";
 const PINNED = new RegExp(`^nocoo/base-ci/[^@]+@${BASE_CI_SHA}$`);
 
 interface Step {
@@ -84,7 +84,7 @@ it("keeps the caller shape branch protection depends on", () => {
 	expect(caller?.name).toBeUndefined();
 });
 
-it("pins every shared base-ci reference to v2026.14", () => {
+it("pins every shared base-ci reference to v2026.15", () => {
 	const files = [
 		".github/workflows/ci.yml",
 		".github/workflows/quality-slots.yml",

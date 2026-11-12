@@ -64,7 +64,7 @@ Loopback browser host mappings and trusted Caddy previews: [development](docs/12
 
 ## Verification
 
-System0 quality slots, base-ci v2026.14 in native mode. `.github/slot-status.json` declares every slot; `scripts/slot-gate.ts` (Z1) verifies each declaration against the job that ran and the tested sha; `tests/unit/quality-contract.test.ts` keeps the declaration, the workflow, the canonical check names and the pinned references in step. Every slot job is named `<ID>: <Name>` inside `quality-slots.yml`, the caller job stays `quality`, so checks render as `quality / <ID>: <Name>`. Branch protection requires only `quality / Z1: Gate`. No skipped or focused tests.
+System0 quality slots, base-ci v2026.15 in native mode. `.github/slot-status.json` declares every slot; `scripts/slot-gate.ts` (Z1) verifies each declaration against the job that ran and the tested sha; `tests/unit/quality-contract.test.ts` keeps the declaration, the workflow, the canonical check names and the pinned references in step. Every slot job is named `<ID>: <Name>` inside `quality-slots.yml`, the caller job stays `quality`, so checks render as `quality / <ID>: <Name>`. Branch protection requires only `quality / Z1: Gate`. No skipped or focused tests.
 
 | Slot            | Phase            | Working evidence                                                                                               | Status |
 | --------------- | ---------------- | -------------------------------------------------------------------------------------------------------------- | ------ |

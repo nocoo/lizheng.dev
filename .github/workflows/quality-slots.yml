@@ -1,4 +1,4 @@
-# System0 quality slots for lizheng.dev — native mode (base-ci v2026.14).
+# System0 quality slots for lizheng.dev — native mode (base-ci v2026.15).
 # Job display names are exactly `<ID>: <Name>`, so ci.yml's `quality` caller renders
 # `quality / <ID>: <Name>` and `quality / Z1: Gate` is the single required check.
 # Blocking jobs outside the slot list carry no slot id and are aggregated by Z1.
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
       - name: Scan checked out content for secrets
         run: gitleaks detect --no-banner --verbose --redact --no-git --config=.gitleaks.toml
       - name: Record tested sha
@@ -137,7 +137,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
       - name: Scan the lockfile for known vulnerabilities
         run: osv-scanner scan --lockfile=bun.lock --config=osv-scanner.toml
       - name: Record tested sha
@@ -158,7 +158,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -184,7 +184,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -218,7 +218,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -244,7 +244,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -333,7 +333,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -372,13 +372,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-js@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
         with:
           package-manager: bun
           runtime-version: "1.4.0"
           node-version: "26.12.1"
           install-policy: blocked
-      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@9ec93ad01928da34fdd0a4c7274b23b2c7d77bb6 # v2026.14
+      - uses: nocoo/base-ci/.github/actions/setup-security-scanners@777bbe4f9bacab8a91d8c01974480a6ee23d28e0 # v2026.15
       - name: Install verified actionlint
         run: |
           curl --fail --silent --show-error --location --retry 3 \
