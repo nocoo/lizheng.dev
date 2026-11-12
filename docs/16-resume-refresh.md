@@ -91,7 +91,7 @@
 - `bun run check:budgets`：四页构建与资源预算通过。
 - `bun run test:http`：5 项 HTTP 测试通过，覆盖四个域名入口的路由、资源和公开内容。
 - `bun run test:browser --grep 'resume|portrait keepsake' --update-snapshots=changed`：54 项检查通过，覆盖 Chromium、Firefox、WebKit，两种语言、主题、桌面和移动视口，以及无 JavaScript、打印、无障碍和装饰状态。
-- 在本机以 `CI=1` 更新并通过 8 项 Chromium 简历布局检查，刷新 darwin-ci 基线；普通 darwin 的 8 张简历基线也已更新。远程 CI 未运行，不能据此声称已在 GitHub 的 macOS runner 验证。
+- 在本机以 `CI=1` 更新并通过 8 项 Chromium 简历布局检查，刷新当时的 CI 基线；普通 darwin 的 8 张简历基线也已更新。远程 CI 未运行，不能据此声称已在 GitHub 的 macOS runner 验证。
 - 本地 HTTPS 预览在中英文的 1440px、390px 视口均无横向溢出；HTML、Markdown 与 llms.txt 已检查当前团队、项目链接及旧表述移除情况。
 
 最终打印调整后，三种浏览器的打印检查、静态检查和构建预算重新通过。PDFKit 确认中英文各为两页，当前团队、专利和两个项目名称都可从 PDF 正文提取，打印控件没有进入文档；已人工查看打印页面。正文英文单词由约 562 减至 454，中文汉字由约 936 减至 813（不计 frontmatter 和链接地址）。

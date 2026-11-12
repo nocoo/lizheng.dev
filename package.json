@@ -1,6 +1,6 @@
 {
 	"name": "lizheng.dev",
-	"version": "3.2.16",
+	"version": "3.2.17",
 	"type": "module",
 	"private": true,
 	"scripts": {
@@ -22,6 +22,7 @@
 		"types:check": "wrangler types --strict-vars=false --check",
 		"test:http": "env -u NO_COLOR playwright test --config playwright.http.config.ts",
 		"test:browser": "env -u NO_COLOR playwright test",
+		"test:visual:update:linux": "sh scripts/update-linux-snapshots.sh",
 		"check:static": "bun scripts/gates.ts static",
 		"check:staged": "gitleaks protect --staged --no-banner --redact",
 		"check:security": "bun scripts/gates.ts security",
