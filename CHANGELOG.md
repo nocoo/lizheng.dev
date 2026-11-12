@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.16] - 2026-11-12
+
+- Repin the shared CI actions to base-ci v2026.15 (`777bbe4f`), replacing v2026.14 whose internal deploy workflows reference a release-source commit that does not exist.
+
 ## [3.2.15] - 2026-11-12
 
 - Pin the shared CI actions to base-ci v2026.14 (`9ec93ad`) and record the pin in the slot contract test.
