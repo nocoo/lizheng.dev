@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.18] - 2026-11-12
+
+- Stabilize browser interaction tests with a 5px tilt drift tolerance, explicit page focus, and settled keyboard transitions.
+
 ## [3.2.17] - 2026-11-12
 
 - Run browser and performance CI on Linux with reproducible container-generated visual baselines.
