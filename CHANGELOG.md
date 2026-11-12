@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.15] - 2026-11-12
+
+- Pin the shared CI actions to base-ci v2026.14 (`9ec93ad`) and record the pin in the slot contract test.
+
 ## [3.2.14] - 2026-11-12
 
 - Link to the Chinese-language podcast his.fm in both landing-page introductions.
