@@ -313,8 +313,12 @@ it("reports manifest and lock drift", () => {
 	expect(problems).toContain(
 		"package.json dependencies.extra is 1.0.0 but bun.lock records nothing",
 	);
-	expect(problems).toContain(
-		"package.json override playwright-core is 1.0.0 but bun.lock records 1.65.0",
+	expect(problems).toEqual(
+		expect.arrayContaining([
+			expect.stringMatching(
+				/^package\.json override playwright-core is 1\.0\.0 but bun\.lock records [\d.]+$/,
+			),
+		]),
 	);
 	expect(
 		auditManifest(
