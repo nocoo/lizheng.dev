@@ -8,7 +8,7 @@ import {
 	SLOT_NAMES,
 } from "../../packages/quality/slots";
 
-const BASE_CI_SHA = "777bbe4f9bacab8a91d8c01974480a6ee23d28e0";
+const BASE_CI_SHA = "6424d395d36a815d931f10e557762eb635d511c0";
 const PINNED = new RegExp(`^nocoo/base-ci/[^@]+@${BASE_CI_SHA}$`);
 
 interface Step {
@@ -124,7 +124,7 @@ it("runs browser jobs in the same pinned Linux image as visual updates", () => {
 	);
 });
 
-it("pins every shared base-ci reference to v2026.15", () => {
+it("pins every shared base-ci reference to v2026.16", () => {
 	const files = [
 		".github/workflows/ci.yml",
 		".github/workflows/quality-slots.yml",
