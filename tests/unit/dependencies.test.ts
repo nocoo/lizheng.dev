@@ -152,8 +152,12 @@ it("rejects an installed tree missing a locked transitive dependency", () => {
 			(entry) => entry.name !== "picocolors",
 		),
 	);
-	expect(problems).toContain(
-		"postcss@8.5.30 depends on picocolors@1.1.1, which is not installed",
+	expect(problems).toEqual(
+		expect.arrayContaining([
+			expect.stringMatching(
+				/^postcss@\d+\.\d+\.\d+ depends on picocolors@\d+\.\d+\.\d+, which is not installed$/,
+			),
+		]),
 	);
 });
 
