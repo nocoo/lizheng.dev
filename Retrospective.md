@@ -2,7 +2,7 @@
 
 Accident narratives for this repository. No root-handbook incidents were present when this log was initialized.
 
-Record the actual date, what happened, cause and follow-up. Keep recurring project rules brief in [AGENTS.md](AGENTS.md); cross-project lessons belong in global rules/nmem, and deterministic checks belong in tests or hooks.
+Record the actual date, what happened, cause and follow-up. Keep recurring project rules brief in [AGENTS.md](AGENTS.md); cross-project lessons belong in global rules, and deterministic checks belong in tests or hooks.
 
 ## 2026-11-12 — Keep local suites sequential with L4
 
