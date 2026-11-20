@@ -48,7 +48,7 @@
 		"@vitejs/plugin-react": "6.3.0",
 		"@vitest/coverage-v8": "5.1.0",
 		"husky": "9.1.7",
-		"jsdom": "31.0.0",
+		"jsdom": "31.0.1",
 		"knip": "6.44.2",
 		"miniflare": "5.20261006.1-alpha",
 		"sharp": "0.35.5",
