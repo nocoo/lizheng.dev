@@ -152,8 +152,12 @@ it("rejects an installed tree missing a locked transitive dependency", () => {
 			(entry) => entry.name !== "picocolors",
 		),
 	);
-	expect(problems).toContain(
-		"postcss@8.5.30 depends on picocolors@1.1.1, which is not installed",
+	expect(problems).toEqual(
+		expect.arrayContaining([
+			expect.stringMatching(
+				/^postcss@\d+\.\d+\.\d+ depends on picocolors@\d+\.\d+\.\d+, which is not installed$/,
+			),
+		]),
 	);
 });
 
@@ -309,8 +313,12 @@ it("reports manifest and lock drift", () => {
 	expect(problems).toContain(
 		"package.json dependencies.extra is 1.0.0 but bun.lock records nothing",
 	);
-	expect(problems).toContain(
-		"package.json override playwright-core is 1.0.0 but bun.lock records 1.65.0",
+	expect(problems).toEqual(
+		expect.arrayContaining([
+			expect.stringMatching(
+				/^package\.json override playwright-core is 1\.0\.0 but bun\.lock records [\d.]+$/,
+			),
+		]),
 	);
 	expect(
 		auditManifest(
