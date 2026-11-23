@@ -55,6 +55,19 @@ html[lang="zh-CN"] {
 	--accent: #b4c695;
 	--line: #3d4940;
 }
+@media screen and (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--paper: #1e2824;
+		--ink: #e5e5db;
+		--muted: #9fa79b;
+		--accent: #b4c695;
+		--line: #3d4940;
+	}
+	:root:not([data-theme="light"]) .resume-keepsake {
+		filter: brightness(0.92) saturate(0.86)
+			drop-shadow(0.5px 1.5px 1px #203a2a33);
+	}
+}
 body {
 	background: var(--paper);
 	color: var(--ink);
@@ -275,7 +288,7 @@ html[lang="zh-CN"] .resume-layout {
 	text-underline-offset: 3px;
 }
 .resume-intro a:hover {
-	color: var(--text);
+	color: var(--ink);
 }
 .resume-socials {
 	display: flex;

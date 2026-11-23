@@ -47,6 +47,31 @@
 	--screen-light: #acbd7e;
 	--screen-dark: #253520;
 }
+@media screen and (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--page: #1e2824;
+		--ink: #e6e9dc;
+		--muted: #a0aa9a;
+		--accent: #e79670;
+		--line: #3d4940;
+		--shell-top: #555b55;
+		--shell-bottom: #343e39;
+		--shell-edge: #202a25;
+		--shell-highlight: #7f877b;
+		--shell-label: #b7c0af;
+		--screen-light: #acbd7e;
+		--screen-dark: #253520;
+	}
+	:root:not([data-theme="light"]) .outline-word {
+		color: #a9b59c;
+	}
+	:root:not([data-theme="light"]) .adventure-ball {
+		filter: brightness(0.85) saturate(0.85);
+	}
+	:root:not([data-theme="light"]) .screen-bezel {
+		background: linear-gradient(140deg, #353e3c, #283330);
+	}
+}
 html {
 	overflow-x: clip;
 }

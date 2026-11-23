@@ -255,7 +255,11 @@ for (const surface of ["resume", "landing"])
 				expect(missing.headers()["content-security-policy"]).toContain(
 					"frame-ancestors 'none'",
 				);
-				expect(await missing.text()).toContain(`>${label}</a>`);
+				const missingHtml = await missing.text();
+				expect(missingHtml).toContain(
+					'<meta name="color-scheme" content="light dark">',
+				);
+				expect(missingHtml).toContain(`>${label}</a>`);
 			}
 			for (const path of [
 				"/2024/01/post",

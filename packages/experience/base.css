@@ -36,7 +36,7 @@
 	box-sizing: border-box;
 }
 html {
-	color-scheme: light;
+	color-scheme: light dark;
 	scroll-behavior: smooth;
 	scroll-padding-top: var(--site-topbar-offset);
 	--site-layout-max: 1500px;
@@ -57,12 +57,35 @@ html {
 	--site-mono:
 		"Geist Mono Variable", "Geist Mono Fallback", "PingFang SC", monospace;
 }
+html[data-theme="light"] {
+	color-scheme: light;
+}
 [data-theme="dark"] {
+	color-scheme: dark;
 	--site-background: #1e2824;
 	--site-ink: #e6e9dc;
 	--site-muted: #a0ae98;
 	--site-line: #3d4940;
 	--site-orange: #e79670;
+}
+@media screen and (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		color-scheme: dark;
+		--site-background: #1e2824;
+		--site-ink: #e6e9dc;
+		--site-muted: #a0ae98;
+		--site-line: #3d4940;
+		--site-orange: #e79670;
+	}
+	:root:not([data-theme="light"]) .brand-wordmark {
+		--brand-accent: #e79670;
+	}
+	:root:not([data-theme="light"]) .theme-sun {
+		display: none;
+	}
+	:root:not([data-theme="light"]) .theme-moon {
+		display: block;
+	}
 }
 body {
 	margin: 0;
@@ -324,7 +347,8 @@ html[lang="zh-CN"] .site-header .surface-links a {
 }
 .site-header :is(button, a):focus-visible,
 .site-footer a:focus-visible {
-	outline: 2px solid color-mix(in srgb, var(--site-orange) 80%, var(--site-ink));
+	outline: 2px solid
+		color-mix(in oklab, var(--site-orange) 80%, var(--site-ink));
 	outline-offset: 4px;
 	border-radius: 3px;
 }

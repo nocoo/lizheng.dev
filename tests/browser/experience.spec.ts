@@ -244,6 +244,19 @@ for (const surface of ["resume", "landing"])
 				),
 			).toBe(true);
 		}
+		await page.emulateMedia({ colorScheme: "dark" });
+		await expect
+			.poll(() =>
+				page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+			)
+			.toBe("rgb(30, 40, 36)");
+		await expect(page.locator(".theme-moon")).toBeVisible();
+		await page.emulateMedia({ colorScheme: "light" });
+		await expect
+			.poll(() =>
+				page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+			)
+			.toBe("rgb(240, 240, 233)");
 		await context.close();
 	});
 

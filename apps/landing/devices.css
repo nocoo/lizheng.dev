@@ -361,7 +361,7 @@
 [aria-selected="true"] .chapter-track > i {
 	background: var(--accent);
 	border-color: var(--accent);
-	box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+	box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 12%, transparent);
 }
 .chapter-progress {
 	position: absolute;
@@ -424,7 +424,7 @@
 .chapter-rail button:focus-visible {
 	outline-color: var(--chapter-active);
 	outline-offset: 1px;
-	background: color-mix(in srgb, var(--accent) 6%, transparent);
+	background: color-mix(in oklab, var(--accent) 6%, transparent);
 }
 .gallery-playback:focus-visible {
 	border-radius: 4px;
@@ -2486,6 +2486,82 @@
 		#d7eab103 68%,
 		#d7eab100 94%
 	);
+}
+@media screen and (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) .journey-prop {
+		filter: brightness(0.83) saturate(0.83) drop-shadow(3px 7px 6px #07120d55);
+	}
+	:root:not([data-theme="light"]) .device-gallery {
+		--muted: #a0aa9a;
+		--chapter-active: var(--accent);
+	}
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) {
+		--object-shadow: #050e0955;
+		--deep-shadow: #000a0877;
+	}
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) .nokia-front {
+		background: linear-gradient(
+			96deg,
+			#7e3936,
+			#b65349 8%,
+			#ba5c4c 20%,
+			#94443e 90%,
+			#57302b
+		);
+	}
+	:root:not([data-theme="light"])
+		.device-layer:not(.is-cached)
+		.nokia-front::before {
+		background: linear-gradient(105deg, #d6d7c7, #b7bead 80%, #899a87);
+		border-color: #d2d7c2;
+	}
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) .mac-case {
+		background: linear-gradient(115deg, #c2c2a8, #aaaf95 65%, #7b8a73);
+		border-color: #d3d1b5;
+		box-shadow:
+			inset 2px 2px 3px #e6e4c1,
+			inset -2px -2px 3px #374d3555,
+			1px 3px 0 #7c8a71,
+			3px 6px 0 #6d7c65,
+			5px 9px 0 #64745e,
+			8px 13px 0 #52644f,
+			13px 18px 18px var(--deep-shadow),
+			28px 37px 37px var(--object-shadow);
+	}
+	:root:not([data-theme="light"])
+		.device-layer:not(.is-cached)
+		.mac-crt-recess {
+		background: linear-gradient(
+			135deg,
+			#66735d,
+			#8d9d80 13%,
+			#b3bea0 88%,
+			#c8d0b0
+		);
+	}
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) .mac-screen {
+		box-shadow:
+			0 0 0 0.5cqw #0c1b1266,
+			0 0 4cqw #c2eaa11c,
+			inset 0 0 4cqw #12291b70;
+	}
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) .ipod-device {
+		background: linear-gradient(115deg, #dce1d5, #b6c3b7 56%, #98ac9c);
+		border-color: #d2dccb;
+	}
+	:root:not([data-theme="light"]) .device-layer:not(.is-cached) .ipod-wheel {
+		background: linear-gradient(145deg, #dce5d4, #b2c3ae);
+		border-color: #7d947c;
+	}
+	:root:not([data-theme="light"]) .device-change-light {
+		background: radial-gradient(
+			ellipse closest-side at 44% 48%,
+			#d7eab124,
+			#d7eab10c 32%,
+			#d7eab103 68%,
+			#d7eab100 94%
+		);
+	}
 }
 
 @keyframes accessory-arrive {
