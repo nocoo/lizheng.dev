@@ -16,9 +16,13 @@ it("keeps page type no smaller than 9px", () => {
 			"",
 		);
 		for (const match of css.matchAll(
-			/(?:font-size:\s*|font:\s*)(\d+(?:\.\d+)?)px/g,
-		))
-			if (Number(match[1]) < 9) undersized.push(`${file} ${match[1]}px`);
+			/(?:font-size:\s*|font:\s*(?:\d+\s+)?)(\d+(?:\.\d+)?)(px|rem)/g,
+		)) {
+			const value = Number(match[1]);
+			const unit = match[2];
+			if ((unit === "px" && value < 9) || (unit === "rem" && value * 16 < 9))
+				undersized.push(`${file} ${match[1]}${unit}`);
+		}
 	}
 	expect(undersized).toEqual([]);
 });

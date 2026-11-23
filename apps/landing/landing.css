@@ -112,7 +112,7 @@ body::before {
 	align-items: center;
 	gap: 9px;
 	font-family: var(--mono);
-	font-size: 11px;
+	font-size: 0.6875rem;
 	letter-spacing: 0.06em;
 	color: var(--muted);
 	margin-bottom: 31px;
@@ -123,7 +123,7 @@ body::before {
 	background: var(--accent);
 }
 .landing-intro h1 {
-	font-size: clamp(70px, 7.2vw, 104px);
+	font-size: clamp(4.375rem, 7.2vw, 6.5rem);
 	font-weight: 500;
 	letter-spacing: -0.085em;
 	line-height: 1.03;
@@ -139,7 +139,7 @@ body::before {
 	color: var(--accent);
 }
 .intro-description {
-	font-size: 19px;
+	font-size: 1.1875rem;
 	line-height: 1.65;
 	letter-spacing: -0.035em;
 	margin: 0;
@@ -147,7 +147,7 @@ body::before {
 .intro-story {
 	max-width: 355px;
 	margin: 23px 0 0;
-	font-size: 14px;
+	font-size: 0.875rem;
 	line-height: 1.95;
 	color: var(--muted);
 	text-wrap: pretty;
@@ -156,7 +156,7 @@ body::before {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	font-size: 12px;
+	font-size: 0.75rem;
 	color: var(--muted);
 	margin-top: 28px;
 }
@@ -180,7 +180,7 @@ body::before {
 }
 .keyboard-legend dd {
 	margin: 0;
-	font-size: 11px;
+	font-size: 0.6875rem;
 	color: var(--muted);
 }
 .keyboard-keys {
@@ -197,15 +197,15 @@ body::before {
 	border-bottom-width: 3px;
 	border-radius: 4px;
 	color: var(--muted);
-	font-size: 12px;
+	font-size: 0.75rem;
 	font-family: var(--mono);
 }
 .keyboard-keys .key-enter {
 	width: 52px;
-	font-size: 9px;
+	font-size: 0.5625rem;
 }
 .desktop-instructions p {
-	font-size: 9px;
+	font-size: 0.5625rem;
 	line-height: 1.85;
 	color: var(--muted);
 	margin: 12px 0 0;
@@ -213,7 +213,7 @@ body::before {
 .journey-directory {
 	max-width: 390px;
 	margin-top: 22px;
-	font-size: 13px;
+	font-size: 0.8125rem;
 	line-height: 1.7;
 	color: var(--muted);
 }
@@ -241,13 +241,13 @@ body::before {
 }
 .journey-directory h3 {
 	margin: 0;
-	font-size: 13px;
+	font-size: 0.8125rem;
 	font-weight: 500;
 	color: var(--ink);
 }
 .journey-directory h3 span {
 	font-family: var(--mono);
-	font-size: 9px;
+	font-size: 0.5625rem;
 	color: var(--muted);
 }
 .journey-directory p {
@@ -334,7 +334,7 @@ body::before {
 	top: 42px;
 	right: -31px;
 	font-family: var(--mono);
-	font-size: 9px;
+	font-size: 0.5625rem;
 	letter-spacing: 0.1em;
 	writing-mode: vertical-rl;
 	color: var(--muted);
@@ -970,7 +970,7 @@ body::before {
 }
 
 html[lang="zh-CN"] .landing-intro h1 {
-	font-size: clamp(56px, 5.8vw, 82px);
+	font-size: clamp(3.5rem, 5.8vw, 5.125rem);
 	line-height: 1.3;
 	letter-spacing: -0.06em;
 }
@@ -986,7 +986,7 @@ html[lang="zh-CN"] .lcd-bio {
 }
 html[lang="zh-CN"] .intro-description {
 	line-height: 1.9;
-	font-size: 17px;
+	font-size: 1.0625rem;
 }
 @keyframes console-arrive {
 	from {
@@ -1036,7 +1036,7 @@ html[lang="zh-CN"] .intro-description {
 		width: 430px;
 	}
 	.landing-intro h1 {
-		font-size: 114px;
+		font-size: 7.125rem;
 	}
 }
 @media (max-width: 1420px) {
@@ -1065,7 +1065,7 @@ html[lang="zh-CN"] .intro-description {
 		padding-left: 0;
 	}
 	.landing-intro h1 {
-		font-size: 80px;
+		font-size: 5rem;
 	}
 	.console-position {
 		width: 350px;
@@ -1096,10 +1096,10 @@ html[lang="zh-CN"] .intro-description {
 	.intro-kicker {
 		justify-content: center;
 		margin-bottom: 20px;
-		font-size: 9px;
+		font-size: 0.5625rem;
 	}
 	.landing-intro h1 {
-		font-size: 78px;
+		font-size: 4.875rem;
 		line-height: 1;
 		margin: 0 0 20px;
 	}
@@ -1110,7 +1110,7 @@ html[lang="zh-CN"] .intro-description {
 		content: " ";
 	}
 	.intro-description {
-		font-size: 16px;
+		font-size: 1rem;
 	}
 	.intro-description br {
 		display: block;
@@ -1121,12 +1121,12 @@ html[lang="zh-CN"] .intro-description {
 	.intro-story {
 		max-width: 340px;
 		margin: 18px auto 0;
-		font-size: 13px;
+		font-size: 0.8125rem;
 		line-height: 1.9;
 	}
 	.intro-invitation {
 		justify-content: center;
-		font-size: 11px;
+		font-size: 0.6875rem;
 		margin-top: 16px;
 	}
 	.desktop-instructions {
@@ -1147,7 +1147,7 @@ html[lang="zh-CN"] .intro-description {
 		top: 58px;
 	}
 	html[lang="zh-CN"] .landing-intro h1 {
-		font-size: 48px;
+		font-size: 3rem;
 	}
 }
 @media (max-width: 480px) {
@@ -1175,7 +1175,7 @@ html[lang="zh-CN"] .intro-description {
 		gap: 37px;
 	}
 	.landing-intro h1 {
-		font-size: 60px;
+		font-size: 3.75rem;
 		letter-spacing: -0.075em;
 	}
 	.landing-intro h1 br {
@@ -1185,15 +1185,15 @@ html[lang="zh-CN"] .intro-description {
 		content: none;
 	}
 	.intro-kicker {
-		font-size: 9px;
+		font-size: 0.5625rem;
 		margin-bottom: 18px;
 	}
 	.intro-description {
-		font-size: 15px;
+		font-size: 0.9375rem;
 		line-height: 1.8;
 	}
 	.intro-invitation {
-		font-size: 9px;
+		font-size: 0.5625rem;
 		margin-top: 13px;
 		gap: 8px;
 	}
@@ -1207,11 +1207,11 @@ html[lang="zh-CN"] .intro-description {
 		width: 302px;
 	}
 	html[lang="zh-CN"] .landing-intro h1 {
-		font-size: 49px;
+		font-size: 3.0625rem;
 		line-height: 1.2;
 	}
 	html[lang="zh-CN"] .intro-description {
-		font-size: 14px;
+		font-size: 0.875rem;
 		line-height: 1.8;
 	}
 }

@@ -71,6 +71,10 @@ for (const surface of ["resume", "landing"] as const)
 				expect(html).toContain(`rel="canonical" href="${origin}/${locale}/"`);
 				expect(html).toContain(`href="/${locale}/content.md"`);
 				expect(html).toContain(
+					'<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">',
+				);
+				expect(html).toContain('<meta name="text-scale" content="scale">');
+				expect(html).toContain(
 					`<meta name="version" content="${manifest.version}">`,
 				);
 				expect(html).toContain('hreflang="en"');

@@ -132,7 +132,7 @@ button {
 	align-items: center;
 	flex-shrink: 0;
 	font-family: "Space Grotesk Variable", "Space Grotesk Fallback", sans-serif;
-	font-size: 23px;
+	font-size: 1.4375rem;
 	font-weight: 600;
 	letter-spacing: -1px;
 	text-decoration: none;
@@ -159,7 +159,7 @@ button {
 }
 @media (max-width: 480px) {
 	.brand-wordmark {
-		font-size: 21px;
+		font-size: 1.3125rem;
 	}
 	.brand-grid {
 		margin-right: 9px;
@@ -318,7 +318,7 @@ button {
 	align-items: center;
 	min-height: 44px;
 	color: var(--site-muted);
-	font: 12px / 1 var(--site-mono);
+	font: 0.75rem / 1 var(--site-mono);
 	text-decoration: none;
 	white-space: nowrap;
 }
@@ -357,7 +357,7 @@ html[lang="zh-CN"] .site-header .surface-links a {
 }
 .site-footer {
 	color: var(--site-muted);
-	font: 11px / 1.6 var(--site-mono);
+	font: 0.6875rem / 1.6 var(--site-mono);
 	contain: style;
 }
 .site-footer-compact {
@@ -403,7 +403,7 @@ html[lang="zh-CN"] .site-header .surface-links a {
 	gap: 24px;
 }
 .site-footer-identity .brand-wordmark {
-	font-size: 20px;
+	font-size: 1.25rem;
 	color: var(--site-ink);
 }
 .site-footer-identity p {
@@ -479,13 +479,13 @@ html[lang="zh-CN"] .site-header .surface-links a {
 		gap: 16px;
 	}
 	.site-header .brand-wordmark {
-		font-size: 22px;
+		font-size: 1.375rem;
 	}
 	.surface-links {
 		gap: 15px;
 	}
 	.surface-links a {
-		font-size: 11px;
+		font-size: 0.6875rem;
 	}
 	.icon-toggle {
 		width: 36px;
@@ -554,7 +554,7 @@ html[lang="zh-CN"] .site-header .surface-links a {
 		--site-content-padding: 22px;
 	}
 	.site-header .brand-wordmark {
-		font-size: 21px;
+		font-size: 1.3125rem;
 	}
 }
 @media (pointer: coarse) {
