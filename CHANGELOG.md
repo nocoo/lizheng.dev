@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.19] - 2026-11-23
+
+- Align interactive control accessibility: match autoplay pause/play visible labels (WCAG 2.5.3), replace double-inverted Nokia slider ARIA labeling with a stable `aria-controls`/`aria-expanded` toggle, distinguish mobile résumé contents `<nav>` labels, expand `.icon-toggle` to 44px on coarse pointers, and add `forced-colors: active` focus/selection indicators.
+- Add no-JS `@media screen and (prefers-color-scheme: dark)` fallbacks across both surfaces and `color-scheme: light dark` on 404 pages, fix the undefined `--text` résumé intro hover token, and upgrade `color-mix()` calls to `oklab`.
+- Enable `viewport-fit=cover`, add `<meta name="text-scale" content="scale">`, convert reading and navigation typography to exact `rem` units while keeping the 9px floor guard, and mark off-screen device portraits `decoding="async"`.
+- Add `Cross-Origin-Opener-Policy: same-origin` and resource-aware `Cross-Origin-Resource-Policy` headers (`cross-origin` for public icons and social previews), defer the Traks collect script to the end of `<body>`, and include patch dependency updates (Vite, Biome, Playwright, Vitest, marked, jsdom).
+
 ## [3.2.18] - 2026-11-12
 
 - Stabilize browser interaction tests with a 5px tilt drift tolerance, explicit page focus, and settled keyboard transitions.
