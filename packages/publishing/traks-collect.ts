@@ -24,7 +24,7 @@ export function isTraksCollectScriptUrl(url: string): boolean {
 	}
 }
 
-export function traksCollectHeadMarkup(surface: Surface): string {
+export function traksCollectMarkup(surface: Surface): string {
 	const siteKey = traksSiteKeys[surface];
 	return `<script>${traksStubScript}</script><script defer data-site="${siteKey}" src="${TRAKS_COLLECT_ORIGIN}${traksCollectScriptPath}"></script>`;
 }

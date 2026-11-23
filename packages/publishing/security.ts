@@ -15,4 +15,6 @@ export const securityHeaders = {
 	"Referrer-Policy": "strict-origin-when-cross-origin",
 	"Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 	"X-Frame-Options": "DENY",
+	"Cross-Origin-Opener-Policy": "same-origin",
+	"Cross-Origin-Resource-Policy": "same-origin",
 };

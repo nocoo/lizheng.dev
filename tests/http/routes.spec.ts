@@ -108,6 +108,9 @@ for (const surface of ["resume", "landing"])
 				expect(image.status()).toBe(200);
 				expect(image.headers()["content-type"]).toContain("image/jpeg");
 				expect(image.headers()["cache-control"]).toContain("immutable");
+				expect(image.headers()["cross-origin-resource-policy"]).toBe(
+					"cross-origin",
+				);
 				expect(await sharp(await image.body()).metadata()).toMatchObject({
 					width: 1200,
 					height: 630,
@@ -145,6 +148,12 @@ for (const surface of ["resume", "landing"])
 				]);
 				expect(page.headers()["content-security-policy"]).toContain(
 					"frame-ancestors 'none'",
+				);
+				expect(page.headers()["cross-origin-opener-policy"]).toBe(
+					"same-origin",
+				);
+				expect(page.headers()["cross-origin-resource-policy"]).toBe(
+					"same-origin",
 				);
 				expect((await get(`/${locale}`)).status()).toBe(200);
 				const head = await request.head(`${base}/${locale}/`, {
@@ -206,6 +215,9 @@ for (const surface of ["resume", "landing"])
 				height: 180,
 			});
 			const ico = await get("/favicon.ico");
+			expect(ico.headers()["cross-origin-resource-policy"]).toBe(
+				"cross-origin",
+			);
 			expect(ico.headers()["content-type"]).toMatch(
 				/image\/(?:x-icon|vnd.microsoft.icon)/,
 			);

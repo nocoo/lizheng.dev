@@ -122,6 +122,8 @@ export default {
 			);
 			// Keep edge-injected scripts from conflicting with the self-only CSP.
 			if (page) result.headers.append("Cache-Control", "no-transform");
+			if ((socialPaths.has(path) || icon) && asset.ok)
+				result.headers.set("Cross-Origin-Resource-Policy", "cross-origin");
 			if (markdown && asset.ok)
 				result.headers.set("Content-Type", "text/markdown; charset=utf-8");
 			if (llms && asset.ok)

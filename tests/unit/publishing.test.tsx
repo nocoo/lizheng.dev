@@ -107,8 +107,11 @@ for (const surface of ["resume", "landing"] as const)
 						'data-site="pb_live_zq1jbvt6hrll2zx01fk36hp7"',
 					);
 				}
-				expect(html).toContain(`<script>${traksStubScript}</script>`);
-				expect(html).toContain(`${TRAKS_COLLECT_ORIGIN}/t.js`);
+				const [head, body] = html.split("</head>");
+				expect(head).not.toContain(traksStubScript);
+				expect(head).not.toContain(`${TRAKS_COLLECT_ORIGIN}/t.js`);
+				expect(body).toContain(`<script>${traksStubScript}</script>`);
+				expect(body).toContain(`${TRAKS_COLLECT_ORIGIN}/t.js`);
 			});
 it("recognizes the Traks collect script URL for isolated stubs", () => {
 	expect(isTraksCollectScriptUrl(`${TRAKS_COLLECT_ORIGIN}/t.js`)).toBe(true);
@@ -125,6 +128,8 @@ it("CSP permits bootstrap and Traks collect scripts", () => {
 		createHash("sha256").update(traksStubScript).digest("base64"),
 	);
 	expect(policy).toContain(TRAKS_COLLECT_ORIGIN);
+	expect(securityHeaders["Cross-Origin-Opener-Policy"]).toBe("same-origin");
+	expect(securityHeaders["Cross-Origin-Resource-Policy"]).toBe("same-origin");
 });
 it("lists reciprocal hreflang alternates in the pages sitemap", () => {
 	const xml = sitemapPagesXml("https://lizheng.dev");

@@ -357,4 +357,16 @@ it("uses isolated host mapping and deployment metadata", async () => {
 	expect(result.headers.get("content-security-policy")).not.toContain(
 		"upgrade-insecure-requests",
 	);
+	expect(result.headers.get("cross-origin-opener-policy")).toBe("same-origin");
+	expect(result.headers.get("cross-origin-resource-policy")).toBe(
+		"same-origin",
+	);
+});
+it("allows cross-origin embedding for public icons and social previews while isolating HTML", async () => {
+	const f = fixture("lizheng.dev");
+	const html = await f.request("/en/");
+	expect(html.headers.get("cross-origin-opener-policy")).toBe("same-origin");
+	expect(html.headers.get("cross-origin-resource-policy")).toBe("same-origin");
+	const icon = await f.request("/favicon.ico");
+	expect(icon.headers.get("cross-origin-resource-policy")).toBe("cross-origin");
 });
