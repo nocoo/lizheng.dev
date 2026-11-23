@@ -255,6 +255,18 @@ test("handheld responds to touch on a narrow screen", async ({ browser }) => {
 	await context.route("**/*", routeIsolatedRequest);
 	const page = await context.newPage();
 	await page.goto(`${origin("landing")}/zh/`);
+	const coarseTargets = await page.evaluate(() => ({
+		coarse: matchMedia("(pointer: coarse)").matches,
+		sizes: [...document.querySelectorAll(".icon-toggle")].map((node) => {
+			const box = node.getBoundingClientRect();
+			return { width: box.width, height: box.height };
+		}),
+	}));
+	if (coarseTargets.coarse)
+		for (const size of coarseTargets.sizes) {
+			expect(size.width).toBeGreaterThanOrEqual(44);
+			expect(size.height).toBeGreaterThanOrEqual(44);
+		}
 	// The introduction can put only the bottom-edge sliver of a key above the fold.
 	await page.locator(".console-scene").scrollIntoViewIfNeeded();
 	await page.locator(".dpad-down").tap();

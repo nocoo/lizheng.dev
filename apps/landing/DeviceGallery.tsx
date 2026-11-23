@@ -299,8 +299,8 @@ export function DeviceGallery({ content }: { content: LandingContent }) {
 								? "暂停自动轮播"
 								: "Pause autoplay"
 							: zh
-								? "开始自动轮播"
-								: "Start autoplay"
+								? "播放自动轮播"
+								: "Play autoplay"
 					}
 					onClick={() => {
 						if (!snapshot.playing) gallery.pause("focus", false);

@@ -2821,3 +2821,20 @@
 		transition: none;
 	}
 }
+@media (forced-colors: active) {
+	.chapter-rail button[aria-selected="true"] {
+		outline: 1px solid Highlight;
+		outline-offset: -1px;
+	}
+	.chapter-track {
+		border-bottom: 1px solid CanvasText;
+	}
+	[aria-selected="true"] .chapter-track > i {
+		border-color: Highlight;
+		background: Highlight;
+		forced-color-adjust: none;
+	}
+	.chapter-progress {
+		border-bottom: 2px solid Highlight;
+	}
+}

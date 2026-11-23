@@ -57,6 +57,7 @@ export function IPod(props: DeviceProps) {
 										width="64"
 										height="72"
 										alt=""
+										decoding="async"
 									/>
 									<span aria-hidden="true">VOL. 01</span>
 								</div>

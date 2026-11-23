@@ -106,7 +106,7 @@ export function ResumePage({ content }: { content: PageContent }) {
 					</div>
 					<details className="resume-contents">
 						<summary>{zh ? "浏览简历目录" : "Browse résumé sections"}</summary>
-						<nav aria-label={zh ? "章节导航" : "On this page"}>
+						<nav aria-label={zh ? "简历目录" : "Résumé sections"}>
 							<SectionLinks sections={sections} />
 						</nav>
 					</details>

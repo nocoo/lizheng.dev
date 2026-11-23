@@ -357,7 +357,7 @@ test("automatic chapters preserve reading time, wrap and offer explicit playback
 		"data-device-active",
 		"gameboy",
 	);
-	await page.getByRole("button", { name: "Start autoplay" }).click();
+	await page.getByRole("button", { name: "Play autoplay" }).click();
 	await expect(page.locator("[data-gallery]")).toHaveAttribute(
 		"data-running",
 		"true",
@@ -553,9 +553,19 @@ test("Nokia slider and iPod click wheel work with real pointer gestures", async 
 	await page.goto(`${origin}/en/`);
 	await page.locator('[data-chapter="1"]').click();
 	await settle(page);
-	await page.getByRole("button", { name: "Close slider" }).click();
+	const slider = page.getByRole("button", { name: "Numeric keypad slider" });
+	const keypadId = await slider.getAttribute("aria-controls");
+	expect(keypadId).toBeTruthy();
+	await expect(page.locator(".nokia-keypad")).toHaveAttribute(
+		"id",
+		keypadId as string,
+	);
+	await expect(slider).toHaveAttribute("aria-expanded", "true");
+	await slider.click();
+	await expect(slider).toHaveAttribute("aria-expanded", "false");
 	await expect(page.locator(".nokia-keypad")).toHaveAttribute("inert", "");
-	await page.getByRole("button", { name: "Open numeric keypad" }).click();
+	await slider.click();
+	await expect(slider).toHaveAttribute("aria-expanded", "true");
 	await expect(page.locator(".nokia-keypad")).not.toHaveAttribute("inert");
 	await page.locator(".nokia-keypad button").nth(2).click();
 	await expect(

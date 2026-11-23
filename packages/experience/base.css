@@ -533,6 +533,19 @@ html[lang="zh-CN"] .site-header .surface-links a {
 		font-size: 21px;
 	}
 }
+@media (pointer: coarse) {
+	.icon-toggle {
+		width: 44px;
+		height: 44px;
+	}
+}
+@media (forced-colors: active) {
+	.site-header .surface-links a[aria-current]::after {
+		height: 0;
+		background: none;
+		border-bottom: 2px solid Highlight;
+	}
+}
 @media print {
 	.site-header,
 	.site-footer {

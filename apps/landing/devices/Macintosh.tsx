@@ -66,6 +66,7 @@ export function Macintosh(props: DeviceProps) {
 												width="64"
 												height="72"
 												alt={content.meta.name}
+												decoding="async"
 											/>
 											<div>
 												<span>{content.meta.eyebrow}</span>

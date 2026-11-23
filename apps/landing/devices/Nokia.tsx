@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Battery, DeviceAbout, DeviceLinks, type DeviceProps } from "./shared";
 
 const keypad = [
@@ -35,6 +35,7 @@ export function Nokia(props: DeviceProps) {
 	const { content, state, active, dispatch, openSelected } = props;
 	const zh = content.locale === "zh";
 	const [open, setOpen] = useState(true);
+	const keypadId = useId();
 	return (
 		<div
 			className={`hardware-position nokia-position${open ? " slider-open" : ""}`}
@@ -45,7 +46,7 @@ export function Nokia(props: DeviceProps) {
 				data-device-shell
 			>
 				<div className="nokia-back">
-					<div className="nokia-keypad" inert={!open}>
+					<div id={keypadId} className="nokia-keypad" inert={!open}>
 						{keypad.map(([number, letters], index) => (
 							<button
 								type="button"
@@ -213,15 +214,8 @@ export function Nokia(props: DeviceProps) {
 					<button
 						type="button"
 						className="nokia-slide-grip"
-						aria-label={
-							open
-								? zh
-									? "合上滑盖"
-									: "Close slider"
-								: zh
-									? "打开数字键盘"
-									: "Open numeric keypad"
-						}
+						aria-label={zh ? "数字键盘滑盖" : "Numeric keypad slider"}
+						aria-controls={keypadId}
 						aria-expanded={open}
 						onClick={() => setOpen(!open)}
 					>
