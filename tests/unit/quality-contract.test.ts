@@ -93,7 +93,7 @@ it("runs browser jobs in the same pinned Linux image as visual updates", () => {
 	const extended = read(".github/workflows/extended.yml");
 	for (const job of [
 		slots.jobs["l4-e2e"],
-		slots.jobs["browser-e2e"],
+		extended.jobs["browser-e2e"],
 		extended.jobs.performance,
 	]) {
 		expect(job?.["runs-on"]).toBe("ubuntu-latest");

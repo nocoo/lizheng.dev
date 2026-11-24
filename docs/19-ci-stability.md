@@ -131,8 +131,9 @@ Z1's `needs`.
 | L4 | `l4-e2e` | ubuntu, Playwright container | Playwright Chromium plus `test:development` |
 | P1 | `p1-package` | — | skipped, declared `na` |
 | Z1 | `z1-gate` | ubuntu | `bun scripts/slot-gate.ts` over `toJSON(needs)` |
-| — | `browser-e2e` | ubuntu, Playwright container | Firefox 1/2–2/2 and WebKit 1/4–4/4, no slot id in the name |
 | — | `release-package` | ubuntu | `check:hooks`, `check:budgets`, wrangler dry run, archive extraction |
+
+Firefox 1/2–2/2 and WebKit 1/4–4/4 (`browser-e2e`) now run on `schedule` and `workflow_dispatch` inside `.github/workflows/extended.yml` instead of blocking push/PR `z1-gate`.
 
 Release proof is fail-closed on the deployed sha: both `release-source` steps now
 name `quality / Z1: Gate` explicitly, and a dispatch or artifact whose Z1 failed

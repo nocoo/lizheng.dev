@@ -40,13 +40,13 @@ bun run lint
 bun run check:docs
 bun run test:coverage
 bun run test:http
-bunx playwright install chromium firefox webkit
-bun run test:browser
+bunx playwright install chromium
+bun run test:browser --project=chromium --workers=3
 bun run test:performance
 bun run test:development
 ```
 
-Vitest checks content, publishing and Worker logic. HTTP/browser tests use isolated workerd instances, separate assets and ports `17046` / `27046`. Browser checks cover three engines, accessibility and visual regression. Performance and development checks run separately; run browser suites sequentially. Résumé screenshots retain separate local/CI baselines for system-font differences.
+Vitest checks content, publishing and Worker logic. HTTP/browser tests use isolated workerd instances, separate assets and ports `17046` / `27046`. Push/PR browser checks cover Chromium, accessibility and visual regression, while Firefox/WebKit shards and performance checks run in the scheduled/manual extended workflow; run browser suites sequentially. Résumé screenshots retain separate local/CI baselines for system-font differences.
 
 ## Stack
 

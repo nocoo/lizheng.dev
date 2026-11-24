@@ -16,7 +16,7 @@
 	},
 	"L4": {
 		"status": "impl",
-		"reason": "Playwright journeys in three engines; Firefox and WebKit shards run as aggregated blocking jobs"
+		"reason": "Playwright Chromium and development suites block Z1; Firefox and WebKit shards run in the scheduled/manual extended workflow"
 	},
 	"P1": {
 		"status": "na",
