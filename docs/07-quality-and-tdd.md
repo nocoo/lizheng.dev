@@ -22,12 +22,12 @@
 | L2 Runtime | 不适用：没有 workerd / vitest-pool-workers 专属套件，Worker 的 Web API 行为由 L1 单测与 L3 真实 wrangler 产物覆盖 | — |
 | L3 Integration | `test:http`：真实 wrangler 产物跑在 Miniflare 上，固定 17046，覆盖全部公开路由类别与两个访问域名族，逐项核对状态/内容/头/链接 | push、CI |
 | L4 E2E | Playwright：Chromium 旅程与 `test:development` 在槽位作业内阻塞门禁；Firefox 两片与 WebKit 四片移至 `extended.yml` 每日/手动运行 | CI |
-| P1 Package | 不适用：`package.json` 是 private，不发布 npm 包 | — |
+| P1 Package | `check:budgets`、wrangler dry-run 打包与 `release-artifact.tgz` 解包上传校验 | CI |
 | Z1 Gate | `scripts/slot-gate.ts`：校验声明与实跑一致、各槽位 tested-sha 一致，并要求槽位外阻塞作业全部成功 | CI |
 
 声明文件是 `.github/slot-status.json`，`impl` / `na` / `todo` 与理由都写在那里；`tests/unit/quality-contract.test.ts` 断言声明与 `quality-slots.yml` 一致，任何一边单独改动都会让 L1 失败。
 
-槽位外的阻塞作业只允许不带槽位编号的显示名，并必须进入 Z1 的 `needs`：`Release package verify`（`check:hooks`、`check:budgets`、wrangler dry run、生产同款归档解包校验）。性能实验室、Firefox/WebKit 矩阵与发布部署不在 push/PR CI 门禁内。
+附加阻塞作业 `L1: Unit (Pre-commit Gate)`（`check:hooks`、`check:l1-gate`）也必须进入 Z1 的 `needs`。性能实验室、Firefox/WebKit 矩阵与发布部署不在 push/PR CI 门禁内。
 
 ## 测试先行顺序
 
@@ -126,7 +126,7 @@ runner 启动独立测试服务器，固定连接 127.0.0.1:17046；通过测试
 
 每个 hook 调用一个等待所有子任务的 gate runner，保留每项退出码，不使用后台命令后直接退出。两个 hook 都只读，不修改源码或暂存区。
 
-新门禁需要故障注入验收：`scripts/verify-hooks.ts` 在隔离的临时 Git 仓库里通过替身子命令注入静态槽位、安全扫描器、L3、预算失败，并构造依赖漂移、工具链越界、被工作区掩盖的坏提交、非 HEAD ref、缺失对象等真实失败，逐一确认阻断；同时验证纯删除 ref 不触发源码检查、健康提交与推送可通过。`scripts/verify-l1-gate.ts` 另外验证「暂存了失败测试、工作区已修好」仍被拒绝。两者都在 CI 的 release package 作业运行，防止本地 hook 未安装产生绕过。
+新门禁需要故障注入验收：`scripts/verify-hooks.ts` 在隔离的临时 Git 仓库里通过替身子命令注入静态槽位、安全扫描器、L3、预算失败，并构造依赖漂移、工具链越界、被工作区掩盖的坏提交、非 HEAD ref、缺失对象等真实失败，逐一确认阻断；同时验证纯删除 ref 不触发源码检查、健康提交与推送可通过。`scripts/verify-l1-gate.ts` 另外验证「暂存了失败测试、工作区已修好」仍被拒绝。两者都在 CI 的 `L1: Unit (Pre-commit Gate)` 作业运行，防止本地 hook 未安装产生绕过。
 
 ## 分支保护
 

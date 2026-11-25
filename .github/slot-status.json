@@ -19,8 +19,8 @@
 		"reason": "Playwright Chromium and development suites block Z1; Firefox and WebKit shards run in the scheduled/manual extended workflow"
 	},
 	"P1": {
-		"status": "na",
-		"reason": "package.json is private and no npm package is published"
+		"status": "impl",
+		"reason": "check:budgets, wrangler dry-run bundle, and release-artifact.tgz pack/unpack verification"
 	},
 	"Z1": { "status": "impl" }
 }

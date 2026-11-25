@@ -31,7 +31,7 @@ it("parses the committed declaration and keeps na reasons", () => {
 	);
 	expect(declarations.L2.status).toBe("na");
 	expect(declarations.L2.reason).toContain("wrangler");
-	expect(declarations.P1.status).toBe("na");
+	expect(declarations.P1.status).toBe("impl");
 	expect(declarations.L4.status).toBe("impl");
 	expect(declarations.Z1.status).toBe("impl");
 });
@@ -176,10 +176,10 @@ it("rejects failing blocking jobs and empty impl declarations", () => {
 		verifySlots({
 			declarations,
 			runs: successRuns(),
-			extras: [{ name: "release-package", result: "failure", sha: "" }],
+			extras: [{ name: "l1-precommit-gate", result: "failure", sha: "" }],
 			expectedSha: sha,
 		}),
-	).toThrow(/blocking job release-package finished with 'failure'/);
+	).toThrow(/blocking job l1-precommit-gate finished with 'failure'/);
 	const empty = parseDeclarations(
 		JSON.stringify({
 			...Object.fromEntries(

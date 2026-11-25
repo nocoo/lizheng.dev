@@ -286,15 +286,44 @@ jobs:
 
   p1-package:
     name: "P1: Package"
-    if: ${{ vars.SLOT_P1_PACKAGE == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    outputs:
+      tested-sha: ${{ steps.record-sha.outputs.sha }}
     steps:
-      - run: echo "P1 Package is not applicable; see .github/slot-status.json"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: nocoo/base-ci/.github/actions/setup-js@6424d395d36a815d931f10e557762eb635d511c0 # v2026.16
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - name: Verify budgets, dry-run bundle and the release archive
+        run: |
+          bun run check:budgets
+          test -d dist
+          ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
+          tar -czf release-artifact.tgz dist .release-worker
+          validation_dir=$(mktemp -d)
+          (cd "$validation_dir" && bash "$GITHUB_WORKSPACE/scripts/unpack-release.sh" "$GITHUB_WORKSPACE/release-artifact.tgz")
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: worker-${{ github.sha }}
+          path: release-artifact.tgz
+          retention-days: 14
+      - name: Record tested sha
+        id: record-sha
+        if: always()
+        run: |
+          sha=$(git rev-parse HEAD)
+          test "$sha" = "$GITHUB_SHA"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
-  # Outside the slot list: publishable artifact and gate self-checks, aggregated by Z1.
-  release-package:
-    name: "Release package verify"
+  # Outside the slot list: pre-commit and L1 gate self-checks, aggregated by Z1.
+  l1-precommit-gate:
+    name: "L1: Unit (Pre-commit Gate)"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -318,21 +347,10 @@ jobs:
           echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP" actionlint
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
-      - name: Verify hooks, budgets and the release archive
+      - name: Verify hooks and L1 gate
         run: |
           bun run check:hooks
           bun run check:l1-gate
-          bun run check:budgets
-          test -d dist
-          ./node_modules/.bin/wrangler deploy --dry-run --outdir .release-worker
-          tar -czf release-artifact.tgz dist .release-worker
-          validation_dir=$(mktemp -d)
-          (cd "$validation_dir" && bash "$GITHUB_WORKSPACE/scripts/unpack-release.sh" "$GITHUB_WORKSPACE/release-artifact.tgz")
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: worker-${{ github.sha }}
-          path: release-artifact.tgz
-          retention-days: 14
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -356,7 +374,7 @@ jobs:
       - l3-integration
       - l4-e2e
       - p1-package
-      - release-package
+      - l1-precommit-gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
