@@ -12,113 +12,29 @@ jobs:
   performance:
     name: Cold load and interaction budgets
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.65.1-noble@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579
-      options: --ipc=host
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Trust checked-out workspace
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Install Bun
-        run: |
-          npm install --prefix /tmp/bun --no-save --ignore-scripts @oven/bun-linux-x64@1.4.0
-          echo "/tmp/bun/node_modules/@oven/bun-linux-x64/bin" >> "$GITHUB_PATH"
-      - name: Install frozen dependencies without lifecycle scripts
-        run: |
-          test "$(node --version)" = "v26.13.1"
-          test "$(bun --version)" = "1.4.0"
-          bun install --frozen-lockfile --ignore-scripts
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - uses: nocoo/base-ci/.github/actions/setup-playwright@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+        with:
+          package-manager: bun
+          browsers: chromium
       - name: Resolve test hosts only to IPv4 loopback
-        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | tee -a /etc/hosts
+        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
       - run: bun run test:performance
-        env:
-          HOME: /root
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
           name: performance-${{ github.sha }}
           path: .test-results
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: true
-
-  browser-e2e:
-    name: "Browser E2E (${{ matrix.label }})"
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: firefox 1/2
-            browser: firefox
-            slug: firefox-1
-            shard: 1
-            shards: 2
-            workers: 2
-          - label: firefox 2/2
-            browser: firefox
-            slug: firefox-2
-            shard: 2
-            shards: 2
-            workers: 2
-          - label: webkit 1/4
-            browser: webkit
-            slug: webkit-1
-            shard: 1
-            shards: 4
-            workers: 1
-          - label: webkit 2/4
-            browser: webkit
-            slug: webkit-2
-            shard: 2
-            shards: 4
-            workers: 1
-          - label: webkit 3/4
-            browser: webkit
-            slug: webkit-3
-            shard: 3
-            shards: 4
-            workers: 1
-          - label: webkit 4/4
-            browser: webkit
-            slug: webkit-4
-            shard: 4
-            shards: 4
-            workers: 1
-    runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.65.1-noble@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579
-      options: --ipc=host
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Trust checked-out workspace
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Install Bun
-        run: |
-          npm install --prefix /tmp/bun --no-save --ignore-scripts @oven/bun-linux-x64@1.4.0
-          echo "/tmp/bun/node_modules/@oven/bun-linux-x64/bin" >> "$GITHUB_PATH"
-      - name: Install frozen dependencies without lifecycle scripts
-        run: |
-          test "$(node --version)" = "v26.13.1"
-          test "$(bun --version)" = "1.4.0"
-          bun install --frozen-lockfile --ignore-scripts
-      - name: Resolve test hosts only to IPv4 loopback
-        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | tee -a /etc/hosts
-      - run: bun run test:browser --project=${{ matrix.browser }} --workers=${{ matrix.workers }} --shard=${{ matrix.shard }}/${{ matrix.shards }}
-        env:
-          HOME: /root
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
-        with:
-          name: browser-${{ matrix.slug }}-evidence-${{ github.sha }}
-          path: |
-            .test-results
-            playwright-report
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: true

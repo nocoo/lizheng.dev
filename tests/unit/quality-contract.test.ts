@@ -8,7 +8,7 @@ import {
 	SLOT_NAMES,
 } from "../../packages/quality/slots";
 
-const BASE_CI_SHA = "dc858360aa7812db61fd9d825943e4efd4dcd0e7";
+const BASE_CI_SHA = "bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c";
 const PINNED = new RegExp(`^nocoo/base-ci/[^@]+@${BASE_CI_SHA}$`);
 
 interface Step {
@@ -63,7 +63,7 @@ it("keeps the committed declaration in step with the jobs that run", () => {
 	}
 });
 
-it("aggregates every slot job and every blocking job in Z1", () => {
+it("aggregates every slot job and every blocking job in a checkout-free Z1", () => {
 	const gate = slots.jobs[SLOT_JOBS.Z1];
 	expect(gate?.if).toBe("always()");
 	const blocking = Object.keys(slots.jobs).filter(
@@ -71,10 +71,18 @@ it("aggregates every slot job and every blocking job in Z1", () => {
 	);
 	expect([...(gate?.needs ?? [])].sort()).toEqual(blocking.sort());
 	expect(
-		gate?.steps?.some((step) =>
-			`${step.run ?? ""}`.includes("scripts/slot-gate.ts"),
-		),
-	).toBe(true);
+		gate?.steps?.some((step) => step.uses?.startsWith("actions/checkout@")),
+	).toBe(false);
+	const gateStep = gate?.steps?.find(
+		(step) =>
+			step.uses === `nocoo/base-ci/.github/actions/z1-gate@${BASE_CI_SHA}`,
+	);
+	expect(gateStep).toBeDefined();
+	expect(gateStep?.with?.["needs-json"]).toMatch(
+		/^\$\{\{ toJSON\(needs\) \}\}$/,
+	);
+	expect(gateStep?.with?.["expected-sha"]).toMatch(/^\$\{\{ github\.sha \}\}$/);
+	expect(gateStep?.with?.["skipped-jobs"]).toBe("l2-runtime=L2: Runtime");
 	expect(gate?.outputs?.["tested-sha"]).toMatch(
 		/^\$\{\{ steps\.gate\.outputs\.tested-sha \}\}$/,
 	);
@@ -87,44 +95,37 @@ it("keeps the caller shape branch protection depends on", () => {
 	expect(caller?.name).toBeUndefined();
 });
 
-it("runs browser jobs in the same pinned Linux image as visual updates", () => {
-	const image =
-		"mcr.microsoft.com/playwright:v1.65.1-noble@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579";
+it("runs browser jobs on ubuntu-latest with setup-playwright and reuses B1 dist", () => {
 	const extended = read(".github/workflows/extended.yml");
-	for (const job of [
-		slots.jobs["l4-e2e"],
-		extended.jobs["browser-e2e"],
-		extended.jobs.performance,
-	]) {
+	for (const job of [slots.jobs["l4-e2e"], extended.jobs.performance]) {
 		expect(job?.["runs-on"]).toBe("ubuntu-latest");
-		expect(job?.container).toEqual({ image, options: "--ipc=host" });
-		const commands = job?.steps?.map((step) => step.run ?? "").join("\n");
-		expect(commands).toContain('test "$(node --version)" = "v26.13.1"');
-		expect(commands).toContain('test "$(bun --version)" = "1.4.0"');
-		expect(commands).toContain(
-			"npm install --prefix /tmp/bun --no-save --ignore-scripts @oven/bun-linux-x64@1.4.0",
+		expect(job?.container).toBeUndefined();
+		const setupJs = job?.steps?.find((step) =>
+			step.uses?.startsWith("nocoo/base-ci/.github/actions/setup-js@"),
 		);
-		expect(commands).toContain(
-			"bun install --frozen-lockfile --ignore-scripts",
+		expect(setupJs?.with?.["package-manager"]).toBe("bun");
+		expect(setupJs?.with?.["install-policy"]).toBe("blocked");
+		const setupPlaywright = job?.steps?.find((step) =>
+			step.uses?.startsWith("nocoo/base-ci/.github/actions/setup-playwright@"),
 		);
-		expect(commands).toContain(
-			'git config --global --add safe.directory "$GITHUB_WORKSPACE"',
-		);
-		const browserSteps = job?.steps?.filter((step) =>
-			step.run?.startsWith("bun run test:"),
-		);
-		expect(browserSteps?.length).toBeGreaterThan(0);
-		for (const step of browserSteps ?? []) expect(step.env?.HOME).toBe("/root");
+		expect(setupPlaywright?.with?.["package-manager"]).toBe("bun");
+		expect(setupPlaywright?.with?.browsers).toBe("chromium");
+	}
+	for (const jobId of ["l3-integration", "l4-e2e", "p1-package"]) {
+		const job = slots.jobs[jobId];
+		expect(job?.needs).toContain("b1-build");
+		expect(
+			job?.steps?.some((step) =>
+				step.uses?.startsWith("actions/download-artifact@"),
+			),
+		).toBe(true);
 	}
 	for (const document of [slots, extended, release])
 		for (const job of Object.values(document.jobs))
 			if (job["runs-on"]) expect(job["runs-on"]).toBe("ubuntu-latest");
-	expect(readFileSync("scripts/update-linux-snapshots.sh", "utf8")).toContain(
-		image,
-	);
 });
 
-it("pins every shared base-ci reference to v2026.17", () => {
+it("pins every shared base-ci reference to v2026.18", () => {
 	const files = [
 		".github/workflows/ci.yml",
 		".github/workflows/quality-slots.yml",

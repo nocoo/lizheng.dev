@@ -1,13 +1,19 @@
+import { existsSync } from "node:fs";
 import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { gzipSync } from "node:zlib";
 
-const build = Bun.spawn(["bun", "run", "build"], {
-	stdout: "inherit",
-	stderr: "inherit",
-});
-if ((await build.exited) !== 0)
-	throw new Error("Build failed before budget verification");
+if (process.env.REUSE_DIST === "1") {
+	if (!existsSync("dist/_sites"))
+		throw new Error("REUSE_DIST=1 requires a built dist/ directory");
+} else {
+	const build = Bun.spawn(["bun", "run", "build"], {
+		stdout: "inherit",
+		stderr: "inherit",
+	});
+	if ((await build.exited) !== 0)
+		throw new Error("Build failed before budget verification");
+}
 const root = resolve("dist");
 const read = async (path: string) => {
 	const absolute = resolve(root, `.${path}`);

@@ -40,13 +40,13 @@ bun run lint
 bun run check:docs
 bun run test:coverage
 bun run test:http
-bunx playwright install chromium firefox webkit
+bunx playwright install chromium
 bun run test:browser
 bun run test:performance
 bun run test:development
 ```
 
-Vitest 检查内容、发布与 Worker 逻辑；HTTP 与浏览器测试使用隔离 workerd、独立资源和 `17046` / `27046` 端口。浏览器测试涵盖三种引擎、无障碍和视觉回归；性能与开发体验检查单独运行，浏览器套件依次执行。简历截图为本地与 CI 的系统字体差异保留独立基线。
+Vitest 检查内容、发布与 Worker 逻辑；HTTP 与浏览器测试使用隔离 workerd、独立资源和 `17046` / `27046` 端口。浏览器冒烟与无障碍检查使用单桌面 Chromium 并行执行；性能与开发体验检查单独运行。
 
 ## 技术栈
 

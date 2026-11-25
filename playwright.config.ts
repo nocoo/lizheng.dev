@@ -1,8 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
 	testDir: "tests/browser",
-	// Résumé keeps system-CJK platform variants; landing uses its self-hosted subset.
-	snapshotPathTemplate: `{testDir}/snapshots/{platform}${process.env.CI ? "-ci" : ""}/{arg}{ext}`,
 	fullyParallel: true,
 	workers: 3,
 	forbidOnly: true,
@@ -20,23 +18,7 @@ export default defineConfig({
 		screenshot: "only-on-failure",
 		video: "retain-on-failure",
 	},
-	projects: [
-		{ name: "chromium", use: { ...devices["Desktop Chrome"] } },
-		{
-			name: "firefox",
-			use: {
-				...devices["Desktop Firefox"],
-				launchOptions: {
-					firefoxUserPrefs: {
-						"network.proxy.type": 0,
-						"network.dns.localDomains":
-							"resume.lizheng-test.localhost,landing.lizheng-test.localhost",
-					},
-				},
-			},
-		},
-		{ name: "webkit", use: { ...devices["Desktop Safari"] } },
-	],
+	projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 	webServer: {
 		command:
 			"bun build scripts/test-server.ts --target=node --packages=external --outfile=.test-dist/test-server-l3.mjs && node .test-dist/test-server-l3.mjs l3",

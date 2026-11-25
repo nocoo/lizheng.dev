@@ -1,4 +1,4 @@
-# System0 quality slots for lizheng.dev — native mode (base-ci v2026.15).
+# System0 quality slots for lizheng.dev — native mode (base-ci v2026.18).
 # Job display names are exactly `<ID>: <Name>`, so ci.yml's `quality` caller renders
 # `quality / <ID>: <Name>` and `quality / Z1: Gate` is the single required check.
 # Blocking jobs outside the slot list carry no slot id and are aggregated by Z1.
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/lint-workflows@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/lint-workflows@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -98,7 +98,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
-      - uses: nocoo/base-ci/.github/actions/scan-secrets@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/scan-secrets@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/scan-dependencies@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/scan-dependencies@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           lockfiles: "bun.lock"
       - name: Record tested sha
@@ -138,7 +138,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -146,6 +146,12 @@ jobs:
           install-policy: blocked
       - name: Build published assets and Worker
         run: bun run build
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dist-${{ github.sha }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -164,7 +170,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -190,6 +196,7 @@ jobs:
 
   l3-integration:
     name: "L3: Integration"
+    needs: [b1-build]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -198,14 +205,20 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           package-manager: bun
           runtime-version: "1.4.0"
           node-version: "26.12.1"
           install-policy: blocked
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist-${{ github.sha }}
+          path: dist
       - name: Real HTTP against the built Worker
         run: bun run test:http
+        env:
+          REUSE_DIST: "1"
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -216,36 +229,35 @@ jobs:
 
   l4-e2e:
     name: "L4: E2E"
+    needs: [b1-build]
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.65.1-noble@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579
-      options: --ipc=host
-    timeout-minutes: 20
+    timeout-minutes: 15
     outputs:
       tested-sha: ${{ steps.record-sha.outputs.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Trust checked-out workspace
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Install Bun
-        run: |
-          npm install --prefix /tmp/bun --no-save --ignore-scripts @oven/bun-linux-x64@1.4.0
-          echo "/tmp/bun/node_modules/@oven/bun-linux-x64/bin" >> "$GITHUB_PATH"
-      - name: Install frozen dependencies without lifecycle scripts
-        run: |
-          test "$(node --version)" = "v26.13.1"
-          test "$(bun --version)" = "1.4.0"
-          bun install --frozen-lockfile --ignore-scripts
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+        with:
+          package-manager: bun
+          runtime-version: "1.4.0"
+          node-version: "26.12.1"
+          install-policy: blocked
+      - uses: nocoo/base-ci/.github/actions/setup-playwright@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+        with:
+          package-manager: bun
+          browsers: chromium
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist-${{ github.sha }}
+          path: dist
       - name: Resolve test hosts only to IPv4 loopback
-        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | tee -a /etc/hosts
+        run: echo '127.0.0.1 resume.lizheng-test.localhost landing.lizheng-test.localhost www.resume.lizheng-test.localhost www.landing.lizheng-test.localhost' | sudo tee -a /etc/hosts
       - run: bun run test:browser --project=chromium --workers=3
         env:
-          HOME: /root
+          REUSE_DIST: "1"
       - run: bun run test:development
-        env:
-          HOME: /root
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
@@ -266,6 +278,7 @@ jobs:
 
   p1-package:
     name: "P1: Package"
+    needs: [b1-build]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -274,13 +287,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@dc858360aa7812db61fd9d825943e4efd4dcd0e7 # v2026.17
+      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
         with:
           package-manager: bun
           runtime-version: "1.4.0"
           node-version: "26.12.1"
           install-policy: blocked
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: dist-${{ github.sha }}
+          path: dist
       - name: Verify budgets, dry-run bundle and the release archive
+        env:
+          REUSE_DIST: "1"
         run: |
           bun run check:budgets
           test -d dist
@@ -321,15 +340,21 @@ jobs:
     outputs:
       tested-sha: ${{ steps.gate.outputs.tested-sha }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: "1.4.0"
-      - name: Verify slot declarations, blocking jobs and tested shas
+      - name: Verify slot jobs and tested shas
         id: gate
-        env:
-          NEEDS_JSON: ${{ toJSON(needs) }}
-          EXPECTED_SHA: ${{ github.sha }}
-        run: bun scripts/slot-gate.ts
+        uses: nocoo/base-ci/.github/actions/z1-gate@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+        with:
+          needs-json: ${{ toJSON(needs) }}
+          expected-sha: ${{ github.sha }}
+          required-jobs: |
+            s1-types=S1: Types
+            s2-lint=S2: Lint
+            s3-workflow=S3: Workflow
+            g1-secrets=G1: Secrets
+            g2-dependencies=G2: Dependencies
+            b1-build=B1: Build
+            l1-unit=L1: Unit
+            l3-integration=L3: Integration
+            l4-e2e=L4: E2E
+            p1-package=P1: Package
+          skipped-jobs: "l2-runtime=L2: Runtime"

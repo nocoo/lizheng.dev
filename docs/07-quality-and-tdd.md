@@ -21,9 +21,9 @@
 | L1 Unit | `test:coverage`；内容加载与校验、路由、locale/theme、掌机 ViewModel、元信息、发布模型；四项 ≥80% | pre-commit、CI |
 | L2 Runtime | 不适用：没有 workerd / vitest-pool-workers 专属套件，Worker 的 Web API 行为由 L1 单测与 L3 真实 wrangler 产物覆盖 | — |
 | L3 Integration | `test:http`：真实 wrangler 产物跑在 Miniflare 上，固定 17046，覆盖全部公开路由类别与两个访问域名族，逐项核对状态/内容/头/链接 | push、CI |
-| L4 E2E | Playwright：Chromium 旅程与 `test:development` 在槽位作业内阻塞门禁；Firefox 两片与 WebKit 四片移至 `extended.yml` 每日/手动运行 | CI |
-| P1 Package | `check:budgets`、wrangler dry-run 打包与 `release-artifact.tgz` 解包上传校验 | CI |
-| Z1 Gate | `scripts/slot-gate.ts`：校验声明与实跑一致、各槽位 tested-sha 一致，并要求槽位外阻塞作业全部成功 | CI |
+| L4 E2E | Playwright：单桌面 Chromium 核心冒烟测试（3 workers）与 `test:development` 在槽位作业内阻塞门禁 | CI |
+| P1 Package | `check:budgets`、wrangler dry-run 打包与 `release-artifact.tgz` 解包上传校验（CI 复用 B1 `dist` 产物） | CI |
+| Z1 Gate | `nocoo/base-ci/.github/actions/z1-gate`：免检出校验必须/跳过作业结果与 `tested-sha` 一致 | CI |
 
 声明文件是 `.github/slot-status.json`，`impl` / `na` / `todo` 与理由都写在那里；`tests/unit/quality-contract.test.ts` 断言声明与 `quality-slots.yml` 一致，任何一边单独改动都会让 L1 失败。性能实验室、Firefox/WebKit 矩阵与发布部署不在 push/PR CI 门禁内。
 

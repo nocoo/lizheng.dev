@@ -61,7 +61,7 @@ export interface SlotRun {
 	sha: string;
 }
 
-export interface ExtraRun {
+interface ExtraRun {
 	name: string;
 	result: string;
 	sha: string;

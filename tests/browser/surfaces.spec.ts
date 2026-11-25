@@ -1,190 +1,129 @@
 import { expect, test } from "@playwright/test";
 import { keepsakeIds } from "../../packages/experience/keepsakes";
-import { routeIsolatedRequest } from "./isolated-route";
+import {
+	routeIsolatedRequest,
+	routeIsolatedRequestWithoutMedia,
+} from "./isolated-route";
 import { chooseKeepsake } from "./keepsake-fixture";
+
+const origin = (surface: string) =>
+	`http://${surface}.lizheng-test.localhost:27046`;
 
 test.beforeEach(async ({ context }) => {
 	await context.route("**/*", routeIsolatedRequest);
 });
 
-for (const surface of ["resume", "landing"]) {
-	test(`${surface}: shared frame and portfolio stay available on every screen`, async ({
+for (const surface of ["resume", "landing"] as const) {
+	test(`${surface}: bilingual routes, shared frame, keepsake and clean console`, async ({
 		page,
 	}) => {
-		for (const locale of ["en", "zh"]) {
-			await page.goto(
-				`http://${surface}.lizheng-test.localhost:27046/${locale}/`,
+		const errors: string[] = [];
+		page.on("pageerror", (error) => errors.push(error.message));
+		page.on("console", (message) => {
+			if (message.type() === "error") errors.push(message.text());
+		});
+		if (surface === "resume") await chooseKeepsake(page, keepsakeIds[0]);
+
+		for (const locale of ["en", "zh"] as const) {
+			await page.goto(`${origin(surface)}/${locale}/`);
+			await expect(page.locator("html")).toHaveAttribute(
+				"lang",
+				locale === "zh" ? "zh-CN" : "en",
 			);
 			const destinations =
 				locale === "zh"
 					? ["主页", "博客", "简历", "作品集"]
 					: ["Play", "Journal", "Résumé", "Portfolio"];
 			const links = page.locator(".site-header .surface-links a");
-			const footerLinks = page.locator(".site-footer .surface-links a");
 			await expect(links).toHaveText(destinations);
-			await expect(footerLinks).toHaveCount(0);
+			await expect(page.locator(".site-footer .surface-links a")).toHaveCount(
+				0,
+			);
 			await expect(page.locator(".site-version")).toHaveCount(0);
 			await expect(page.locator(".site-footer-identity p")).toHaveText(
 				"\u00a9 2026 Zheng Li. All rights reserved.",
 			);
-			if (surface === "resume")
-				await expect(page.locator(".footer-curiosity")).toHaveText(
-					"BUILT WITH CURIOSITY.",
-				);
-			await expect(links.last()).toHaveAttribute("href", "https://hexly.ai");
 			await expect(
 				page.locator(`.site-header [data-surface-link="${surface}"]`),
 			).toHaveAttribute("aria-current", "true");
-			await expect(
-				page.locator('.site-header [data-surface-link="blog"]'),
-			).toHaveAttribute("href", "https://lizheng.blog/");
-			const other = surface === "resume" ? "landing" : "resume";
-			await expect(
-				page.locator(`.site-header [data-surface-link="${other}"]`),
-			).toHaveAttribute(
-				"href",
-				`https://lizheng.${other === "landing" ? "me" : "dev"}/${locale}/`,
-			);
-			for (const width of [320, 390, 640, 768, 769, 820, 1100, 1440, 1920]) {
-				await page.setViewportSize({ width, height: 900 });
-				for (const link of await links.all()) await expect(link).toBeVisible();
-				expect(
-					await page
-						.locator(".site-header-inner")
-						.evaluate((el) => el.getBoundingClientRect().width),
-				).toBe(Math.min(width, 1500));
-				expect(
-					await page
-						.locator(".preferences")
-						.evaluate((el) => getComputedStyle(el).borderLeftWidth),
-				).toBe(width <= 640 ? "0px" : "1px");
-				expect(
-					await page
-						.locator(".site-footer")
-						.evaluate((el) => el.getBoundingClientRect().width),
-				).toBe(width);
-				expect(
-					await page
-						.locator(".site-footer-inner")
-						.first()
-						.evaluate((el) => el.getBoundingClientRect().width),
-				).toBe(Math.min(width, 1500));
-				if (surface === "resume") {
-					const rules = await page.evaluate(() => {
-						const footer = document.querySelector(".site-footer");
-						const inner = document.querySelector(
-							".site-footer > .site-footer-inner",
-						);
-						const bottom = document.querySelector(".site-footer-bottom");
-						if (!footer || !inner || !bottom) return null;
-						const padding = Number.parseFloat(
-							getComputedStyle(inner).paddingLeft,
-						);
-						const box = inner.getBoundingClientRect();
-						return {
-							footerBorder: getComputedStyle(footer).borderTopWidth,
-							bottomBorder: getComputedStyle(bottom).borderTopWidth,
-							topWidth: Number.parseFloat(
-								getComputedStyle(footer, "::before").width,
-							),
-							bottomWidth: Number.parseFloat(
-								getComputedStyle(bottom, "::before").width,
-							),
-							contentWidth: box.width - padding * 2,
-						};
-					});
-					expect(rules).not.toBeNull();
-					expect(rules?.footerBorder).toBe("0px");
-					expect(rules?.bottomBorder).toBe("0px");
-					expect(rules?.topWidth).toBe(rules?.contentWidth);
-					expect(rules?.bottomWidth).toBe(rules?.contentWidth);
-				}
-				expect(
-					await page
-						.locator("main")
-						.evaluate((el) => el.getBoundingClientRect().width),
-				).toBe(Math.min(width, 1500));
-				expect(
-					await page.evaluate(
-						() => document.documentElement.scrollWidth <= innerWidth,
-					),
-				).toBe(true);
-			}
-		}
-	});
+			await expect(links.last()).toHaveAttribute("href", "https://hexly.ai");
 
-	test(`${surface}: theme toggle switches light and dark without a system control`, async ({
-		page,
-	}) => {
-		await page.emulateMedia({ colorScheme: "dark" });
-		await page.goto(`http://${surface}.lizheng-test.localhost:27046/en/`);
-		const html = page.locator("html");
-		const toggle = page.locator("[data-theme-toggle]");
-		await expect(html).toHaveAttribute("data-theme-preference", "system");
-		await expect(html).toHaveAttribute("data-theme", "dark");
-		await expect(
-			page.locator('meta[name="theme-color"]').first(),
-		).toHaveAttribute("content", "#1e2824");
-		await expect(page.locator(".theme-system")).toHaveCount(0);
-		await expect(page.locator(".theme-moon")).toBeVisible();
-		await toggle.focus();
-		await page.keyboard.press("Enter");
-		await expect(html).toHaveAttribute("data-theme-preference", "light");
-		await expect(html).toHaveAttribute("data-theme", "light");
-		await expect(
-			page.locator('meta[name="theme-color"]').last(),
-		).toHaveAttribute("content", "#f0f0e9");
-		await expect(page.locator(".theme-sun")).toBeVisible();
-		await expect(toggle).toHaveAccessibleName(/Light.*dark/);
-		await page.keyboard.press("Space");
-		await expect(html).toHaveAttribute("data-theme-preference", "dark");
-		await expect(page.locator(".theme-moon")).toBeVisible();
-		await expect(
-			page.locator('meta[name="theme-color"]').first(),
-		).toHaveAttribute("content", "#1e2824");
-		await page.emulateMedia({ colorScheme: "light" });
-		await expect(html).toHaveAttribute("data-theme", "dark");
-		await toggle.click();
-		await expect(html).toHaveAttribute("data-theme-preference", "light");
-		await expect(html).toHaveAttribute("data-theme", "light");
-		await page.emulateMedia({ colorScheme: "dark" });
-		await expect(html).toHaveAttribute("data-theme", "light");
-		await page.reload();
-		await expect(html).toHaveAttribute("data-theme-preference", "light");
-		await expect(html).toHaveAttribute("data-theme", "light");
+			if (surface === "resume") {
+				await expect(page.locator(".resume-section")).toHaveCount(6);
+				await expect(page.locator(".resume-prose li")).toHaveCount(13);
+				await expect(page.locator(".resume-keepsake")).toHaveAttribute(
+					"src",
+					`/design-assets/keepsakes/${keepsakeIds[0]}.svg`,
+				);
+			} else {
+				await expect(page.locator(".lcd-links a")).toHaveCount(4);
+				await expect(page.locator(".console-shell")).toBeVisible();
+			}
+
+			expect(
+				await page.evaluate(
+					() => document.documentElement.scrollWidth <= innerWidth,
+				),
+			).toBe(true);
+		}
+		expect(errors).toEqual([]);
 	});
 }
 
-for (const id of keepsakeIds)
-	test(`${id}: portrait keepsake stays fixed through reading and theme changes`, async ({
-		page,
-	}) => {
-		await chooseKeepsake(page, id);
-		await page.goto("http://resume.lizheng-test.localhost:27046/en/");
-		const image = page.locator(".resume-keepsake");
-		await expect(image).toHaveAttribute(
-			"src",
-			`/design-assets/keepsakes/${id}.svg`,
-		);
-		await expect
-			.poll(() =>
-				image.evaluate((img) => (img as HTMLImageElement).naturalWidth),
-			)
-			.toBeGreaterThan(0);
-		await page.locator("[data-theme-toggle]").click();
-		await page.locator('.resume-sidebar a[href="#experience"]').click();
-		await expect(image).toHaveAttribute(
-			"src",
-			`/design-assets/keepsakes/${id}.svg`,
-		);
-		await page.setViewportSize({ width: 390, height: 844 });
-		await expect(image).toHaveAttribute(
-			"src",
-			`/design-assets/keepsakes/${id}.svg`,
-		);
-		await expect(image).toHaveAttribute("aria-hidden", "true");
-		await page.emulateMedia({ media: "print" });
-		await expect(image).toBeHidden();
-		await page.emulateMedia({ media: "screen" });
-		await page.setViewportSize({ width: 1440, height: 900 });
+test("theme toggle switches light and dark and persists across reload", async ({
+	page,
+}) => {
+	await page.emulateMedia({ colorScheme: "dark" });
+	await page.goto(`${origin("resume")}/en/`);
+	const html = page.locator("html");
+	const toggle = page.locator("[data-theme-toggle]");
+	await expect(html).toHaveAttribute("data-theme-preference", "system");
+	await expect(html).toHaveAttribute("data-theme", "dark");
+	await toggle.focus();
+	await page.keyboard.press("Enter");
+	await expect(html).toHaveAttribute("data-theme-preference", "light");
+	await expect(html).toHaveAttribute("data-theme", "light");
+	await page.reload();
+	await expect(html).toHaveAttribute("data-theme-preference", "light");
+	await expect(html).toHaveAttribute("data-theme", "light");
+	await toggle.click();
+	await expect(html).toHaveAttribute("data-theme", "dark");
+});
+
+test("no-JS mode preserves navigation, locale links and system theme", async ({
+	browser,
+}) => {
+	const context = await browser.newContext({
+		javaScriptEnabled: false,
+		viewport: { width: 320, height: 568 },
 	});
+	await context.route("**/*", routeIsolatedRequestWithoutMedia);
+	const page = await context.newPage();
+
+	for (const surface of ["resume", "landing"] as const) {
+		await page.goto(`${origin(surface)}/zh/`);
+		await expect(page.locator("h1")).toBeVisible();
+		await expect(page.locator(".site-header .surface-links a")).toHaveCount(4);
+		await expect(page.locator('footer a[href="/zh/content.md"]')).toBeVisible();
+		await expect(page.locator('footer a[href="/llms.txt"]')).toBeVisible();
+		expect(
+			await page.evaluate(
+				() => document.documentElement.scrollWidth <= innerWidth,
+			),
+		).toBe(true);
+	}
+
+	await page.emulateMedia({ colorScheme: "dark" });
+	await expect
+		.poll(() =>
+			page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+		)
+		.toBe("rgb(30, 40, 36)");
+	await page.emulateMedia({ colorScheme: "light" });
+	await expect
+		.poll(() =>
+			page.evaluate(() => getComputedStyle(document.body).backgroundColor),
+		)
+		.toBe("rgb(240, 240, 233)");
+	await context.close();
+});

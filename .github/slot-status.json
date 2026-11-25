@@ -16,7 +16,7 @@
 	},
 	"L4": {
 		"status": "impl",
-		"reason": "Playwright Chromium and development suites block Z1; Firefox and WebKit shards run in the scheduled/manual extended workflow"
+		"reason": "Playwright Desktop Chromium core smoke and development suites block Z1"
 	},
 	"P1": {
 		"status": "impl",

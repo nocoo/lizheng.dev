@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
-import { mkdtemp, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { cp, mkdtemp, rm } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -29,7 +30,15 @@ async function run(command: string, args: string[]) {
 console.info(
 	`Starting isolated ${layer} runtime with Node ${process.versions.node}`,
 );
-await run("bun", ["scripts/build.tsx", `.test-dist/${layer}`]);
+const distTarget = `.test-dist/${layer}`;
+if (process.env.REUSE_DIST === "1") {
+	if (!existsSync("dist/_sites"))
+		throw new Error("REUSE_DIST=1 requires a built dist/ directory");
+	await rm(distTarget, { recursive: true, force: true });
+	await cp("dist", distTarget, { recursive: true });
+} else {
+	await run("bun", ["scripts/build.tsx", distTarget]);
+}
 const configuration = [
 	"--config",
 	"wrangler.test.jsonc",

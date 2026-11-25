@@ -17,16 +17,15 @@ bun run test:coverage  # L1 unit tests (>=80% statements/branches/functions/line
 bun run build  # B1 production assets + Worker
 bun run test:http  # L3 real wrangler artifact on Miniflare (:17046)
 bunx playwright install chromium
-bun run test:browser --project=chromium --workers=3  # L4 blocking Chromium browser/a11y/visual (:27046)
+bun run test:browser --project=chromium --workers=3  # L4 blocking Chromium smoke (:27046)
 bun run test:development  # Blocking Chromium HMR/preview suite inside L4
-bun run test:visual:update:linux  # Linux CI visual baselines in pinned Docker image
 bun run check:security  # Local G1 + G2 scan
 bun run check:hooks  # Local hook fault-injection
 ```
 
 - Hooks require `bun`, `node`, `gitleaks`, `osv-scanner` and `actionlint` on `PATH`; missing tools fail closed.
-- Run local suites sequentially with L4; `test:performance` and Firefox/WebKit `browser-e2e` shards run in the non-blocking daily/manual extended workflow.
-- Loopback hosts, Caddy HTTPS previews and Linux container image/font settings: [12](docs/12-local-development.md), [11](docs/11-release-implementation.md).
+- Run local suites sequentially with L4; `test:performance` runs in the non-blocking daily/manual extended workflow.
+- Loopback hosts and Caddy HTTPS previews: [12](docs/12-local-development.md), [11](docs/11-release-implementation.md).
 
 ## Invariants
 
@@ -47,7 +46,7 @@ bun run check:hooks  # Local hook fault-injection
 
 Follows `system1-quality`; CI slots and pinned `base-ci` refs live in `.github/workflows/quality-slots.yml` and `.github/slot-status.json` (`quality / Z1: Gate` required on `main`, ruleset `27029540`, admin bypass). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
 
-- **Exceptions / extra jobs**: `L2 Runtime` is `N/A` (covered by L1 and L3). `P1 Package` verifies budgets, `wrangler deploy --dry-run`, and `release-artifact.tgz` pack/unpack; Firefox/WebKit `browser-e2e` shards run non-blocking in `.github/workflows/extended.yml`.
+- **Exceptions / extra jobs**: `L2 Runtime` is `N/A` (covered by L1 and L3). `P1 Package` verifies budgets, `wrangler deploy --dry-run`, and `release-artifact.tgz` pack/unpack reusing `B1`'s `dist` artifact (`REUSE_DIST=1` in CI). `test:performance` runs non-blocking in `.github/workflows/extended.yml`.
 - **Contract parity**: `tests/unit/quality-contract.test.ts` keeps `.github/slot-status.json`, workflow jobs, check names and pinned references in step; no skipped or focused tests.
 - **Local hooks**: `bun run prepare` (`.husky/`, check-only, no autofix); `pre-commit` (`scripts/pre-commit-l1.sh`) checks staged index snapshot (`G1`, deps, `S1`/`S2`/`S3`, `L1` >=80%, `B1`).
 - **Pre-push**: `scripts/gates.ts pre-push` pins stdin OIDs (rejecting non-HEAD/absent commits, skipping deletions) and runs dep snapshot, per-ref `G1`, `G2`, `L3` and `check:budgets` on the exported commit.

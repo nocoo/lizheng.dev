@@ -127,14 +127,14 @@ Z1's `needs`.
 | B1 | `b1-build` | ubuntu | `bun run build` |
 | L1 | `l1-unit` | ubuntu | `bun run test:coverage` |
 | L2 | `l2-runtime` | — | skipped, declared `na` |
-| L3 | `l3-integration` | ubuntu | `bun run test:http` |
-| L4 | `l4-e2e` | ubuntu, Playwright container | Playwright Chromium plus `test:development` |
-| P1 | `p1-package` | ubuntu | `check:budgets`, wrangler dry run, archive extraction & upload |
-| Z1 | `z1-gate` | ubuntu | `bun scripts/slot-gate.ts` over `toJSON(needs)` |
+| L3 | `l3-integration` | ubuntu | `bun run test:http` (reusing B1 `dist` artifact) |
+| L4 | `l4-e2e` | ubuntu | `setup-playwright` (Chromium), core browser smoke + `test:development` |
+| P1 | `p1-package` | ubuntu | `check:budgets` (reusing B1 `dist`), wrangler dry run, archive extraction & upload |
+| Z1 | `z1-gate` | ubuntu | `nocoo/base-ci/.github/actions/z1-gate` over `toJSON(needs)` |
 
 `L1: Unit (Pre-commit Gate)` (`check:hooks`, `check:l1-gate`) was later removed from CI (local hooks remain via `.husky/pre-commit` and `.husky/pre-push`), leaving 0 extra jobs outside the 12 System0 slots.
 
-Firefox 1/2–2/2 and WebKit 1/4–4/4 (`browser-e2e`) now run on `schedule` and `workflow_dispatch` inside `.github/workflows/extended.yml` instead of blocking push/PR `z1-gate`.
+On `base-ci` v2026.18, `l4-e2e` and `extended.yml` (`performance`) switched from the Playwright Docker container to `ubuntu-latest` with `setup-js` + `setup-playwright` (single Desktop Chromium, 3 workers, core smoke + `test:development`), and `b1-build` uploads `dist` for `l3-integration`, `l4-e2e`, and `p1-package` to reuse (`REUSE_DIST=1`).
 
 Release proof is fail-closed on the deployed sha: both `release-source` steps now
 name `quality / Z1: Gate` explicitly, and a dispatch or artifact whose Z1 failed
