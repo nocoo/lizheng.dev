@@ -131,7 +131,8 @@ Z1's `needs`.
 | L4 | `l4-e2e` | ubuntu, Playwright container | Playwright Chromium plus `test:development` |
 | P1 | `p1-package` | ubuntu | `check:budgets`, wrangler dry run, archive extraction & upload |
 | Z1 | `z1-gate` | ubuntu | `bun scripts/slot-gate.ts` over `toJSON(needs)` |
-| — | `l1-precommit-gate` | ubuntu | `check:hooks`, `check:l1-gate` (`L1: Unit (Pre-commit Gate)`) |
+
+`L1: Unit (Pre-commit Gate)` (`check:hooks`, `check:l1-gate`) was later removed from CI (local hooks remain via `.husky/pre-commit` and `.husky/pre-push`), leaving 0 extra jobs outside the 12 System0 slots.
 
 Firefox 1/2–2/2 and WebKit 1/4–4/4 (`browser-e2e`) now run on `schedule` and `workflow_dispatch` inside `.github/workflows/extended.yml` instead of blocking push/PR `z1-gate`.
 

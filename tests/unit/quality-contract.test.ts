@@ -43,15 +43,10 @@ it("declares one canonical job per System0 slot", () => {
 		expect(job, `missing slot job ${SLOT_JOBS[id]}`).toBeDefined();
 		expect(job?.name).toBe(SLOT_NAMES[id]);
 	}
-	const extraSlotNames: Record<string, string> = {
-		"l1-precommit-gate": "L1: Unit (Pre-commit Gate)",
-	};
-	const labelled = /^(S1|S2|S3|G1|G2|B1|L1|L2|L3|L4|P1|Z1):/;
-	for (const [key, job] of Object.entries(slots.jobs))
-		if (!slotJobKeys.includes(key)) {
-			if (key in extraSlotNames) expect(job.name).toBe(extraSlotNames[key]);
-			else expect(job.name ?? key).not.toMatch(labelled);
-		}
+	const nonSlotJobs = Object.keys(slots.jobs).filter(
+		(key) => !slotJobKeys.includes(key),
+	);
+	expect(nonSlotJobs).toEqual([]);
 });
 
 it("keeps the committed declaration in step with the jobs that run", () => {
