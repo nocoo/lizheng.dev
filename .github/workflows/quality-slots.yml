@@ -1,4 +1,4 @@
-# System0 quality slots for lizheng.dev — native mode (base-ci v2026.18).
+# System0 quality slots for lizheng.dev — native mode (base-ci v2026.19).
 # Job display names are exactly `<ID>: <Name>`, so ci.yml's `quality` caller renders
 # `quality / <ID>: <Name>` and `quality / Z1: Gate` is the single required check.
 # Blocking jobs outside the slot list carry no slot id and are aggregated by Z1.
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/lint-workflows@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/lint-workflows@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -98,7 +98,7 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 1
-      - uses: nocoo/base-ci/.github/actions/scan-secrets@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/scan-secrets@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
       - name: Record tested sha
         id: record-sha
         if: always()
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/scan-dependencies@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/scan-dependencies@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           lockfiles: "bun.lock"
       - name: Record tested sha
@@ -138,7 +138,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -170,7 +170,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -205,7 +205,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -238,13 +238,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
           node-version: "26.12.1"
           install-policy: blocked
-      - uses: nocoo/base-ci/.github/actions/setup-playwright@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-playwright@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           browsers: chromium
@@ -287,7 +287,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: nocoo/base-ci/.github/actions/setup-js@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+      - uses: nocoo/base-ci/.github/actions/setup-js@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           package-manager: bun
           runtime-version: "1.4.0"
@@ -342,7 +342,7 @@ jobs:
     steps:
       - name: Verify slot jobs and tested shas
         id: gate
-        uses: nocoo/base-ci/.github/actions/z1-gate@bfaac83b5a4d5c7ed26320bb5b09f3ca0a01932c # v2026.18
+        uses: nocoo/base-ci/.github/actions/z1-gate@98fc023423f82b010f17e0ebbc9dd580fe68736a # v2026.19
         with:
           needs-json: ${{ toJSON(needs) }}
           expected-sha: ${{ github.sha }}
