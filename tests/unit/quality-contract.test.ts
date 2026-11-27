@@ -8,7 +8,7 @@ import {
 	SLOT_NAMES,
 } from "../../packages/quality/slots";
 
-const BASE_CI_SHA = "e5876a604547b1ddb0916f16dd841a4f832609a0";
+const BASE_CI_SHA = "3703a073693d598159e87f77f99587e586c14cfe";
 const PINNED = new RegExp(`^nocoo/base-ci/[^@]+@${BASE_CI_SHA}$`);
 
 interface Step {
@@ -26,6 +26,7 @@ interface Job {
 	needs?: string[];
 	outputs?: Record<string, string>;
 	steps?: Step[];
+	with?: Record<string, unknown>;
 }
 interface Document {
 	jobs: Record<string, Job>;
@@ -33,8 +34,7 @@ interface Document {
 
 const read = (path: string) => parse(readFileSync(path, "utf8")) as Document;
 const slots = read(".github/workflows/quality-slots.yml");
-const ci = read(".github/workflows/ci.yml");
-const release = read(".github/workflows/release.yml");
+const pipeline = read(".github/workflows/pipeline.yml");
 const slotJobKeys = Object.values(SLOT_JOBS);
 
 it("declares one canonical job per System0 slot", () => {
@@ -89,8 +89,8 @@ it("aggregates every slot job and every blocking job in a checkout-free Z1", () 
 });
 
 it("keeps the caller shape branch protection depends on", () => {
-	expect(Object.keys(ci.jobs)).toEqual(["quality"]);
-	const caller = ci.jobs.quality;
+	expect(Object.keys(pipeline.jobs)).toEqual(["quality", "deploy"]);
+	const caller = pipeline.jobs.quality;
 	expect(caller?.uses).toBe("./.github/workflows/quality-slots.yml");
 	expect(caller?.name).toBeUndefined();
 });
@@ -120,16 +120,15 @@ it("runs browser jobs on ubuntu-latest with setup-playwright and reuses B1 dist"
 			),
 		).toBe(true);
 	}
-	for (const document of [slots, extended, release])
+	for (const document of [slots, extended, pipeline])
 		for (const job of Object.values(document.jobs))
 			if (job["runs-on"]) expect(job["runs-on"]).toBe("ubuntu-latest");
 });
 
-it("pins every shared base-ci reference to v2026.20", () => {
+it("pins every shared base-ci reference to v2026.24", () => {
 	const files = [
-		".github/workflows/ci.yml",
+		".github/workflows/pipeline.yml",
 		".github/workflows/quality-slots.yml",
-		".github/workflows/release.yml",
 		".github/workflows/extended.yml",
 	];
 	let references = 0;
@@ -152,11 +151,16 @@ it("pins every shared base-ci reference to v2026.20", () => {
 	expect(references).toBeGreaterThan(0);
 });
 
-it("requires the aggregated quality check for release proof", () => {
-	const sources = Object.values(release.jobs)
-		.flatMap((job) => job.steps ?? [])
-		.filter((step) => step.uses?.includes("release-source"));
-	expect(sources).toHaveLength(2);
-	for (const source of sources)
-		expect(source.with?.["required-quality-check"]).toBe("quality / Z1: Gate");
+it("gates unified deploy on quality and main push with mandatory verify", () => {
+	const deploy = pipeline.jobs.deploy;
+	expect(deploy?.needs).toEqual(["quality"]);
+	expect(deploy?.uses).toBe(
+		`nocoo/base-ci/.github/workflows/deploy-worker.yml@${BASE_CI_SHA}`,
+	);
+	expect(deploy?.with?.["artifact-name"]).toMatch(
+		/^worker-\$\{\{ github\.sha \}\}$/,
+	);
+	expect(deploy?.with?.["verify-command"]).toBe(
+		"bun scripts/verify-production.ts",
+	);
 });
