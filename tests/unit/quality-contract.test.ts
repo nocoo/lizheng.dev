@@ -8,7 +8,7 @@ import {
 	SLOT_NAMES,
 } from "../../packages/quality/slots";
 
-const BASE_CI_SHA = "3703a073693d598159e87f77f99587e586c14cfe";
+const BASE_CI_SHA = "9933a7461a312cfaac526ccc5907357a7e3f669a";
 const PINNED = new RegExp(`^nocoo/base-ci/[^@]+@${BASE_CI_SHA}$`);
 
 interface Step {
@@ -125,7 +125,7 @@ it("runs browser jobs on ubuntu-latest with setup-playwright and reuses B1 dist"
 			if (job["runs-on"]) expect(job["runs-on"]).toBe("ubuntu-latest");
 });
 
-it("pins every shared base-ci reference to v2026.24", () => {
+it("pins every shared base-ci reference to v2026.25", () => {
 	const files = [
 		".github/workflows/pipeline.yml",
 		".github/workflows/quality-slots.yml",
