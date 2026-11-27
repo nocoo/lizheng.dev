@@ -48,7 +48,7 @@
 		"@vitest/coverage-v8": "5.1.1",
 		"husky": "9.1.7",
 		"jsdom": "31.0.1",
-		"knip": "6.44.2",
+		"knip": "6.48.0",
 		"miniflare": "5.20261006.1-alpha",
 		"sharp": "0.35.5",
 		"typescript": "7.0.2",
