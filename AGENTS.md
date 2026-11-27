@@ -40,11 +40,11 @@ bun run check:hooks  # Local hook fault-injection
 - Keep exact dependencies, strict TS 7 and frozen installs; keep working production behavior until its tested replacement is ready. HSTS preload and extra `Person` fields are not implicit requirements.
 - Dev uses `127.0.0.1:7046` behind Caddy; L3 reserves `17046` and L4 reserves `27046` without reusing servers. Test config names `l2`/`l3` (`.test-dist/l2`, `l3`) label ports, not slots; one suite per port.
 - Miniflare uses a fresh temp dir, test hosts resolve to loopback, and no prod/dev stores or credentials enter E2E; local `-test` names never authorize remote deployments.
-- Releases follow [11](docs/11-release-implementation.md) (`bun run deploy` or green `main` push CI); local commits never deploy, `workflow_dispatch` is validation-only, and CI runs `scripts/unpack-release.sh`.
+- Releases follow [11](docs/11-release-implementation.md) (`bun run deploy` or unified [pipeline.yml](.github/workflows/pipeline.yml) `D1`–`D5` Worker deploy on `main` push / `workflow_dispatch` with `deploy=true`); local commits never deploy and CI runs `scripts/unpack-release.sh`.
 
 ## Quality & Local Gates
 
-Follows `system1-quality`; CI slots and pinned `base-ci` refs live in `.github/workflows/quality-slots.yml` and `.github/slot-status.json` (`quality / Z1: Gate` required on `main`, ruleset `27029540`, admin bypass). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
+Follows `system1-quality`; CI slots and pinned `base-ci` refs (`v2026.24`) live in [.github/workflows/quality-slots.yml](.github/workflows/quality-slots.yml) and `.github/slot-status.json`, called by [.github/workflows/pipeline.yml](.github/workflows/pipeline.yml) (`quality / Z1: Gate` required on `main`, ruleset `27029540`, admin bypass; gates D1–D5 Worker `deploy` on `main` behind `needs: [quality]`). Status vocabulary: `enforced`, `planned`, `manual`, `N/A`.
 
 - **Exceptions / extra jobs**: `L2 Runtime` is `N/A` (covered by L1 and L3). `P1 Package` verifies budgets, `wrangler deploy --dry-run`, and `release-artifact.tgz` pack/unpack reusing `B1`'s `dist` artifact (`REUSE_DIST=1` in CI). `test:performance` runs non-blocking in `.github/workflows/extended.yml`.
 - **Contract parity**: `tests/unit/quality-contract.test.ts` keeps `.github/slot-status.json`, workflow jobs, check names and pinned references in step; no skipped or focused tests.
