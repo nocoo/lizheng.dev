@@ -211,7 +211,7 @@ E1 的只读排查从 M1 开始即可进行；无需等素材定稿再定位规�
 | 性能与门禁 | 逻辑覆盖率各指标 ≥95%，旧 301 分支 100%，G1 零错误/警告；沿用安全/体积门禁、LCP ≤2.5s、CLS ≤0.05 与实验室交互 ≤200ms 的既定测量条件；不提高阈值 |
 | 实际社交卡片 | 部署后在可用的预览/调试入口检查四个语言 URL，记录平台、时间、标题、图片和缓存状态；模拟 UA 成功与平台真实抓取分别记录 |
 
-扩展现有 [内容测试](../tests/unit/content.test.ts)、[发布测试](../tests/unit/publishing.test.tsx)、[边缘测试](../tests/unit/edge.test.ts) 和 [HTTP 矩阵](../tests/http/routes.spec.ts)。浏览器用现有 experience / surfaces / devices 场景验证新增内容、发现入口及视觉变化。完整实现须通过既有 commit、push 与 CI 门禁；已执行的检查见下方实际记录。
+扩展现有 [内容测试](../tests/unit/content.test.ts)、[发布测试](../tests/unit/publishing.test.ts)、[边缘测试](../tests/unit/edge.test.ts) 和 [HTTP 矩阵](../tests/http/routes.spec.ts)。浏览器用现有 experience / surfaces / devices 场景验证新增内容、发现入口及视觉变化。完整实现须通过既有 commit、push 与 CI 门禁；已执行的检查见下方实际记录。
 
 先生成并 review 四张图和四页最终 head，再进入既有 release 流程。现有 main CI 成功后会触发部署，不能把未完成的中间态当作纯备份推送。部署后检查两个 `/api/live`、公开读取矩阵和新图片，按既有流程做后续复查；边缘设置和应用版本分别保留回滚记录。
 

@@ -8,8 +8,6 @@ import { themeScript } from "../experience/theme-bootstrap";
 import { Metadata } from "./Metadata";
 import { traksCollectMarkup } from "./traks-collect";
 
-export { themeScript } from "../experience/theme-bootstrap";
-
 const escapeHtml = (value: string) =>
 	value
 		.replaceAll("&", "&amp;")
